@@ -10,7 +10,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
-import { ffmpegPath as ffp, chromePath, ENGINE, THREE_BUILD } from './config.mjs';
+import { ffmpegPath as ffp, chromePath, ENGINE, NOTEBOOK, THREE_BUILD } from './config.mjs';
 import { speak as elevenSpeak, sfx, music } from './eleven.mjs';
 const ffmpegPath = ffp();
 
@@ -54,7 +54,7 @@ console.log('length', END.toFixed(2) + 's', Object.entries(lines).map(([k, v]) =
 
 // ---- 2. frames ----
 // the page server: /engine/* = the engines, /three/* = three.js, /ep/* = this episode's folder
-const MOUNTS = [['/engine/', ENGINE], ['/three/', THREE_BUILD], ['/ep/', root]];
+const MOUNTS = [['/engine/notebook/', NOTEBOOK], ['/engine/', ENGINE], ['/three/', THREE_BUILD], ['/ep/', root]];
 const server = http.createServer((req, res) => { const u = decodeURIComponent(req.url.split('?')[0]), m = MOUNTS.find(([p]) => u.startsWith(p)), base = m && m[1], f = m ? path.join(base, u.slice(m[0].length)) : ''; if (!m || !f.startsWith(base) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'content-type': { '.html': 'text/html', '.js': 'text/javascript', '.jpg': 'image/jpeg', '.png': 'image/png' }[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res); }).listen(0);
 const url = `http://localhost:${server.address().port}/ep/index.html`, exe = chromePath();
 if (!exe) { console.log('NO CHROME: install Google Chrome (or Chromium/Edge), or set CHROME_PATH'); process.exit(2); }

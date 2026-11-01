@@ -1,11 +1,11 @@
 // Render one prop-library builder from 4 angles (plus an optional close-up) into one contact image.
 //   node src/prop-view.mjs <module> <builder> ['<opts json>'] [--dist=6] [--height=2.2] [--look=0.9] [--close=x,y,z:lx,ly,lz] --out=file.jpg
 import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import { spawnSync } from 'node:child_process';
-import puppeteer from 'puppeteer-core'; import { ENGINE, THREE_BUILD, chromePath, ffmpegPath } from './config.mjs';
+import puppeteer from 'puppeteer-core'; import { ENGINE, NOTEBOOK, THREE_BUILD, chromePath, ffmpegPath } from './config.mjs';
 const pos = process.argv.slice(2).filter(a => !a.startsWith('--')), flag = (n, d) => { const a = process.argv.find(x => x.startsWith(`--${n}=`)); return a ? a.split('=').slice(1).join('=') : d; };
 const [mod, fn, opts = '{}'] = pos; if (!mod || !fn) { console.log('usage: prop-view.mjs <module> <builder> [opts-json] --out=file.jpg'); process.exit(1); }
 const dist = +flag('dist', 6), hgt = +flag('height', 2.2), look = +flag('look', .9), out = path.resolve(flag('out', `${mod}-${fn}.jpg`));
-const MOUNTS = [['/engine/', ENGINE], ['/three/', THREE_BUILD]];
+const MOUNTS = [['/engine/notebook/', NOTEBOOK], ['/engine/', ENGINE], ['/three/', THREE_BUILD]];
 const server = http.createServer((req, res) => { const u = decodeURIComponent(req.url.split('?')[0]), m = MOUNTS.find(([p]) => u.startsWith(p)), f = m ? path.join(m[1], u.slice(m[0].length)) : '';
   if (!m || !f.startsWith(m[1]) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { 'Content-Type': f.endsWith('.js') ? 'text/javascript' : f.endsWith('.html') ? 'text/html' : 'application/octet-stream' }); fs.createReadStream(f).pipe(res); }).listen(0);

@@ -43,6 +43,23 @@ From a clone: `npm install`, then point the client at `node /path/to/3dblock-stu
 | `FFMPEG_PATH` | bundled | Use your own ffmpeg |
 | `ELEVEN_FORMAT` | `mp3_44100_128` | `mp3_44100_192` on Creator plans and up |
 
+## Repository layout (one repo, one engine)
+
+| Path | What it is |
+| --- | --- |
+| `bin/`, `src/`, `test/` | The MCP server (`npx 3dblock-studio-mcp`). |
+| `crew/`, `templates/`, `examples/` | The AI film crew briefs, episode templates and worked examples the server hands to your AI. |
+| `Xanadu/` | **The 3D studio** (working name): the single engine, the Doll v2 character system and its interactive editor, camera/lights/post, the render pipeline and tools. |
+| `Xanadu/studio/lib/` | The engine itself. The MCP server serves this folder to its pages as `/engine/` (`ps1.js`, `woodcut.js`, `ps1-props/`, `doll/`). |
+| `Xanadu/notebook/` | The shared timeline library and renderer (`/engine/notebook/lib.js`). |
+| `archive/conspiracy-theories/` | Parked sources of the Conspiracy Theories series, kept separate from the studio. |
+
+There is no second copy of the engine: the MCP server and the studio both use `Xanadu/studio/lib`.
+
+**Doll editor:** from `Xanadu/`, run `node tools/serve.mjs` and open `http://localhost:8765/studio/lib/doll/viewer.html`. Build and pose a character: body, hair, face, clothes, armor, animations and emotions.
+
+Studio working folders (`Episodes/`, `Uploads/`, `Support/`, `Temp/`, sound libraries) are git-ignored and live on the author's T7 drive.
+
 ## Your first episode in five prompts
 
 1. *"Check the studio setup."* (`studio_info`)

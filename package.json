@@ -3,12 +3,41 @@
   "version": "0.1.0",
   "description": "An MCP server that lets any AI make PS1-style low-poly 3D short videos: engines, prop library, an 11-role AI film crew, ElevenLabs voice, and a render pipeline to 1080x1920 MP4.",
   "type": "module",
-  "bin": { "3dblock-studio-mcp": "bin/3dblock-studio-mcp.mjs" },
+  "bin": {
+    "3dblock-studio-mcp": "bin/3dblock-studio-mcp.mjs"
+  },
   "main": "src/server.mjs",
-  "files": ["bin", "src", "engine", "crew", "templates", "examples", "README.md", "LICENSE"],
-  "engines": { "node": ">=18.17" },
-  "scripts": { "start": "node bin/3dblock-studio-mcp.mjs", "test": "node test/smoke.mjs" },
-  "keywords": ["mcp", "model-context-protocol", "video", "three.js", "ps1", "low-poly", "tiktok", "shorts", "elevenlabs"],
+  "files": [
+    "bin",
+    "src",
+    "crew",
+    "templates",
+    "examples",
+    "Xanadu/studio/lib",
+    "Xanadu/notebook",
+    "!Xanadu/studio/lib/**/*.backup*",
+    "!Xanadu/studio/lib/*.v*.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node bin/3dblock-studio-mcp.mjs",
+    "test": "node test/smoke.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "video",
+    "three.js",
+    "ps1",
+    "low-poly",
+    "tiktok",
+    "shorts",
+    "elevenlabs"
+  ],
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",

@@ -4,7 +4,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { HOME, EPISODES, OUTPUT, JOBS, ENGINE, CREW, TEMPLATES, EXAMPLES, SERIES, PKG, chromePath, ffmpegPath, elevenKey, CACHE } from './config.mjs';
+import { HOME, EPISODES, OUTPUT, JOBS, ENGINE, NOTEBOOK, CREW, TEMPLATES, EXAMPLES, SERIES, PKG, chromePath, ffmpegPath, elevenKey, CACHE } from './config.mjs';
 
 const ff = a => spawnSync(ffmpegPath(), a, { encoding: 'utf8', maxBuffer: 1 << 28 });
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -32,7 +32,7 @@ export const crewDescription = role => (/description:\s*(.+)/.exec(fs.readFileSy
 export function engineGuide(engine) {
   const file = { ps1: 'ps1.js', woodcut: 'woodcut.js', timeline: 'notebook/lib.js' }[engine];
   if (!file) throw new Error('engine must be ps1, woodcut or timeline');
-  const src = fs.readFileSync(path.join(ENGINE, file), 'utf8').split('\n');
+  const src = fs.readFileSync(file === 'notebook/lib.js' ? path.join(NOTEBOOK, 'lib.js') : path.join(ENGINE, file), 'utf8').split('\n');
   const head = []; for (const l of src) { if (!l.startsWith('//')) break; head.push(l.slice(3)); }
   const api = src.filter(l => /^\s*(PS|WC|NB)\.[A-Za-z]\w*\s*=/.test(l) || /^\s*\/\/ /.test(l) && /PS\.|WC\.|NB\./.test(l)).map(l => l.trim().slice(0, 220));
   return `# ${engine} engine (${file})\n\n${head.join('\n')}\n\n## API (first 220 characters of each definition or note)\n${api.join('\n')}\n\nEach page loads, in order: /three/three.min.js, /engine/notebook/lib.js (timeline helpers: at, st, en, P, lerp, easing), then the engine, then optional /engine/ps1-props/<module>.js, then scene.js. Read a full example with read_episode.`;

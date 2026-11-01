@@ -8,7 +8,9 @@ import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 export const PKG = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const ENGINE = path.join(PKG, 'engine');
+// ONE engine: Xanadu's. Pages still load it as /engine/ps1.js, /engine/ps1-props/*.js, /engine/notebook/lib.js (the page server maps those URLs here)
+export const ENGINE = path.join(PKG, 'Xanadu', 'studio', 'lib');
+export const NOTEBOOK = path.join(PKG, 'Xanadu', 'notebook');
 export const CREW = path.join(PKG, 'crew');
 export const TEMPLATES = path.join(PKG, 'templates');
 export const EXAMPLES = path.join(PKG, 'examples');
