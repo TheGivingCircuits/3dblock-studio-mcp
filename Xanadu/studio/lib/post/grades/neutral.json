@@ -1,0 +1,3 @@
+{ "name": "neutral", "note": "No look: the house gamma and roll-off only. From PS1.GRADES.neutral. Use it to judge a raw plate.",
+  "lift": [0, 0, 0], "gamma": 1.0, "gain": [1, 1, 1], "sat": 1, "contrast": 1, "temp": 0, "print": 0, "vibrancy": 1,
+  "film": { "grain": 0.6, "halation": 0.15, "bloom": 0.25, "rolloff": 0.8, "vignette": 1.0, "fringe": 1.0 } }

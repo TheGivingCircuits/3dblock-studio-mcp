@@ -1,0 +1,920 @@
+{
+ "name": "downtown",
+ "biome": "city",
+ "seed": 2,
+ "size": [
+  196,
+  160
+ ],
+ "sky": {
+  "time": "20:40",
+  "date": "1988-11-04",
+  "place": "illinois",
+  "weather": "clear"
+ },
+ "atmosphere": {
+  "haze": 0.006,
+  "color": "#9a9aa8"
+ },
+ "pieces": [
+  {
+   "uid": "ground-1",
+   "type": "ground",
+   "rect": [
+    -88,
+    108,
+    -80,
+    80
+   ],
+   "tex": "concrete"
+  },
+  {
+   "uid": "street-1",
+   "type": "street",
+   "kind": "city",
+   "from": [
+    -58,
+    0
+   ],
+   "to": [
+    48,
+    0
+   ],
+   "seed": 2
+  },
+  {
+   "uid": "intersection-1",
+   "type": "intersection",
+   "kind": "city",
+   "at": [
+    54,
+    0
+   ],
+   "control": "light"
+  },
+  {
+   "uid": "street-2",
+   "type": "street",
+   "kind": "city",
+   "from": [
+    60,
+    0
+   ],
+   "to": [
+    94,
+    0
+   ],
+   "seed": 3
+  },
+  {
+   "uid": "street-3",
+   "type": "street",
+   "kind": "city",
+   "from": [
+    54,
+    -6
+   ],
+   "to": [
+    54,
+    -46
+   ],
+   "seed": 3
+  },
+  {
+   "uid": "street-4",
+   "type": "street",
+   "kind": "city",
+   "from": [
+    54,
+    6
+   ],
+   "to": [
+    54,
+    46
+   ],
+   "seed": 5
+  },
+  {
+   "uid": "house-1",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -53.2,
+    0,
+    -15.16
+   ],
+   "ry": 0,
+   "paint": "brick",
+   "seed": 537955,
+   "stories": 3
+  },
+  {
+   "uid": "house-2",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -47.6,
+    0,
+    -15.16
+   ],
+   "ry": 0,
+   "paint": "charcoal",
+   "seed": 499201,
+   "stories": 3
+  },
+  {
+   "uid": "house-3",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -42,
+    0,
+    -15.16
+   ],
+   "ry": 0,
+   "paint": "stucco",
+   "seed": 114031,
+   "stories": 3
+  },
+  {
+   "uid": "house-4",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    -31.2,
+    0,
+    -15.66
+   ],
+   "ry": 0,
+   "paint": "brownstone",
+   "seed": 834997,
+   "stories": 5
+  },
+  {
+   "uid": "house-5",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    -15.2,
+    0,
+    -15.66
+   ],
+   "ry": 0,
+   "paint": "slate",
+   "seed": 366698,
+   "stories": 6
+  },
+  {
+   "uid": "house-6",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    0.8,
+    0,
+    -15.66
+   ],
+   "ry": 0,
+   "paint": "tan",
+   "seed": 62183,
+   "stories": 4
+  },
+  {
+   "uid": "house-7",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    16.8,
+    0,
+    -15.66
+   ],
+   "ry": 0,
+   "paint": "brick",
+   "seed": 940102,
+   "stories": 5
+  },
+  {
+   "uid": "house-8",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    27.6,
+    0,
+    -15.16
+   ],
+   "ry": 0,
+   "paint": "brownstone",
+   "seed": 467963,
+   "stories": 3
+  },
+  {
+   "uid": "house-9",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    33.2,
+    0,
+    -15.16
+   ],
+   "ry": 0,
+   "paint": "brownstone",
+   "seed": 521219,
+   "stories": 4
+  },
+  {
+   "uid": "house-10",
+   "type": "house",
+   "preset": "corner-store",
+   "at": [
+    41,
+    0,
+    -14.66
+   ],
+   "ry": 0,
+   "paint": "brick",
+   "seed": 960292,
+   "stories": 3
+  },
+  {
+   "uid": "light-1",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -44,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-2",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -28,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-3",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -12,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-4",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    4,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-5",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    20,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-6",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    36,
+    0.16,
+    -6.8
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "item-1",
+   "type": "item",
+   "id": "hydrant",
+   "at": [
+    -38.78,
+    0.16,
+    -6.7
+   ],
+   "ry": 0,
+   "physics": false
+  },
+  {
+   "uid": "item-2",
+   "type": "item",
+   "id": "newspaper-box",
+   "at": [
+    -28,
+    0.16,
+    -6.7
+   ],
+   "ry": 0,
+   "physics": false
+  },
+  {
+   "uid": "item-3",
+   "type": "item",
+   "id": "trash-bin",
+   "at": [
+    -10.07,
+    0.16,
+    -6.7
+   ],
+   "ry": 0,
+   "physics": false
+  },
+  {
+   "uid": "item-4",
+   "type": "item",
+   "id": "mailbox-cluster",
+   "at": [
+    0.29,
+    0.16,
+    -6.7
+   ],
+   "ry": 0,
+   "physics": false
+  },
+  {
+   "uid": "item-5",
+   "type": "item",
+   "id": "bench",
+   "at": [
+    17.89,
+    0.16,
+    -8.4
+   ],
+   "ry": 3.142,
+   "physics": false
+  },
+  {
+   "uid": "item-6",
+   "type": "item",
+   "id": "hydrant",
+   "at": [
+    30.11,
+    0.16,
+    -6.7
+   ],
+   "ry": 0,
+   "physics": false
+  },
+  {
+   "uid": "vehicle-1",
+   "type": "vehicle",
+   "kind": "wagon",
+   "at": [
+    -43,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#6a1e22"
+  },
+  {
+   "uid": "vehicle-2",
+   "type": "vehicle",
+   "kind": "van",
+   "at": [
+    -19.76,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#6a1e22"
+  },
+  {
+   "uid": "vehicle-3",
+   "type": "vehicle",
+   "kind": "pickup",
+   "at": [
+    12.78,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#1a1a1a"
+  },
+  {
+   "uid": "vehicle-4",
+   "type": "vehicle",
+   "kind": "van",
+   "at": [
+    22.61,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#1a1a1a"
+  },
+  {
+   "uid": "vehicle-5",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    31.74,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#1a1a1a"
+  },
+  {
+   "uid": "vehicle-6",
+   "type": "vehicle",
+   "kind": "pickup",
+   "at": [
+    39.94,
+    0,
+    -4.85
+   ],
+   "ry": -1.571,
+   "paint": "#1a1a1a"
+  },
+  {
+   "uid": "house-11",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -53.2,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "charcoal",
+   "seed": 624172,
+   "stories": 3
+  },
+  {
+   "uid": "house-12",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -47.6,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "stucco",
+   "seed": 205139,
+   "stories": 4
+  },
+  {
+   "uid": "house-13",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -42,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "brick",
+   "seed": 537251,
+   "stories": 4
+  },
+  {
+   "uid": "house-14",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    -31.2,
+    0,
+    15.66
+   ],
+   "ry": 3.142,
+   "paint": "tan",
+   "seed": 167209,
+   "stories": 6
+  },
+  {
+   "uid": "house-15",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -20.4,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "brick",
+   "seed": 843761,
+   "stories": 3
+  },
+  {
+   "uid": "house-16",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -14.8,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "stucco",
+   "seed": 259935,
+   "stories": 4
+  },
+  {
+   "uid": "house-17",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -9.2,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "charcoal",
+   "seed": 20600,
+   "stories": 3
+  },
+  {
+   "uid": "house-18",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    -3.6,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "stucco",
+   "seed": 647477,
+   "stories": 4
+  },
+  {
+   "uid": "house-19",
+   "type": "house",
+   "preset": "apartments",
+   "at": [
+    7.2,
+    0,
+    15.66
+   ],
+   "ry": 3.142,
+   "paint": "slate",
+   "seed": 107513,
+   "stories": 4
+  },
+  {
+   "uid": "house-20",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    18,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "charcoal",
+   "seed": 114024,
+   "stories": 3
+  },
+  {
+   "uid": "house-21",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    23.6,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "stucco",
+   "seed": 28764,
+   "stories": 3
+  },
+  {
+   "uid": "house-22",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    29.2,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "charcoal",
+   "seed": 717775,
+   "stories": 3
+  },
+  {
+   "uid": "house-23",
+   "type": "house",
+   "preset": "row-house",
+   "at": [
+    34.8,
+    0,
+    15.16
+   ],
+   "ry": 3.142,
+   "paint": "brick",
+   "seed": 511051,
+   "stories": 4
+  },
+  {
+   "uid": "house-24",
+   "type": "house",
+   "preset": "corner-store",
+   "at": [
+    42.6,
+    0,
+    14.66
+   ],
+   "ry": 3.142,
+   "paint": "tan",
+   "seed": 445336,
+   "stories": 3
+  },
+  {
+   "uid": "light-7",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -36,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-8",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -20,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-9",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    -4,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-10",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    12,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-11",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    28,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-12",
+   "type": "light",
+   "kind": "lamp-post",
+   "at": [
+    44,
+    0.16,
+    6.8
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "item-7",
+   "type": "item",
+   "id": "mailbox-cluster",
+   "at": [
+    -41.09,
+    0.16,
+    6.7
+   ],
+   "ry": 3.142,
+   "physics": false
+  },
+  {
+   "uid": "item-8",
+   "type": "item",
+   "id": "bench",
+   "at": [
+    -25.67,
+    0.16,
+    8.4
+   ],
+   "ry": 6.283,
+   "physics": false
+  },
+  {
+   "uid": "item-9",
+   "type": "item",
+   "id": "hydrant",
+   "at": [
+    -12.16,
+    0.16,
+    6.7
+   ],
+   "ry": 3.142,
+   "physics": false
+  },
+  {
+   "uid": "item-10",
+   "type": "item",
+   "id": "phone-booth",
+   "at": [
+    2.28,
+    0.16,
+    8.4
+   ],
+   "ry": 3.142,
+   "physics": false
+  },
+  {
+   "uid": "item-11",
+   "type": "item",
+   "id": "bus-stop",
+   "at": [
+    16.08,
+    0.16,
+    6.7
+   ],
+   "ry": 6.283,
+   "physics": false
+  },
+  {
+   "uid": "item-12",
+   "type": "item",
+   "id": "hydrant",
+   "at": [
+    29.21,
+    0.16,
+    6.7
+   ],
+   "ry": 3.142,
+   "physics": false
+  },
+  {
+   "uid": "vehicle-7",
+   "type": "vehicle",
+   "kind": "van",
+   "at": [
+    -43,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#3a4a3a"
+  },
+  {
+   "uid": "vehicle-8",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    -33.36,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#2a3a5a"
+  },
+  {
+   "uid": "vehicle-9",
+   "type": "vehicle",
+   "kind": "van",
+   "at": [
+    -21.61,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#2a3a5a"
+  },
+  {
+   "uid": "vehicle-10",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    -9.89,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#8a6a2a"
+  },
+  {
+   "uid": "vehicle-11",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    2.49,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#8a6a2a"
+  },
+  {
+   "uid": "vehicle-12",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    14.74,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#1a1a1a"
+  },
+  {
+   "uid": "vehicle-13",
+   "type": "vehicle",
+   "kind": "pickup",
+   "at": [
+    27.2,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#6a1e22"
+  },
+  {
+   "uid": "vehicle-14",
+   "type": "vehicle",
+   "kind": "sedan",
+   "at": [
+    35.82,
+    0,
+    4.85
+   ],
+   "ry": 1.571,
+   "paint": "#2a3a5a"
+  },
+  {
+   "uid": "item-13",
+   "type": "item",
+   "id": "manhole",
+   "at": [
+    -38,
+    0,
+    -0.96
+   ]
+  },
+  {
+   "uid": "item-14",
+   "type": "item",
+   "id": "manhole",
+   "at": [
+    -11,
+    0,
+    -0.87
+   ]
+  },
+  {
+   "uid": "item-15",
+   "type": "item",
+   "id": "manhole",
+   "at": [
+    16,
+    0,
+    1.52
+   ]
+  },
+  {
+   "uid": "item-16",
+   "type": "item",
+   "id": "manhole",
+   "at": [
+    43,
+    0,
+    -1.53
+   ]
+  }
+ ],
+ "saved": "2026-10-26",
+ "opts": {}
+}

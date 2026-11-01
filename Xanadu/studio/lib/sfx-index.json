@@ -1,0 +1,1468 @@
+[
+ {
+  "key": "camcorder",
+  "prompt": "1990s camcorder tape mechanism whirring and a beep as recording starts",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-b718b76e478c5e339a1c4a843a44ce9a0138c24c.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "road",
+  "prompt": "a car driving on an empty country highway, steady engine hum, road noise and wind",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-d22d8839e4088bf382e019257f97ba5fd1500e8f.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "carwoods",
+  "prompt": "a car driving slowly on a gravel forest road, tyres on loose stones, engine hum",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-6b8003d7f04d66ecf8723d93ccf18dfdc4121350.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "chainsaw",
+  "prompt": "a chainsaw roaring and revving wildly up and down, close, in an open field",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-04fb75711c4ea8eeeafeaf74bdd0bd347b79c404.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "tv",
+  "prompt": "a cheerful television news anchor in the next room, muffled, upbeat music sting",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-97d97b9889801dd21ba2f4d6ddd9a7398b6c1117.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "radio",
+  "prompt": "a crackly warped old 1930s dance-band record playing faintly on an antique radio, distorted",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-b3a02dd70f3da9344ee6979c9f40c4719e58dce9.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "dinner",
+  "prompt": "a creepy old house at night: an old clock ticking, cutlery clinking on plates, an old man chuckling softly",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-b69e81849f42727e88991a94daafe0107581e84d.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "sniff",
+  "prompt": "a deep inhuman sniffing breath, slow, very close",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-c7689d37489992bc43fd23eab9e638ca043c3d3e.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "horn",
+  "prompt": "a deep loud old truck horn blasting twice",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-26edaa72a45348c13889228f362dbac6277a07d5.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "scream",
+  "prompt": "a distant man screaming in terror echoing through a forest at night",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-a8594b7a313e598349dbe3f2cda8ba11d1dfa52a.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "dog",
+  "prompt": "a dog barking twice in the distance at night",
+  "duration": 1.5,
+  "cached": true,
+  "file": "sfx-ba76ddeb982eacf8441c14ed708e11c48441653c.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "dinner",
+  "prompt": "a family dinner: cutlery on plates, a wine glass clink, quiet chatter",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-5d035b5d4ece4b75dc70851b626eece747be42fe.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "giggle",
+  "prompt": "a group of young people giggling softly and creepily outside at night",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-b169dacd00c5605c6e3d6288e30c0e3d1a2984ad.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "tap",
+  "prompt": "a hammer tapping weakly on a wooden table, three slow taps",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-1f691806636efd3a96ef267bbe93b6897b82da3b.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "fall",
+  "prompt": "a heavy body tumbling over a wooden railing and landing on grass with a thud",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-b5e8c2695e361485a14f888ded81be86964d42d9.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "thud",
+  "prompt": "a heavy bundle sliding down a long metal pipe and landing with a deep echoing thud",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-f82fb678c09801e34abb890dd125ea9be0889fcc.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "door",
+  "prompt": "a heavy front door opening, rain and night air rushing in, then slamming shut",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-2246febaf12d42e50c204ef35c7cc4e17ba0b083.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "gate",
+  "prompt": "a heavy rusty iron gate rattling in a storm, distant bell, rain",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-51cc7251733ac13975add779e60d9f566ddbe04e.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "steel",
+  "prompt": "a heavy steel sliding door rolling fast on a rusty track and banging open",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-c5c56f27b76a0098ac0ebf3ca11cace27feeb110.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "kitchen",
+  "prompt": "a kitchen drawer sliding open and a large knife scraping out of a wooden block, metallic",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-a41f942786119b6211bfb1b92275d8e32366bc98.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "lighter",
+  "prompt": "a lighter flicking on and a small photo catching fire, crackling",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-5182edbbda93a2574057798d536a8cd98042a0fb.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "siren",
+  "prompt": "a long rising and falling air-raid siren wailing across a city at night, then an emergency broadcast tone",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-0d3663211defb969eb56e93d7859cc3ed92c97de.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "machete",
+  "prompt": "a machete blade scraping slowly along a metal shutter",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-33f81b2efcdacd0ed2c94058f44cecb8c41a3ebe.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "help",
+  "prompt": "a man outside shouting for help, muffled through thick walls, desperate",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-90e16b4e495e2cc61816b09be9dca385475fd826.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "thump",
+  "prompt": "a muffled thump and a car door slamming shut at night",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-1d5d2226367164cb1e0dc3b2d7b1e396d4cba84e.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "crows",
+  "prompt": "a murder of crows cawing and flapping around an old church at dusk",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-c070e0e743d60888379ed90785edaaff5af8f6c5.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "paper",
+  "prompt": "a paper map being unfolded and crumpled",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-243c173eea1e36d36cbe966229e763d69fe73e01.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "truck",
+  "prompt": "a pickup truck engine revving, a chain snapping tight and a steel shutter being ripped off a house",
+  "duration": 2.6,
+  "cached": true,
+  "file": "sfx-1a3f5d65ed8916c487914a72d6fa6b27fd41cd06.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "caseopen",
+  "prompt": "a plastic DVD keep case being opened, the crisp click of the hinge snapping open",
+  "duration": 0.8,
+  "cached": true,
+  "file": "sfx-178d312409c5ea1bec3544a34c259d6e348b1494.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js",
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/episodes/the-lockdown/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "caseshut",
+  "prompt": "a plastic DVD keep case snapping shut, one crisp firm click",
+  "duration": 0.7,
+  "cached": true,
+  "file": "sfx-0bc25f237dc4f7d79d525e6cf4575c86db422385.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js",
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/episodes/the-lockdown/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "crowdlaugh",
+  "prompt": "a press room full of reporters bursting into laughter",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-150fbc8cbdf08799925d78d19a4bb28c6f71b8bf.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "slash",
+  "prompt": "a quick sharp swish of a blade and a startled shout",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-534cbfaffe95648d9a9a6a57c272bfdbc2c991c3.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "suburb",
+  "prompt": "a quiet wealthy suburban street at dusk, sprinklers, a distant lawnmower, birds settling",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-55b212f235d930e1734a308b2486d229203eaf81.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "beep",
+  "prompt": "a security keypad beeping, then an electronic lock disengaging with a heavy clunk",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-cab284dd681b93d177bc50b00685e3dab9c0e2d3.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "needle",
+  "prompt": "a sharp dissonant violin stab, short and brutal",
+  "duration": 0.9,
+  "cached": true,
+  "file": "sfx-034b1d2af1040f727a4bc010928310b9d24cdb29.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "shop",
+  "prompt": "a shop door bell jingling and a stretchy rubber mask being pulled down over a head",
+  "duration": 2.2,
+  "cached": true,
+  "file": "sfx-6e043e94c428d8d5a4427fe0b7fd32715c9e2ec7.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "creek",
+  "prompt": "a small forest creek, water running over stones",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-e400db3d84e0099a289660ee99a3ef0b9860d805.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "squeal",
+  "prompt": "a strange high pig-like squeal from inside an old house",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-bbc6efbbc0ecab1881749832fd7b39d65a80fa83.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "thunder",
+  "prompt": "a sudden close crack of thunder, then a deep rumble",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-487b14dc8a8fa4e7702eb7bfa8c34e12db05bf25.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "grab",
+  "prompt": "a sudden scuffle and a sack being pulled over someone, muffled struggle",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-4c65a9b0e9471d3522f6d2fbe6be5c89d1919077.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "line",
+  "prompt": "a telephone line crackling with static, then a muffled struggle and dead silence",
+  "duration": 2.8,
+  "cached": true,
+  "file": "sfx-a295f09f769a04fbc669efa5d55ccfaa31fad238.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "snap",
+  "prompt": "a tree branch snapping sharply in the dark, close",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-9888fc4cd9ad46402329d11749696f19113c1299.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "slide",
+  "prompt": "a van sliding door slammed shut hard, then tires on gravel",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-f64659a9fd3d2b711ca6a6c14fad87ae8e8213a3.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "drop",
+  "prompt": "a video camera dropping and clattering onto a hard floor, then static",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-87402f7b2cf7e5fa761bb808fdf1e03d1112998c.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "glass",
+  "prompt": "a window shattering as someone crashes through it, glass falling",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-71e363dbb5d3fbe3098fdd4c8f84f7ee7c2d168b.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "glass",
+  "prompt": "a window shattering outward, glass raining down",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-064903a65e275923917ded33c0a146b88371216d.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "run",
+  "prompt": "a woman running through dry brush at night, panicked breathing",
+  "duration": 2.2,
+  "cached": true,
+  "file": "sfx-3f680e439ebf1801ea8a0564983baec51202f0fe.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "closet",
+  "prompt": "a wooden closet door being yanked open and wire hangers rattling",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-4fa5ae005ac8fdb4dcdb12bbab7f8d0780d42e44.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "screen",
+  "prompt": "a wooden screen door banging shut",
+  "duration": 0.8,
+  "cached": true,
+  "file": "sfx-658b20033d2fc874107c2841653fab52bdcface7.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "hush",
+  "prompt": "all sound suddenly sucked away into silence, reverse whoosh",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-2c6d8e617bd6e6b5b7dcfebafaaf06e5c0e410b2.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "van",
+  "prompt": "an old 1970s van driving on a country road, steady engine rumble, rattling panels, wind",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-0375417aefda484036498853e702e67118832ff7.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "rec",
+  "prompt": "an old camcorder starting to record: a soft electronic beep and the whir of the tape mechanism",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-f2ed09fa797d1a1b267f7dbc6542a6ed914a93dd.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "phone",
+  "prompt": "an old diner wall telephone ringing loudly, mechanical bell",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-37f4cf4e4f3cb429de7c7494d1222b9e30f82605.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "gen",
+  "prompt": "an old electric generator chugging outside a farmhouse, flies buzzing, crickets",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-019fb5c30e2c599fd983735fb9308819e8186195.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "pumps",
+  "prompt": "an old gas station: a dry pump nozzle clicking empty and a squeaky screen door",
+  "duration": 1.8,
+  "cached": true,
+  "file": "sfx-20ba5749d1a79d0216574684011c2210a8202d61.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "camera",
+  "prompt": "an old instant camera: a flash pop and the whirr of the photo sliding out",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-d8eb8d511890fcf7bb140b4287c6c9419175f44b.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "truck",
+  "prompt": "an old pickup truck door slamming and the engine starting, driving off on gravel",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-e32c9a1ee6eda87c61ffcfdec8c41a05bad6b5d6.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "pickup",
+  "prompt": "an old pickup truck racing past and speeding away on a country road",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-e247f20e47b23af165b6f4f77c3eccdaf11d28b5.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "phone",
+  "prompt": "an old rotary telephone ringing twice",
+  "duration": 1.8,
+  "cached": true,
+  "file": "sfx-d10f4496480b9b0ccd869ea527621db9bcfd7cb5.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "truck",
+  "prompt": "an old rusty truck engine roaring and revving very close behind, rattling metal",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-5c9ea4b10f7b2b9908c46e59cab42d3d5109cdc9.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "wagon",
+  "prompt": "an old station wagon pulling up at a gate in heavy rain, engine idling, a loud thump on the roof, then it roars away",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-d3b62e8c4f8fe39e833eadd8d040fd56cebdc947.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "tv",
+  "prompt": "an old television playing a faint black and white horror movie in another room, muffled dialogue and eerie music",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-c62dfe62f7bae35e38f1664491a8f46af707a60a.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "door",
+  "prompt": "an old wooden door creaking open in a derelict house",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-b45618cb4d92ac3f212c28180ad9f78faba17db5.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "tvglitch",
+  "prompt": "analog video signal dropping out: a burst of static and a low electronic squeal",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-8e7f8c4f42ba776871ce2a8df71549885c041a53.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "flip",
+  "prompt": "calendar pages flipping quickly",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-5233ea10714de26ce77084199046677dc596ddb3.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "wind",
+  "prompt": "cold wind gusting through bare trees at night",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-53dadfc9877f4fa1b10992bb24ad95803dab3b80.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "cemetery",
+  "prompt": "cold wind in an empty cemetery at dusk, a distant church bell, dry leaves",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-9c57a737409a4f674dfdc9628b733e9155dc387d.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "wind",
+  "prompt": "cold wind through a pine forest at night",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-4c8b59d40797572cad37836eced3a37e5f62cb32.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "night",
+  "prompt": "crickets and a soft autumn wind rustling dry leaves on a quiet suburban street at night, kids laughing very far away",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-eaaeddc278ed6eff2977c9dfd3ffa6f184557677.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "dusk",
+  "prompt": "crickets and a warm evening wind over a dry farm at dusk",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-c3b39c33e4f772d3876898145c608d3b304d9541.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "crickets",
+  "prompt": "crickets and night insects in an empty field under the moon",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-c6b4bc06b2f7c6136f80d071afebfd5360b302cb.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "night",
+  "prompt": "crickets and wind on a dark farm at night, a distant dog barking",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-253aa68d1b195cce4a12bd5ec7c221d7e08d705b.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "murmur",
+  "prompt": "crowd murmuring outside at night",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-85c2fc58106584da53d3506a9df778c096c09089.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "gasp",
+  "prompt": "crowd of people gasping in shock together",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-a9d228df1847c3ecd1c2bf31c848311bb903877f.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "birds",
+  "prompt": "daytime forest ambience, birdsong and wind in tall trees",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-6a56ae5b4d74212046b1d99dc083227c17823245.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/tests/lens-test/spec.js"
+  ]
+ },
+ {
+  "key": "hum",
+  "prompt": "deep eerie otherworldly humming drone, slowly pulsing, low frequency",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-709b9ca86e8649f85aa6f24f5deebdd6e3073d12.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "lightOn",
+  "prompt": "deep soft electronic tone as a big light switches on, resonant",
+  "duration": 0.8,
+  "cached": true,
+  "file": "sfx-12e884af760642a87be5ee11ed3a0528be196d23.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "crickets",
+  "prompt": "desert crickets chirping at night, calm",
+  "duration": 5,
+  "cached": true,
+  "file": "sfx-f6eb31ae34faff3468dbe84de9900ed7fe199ede.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "scarecrow",
+  "prompt": "dry straw rustling and an old wooden post creaking in the wind",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-5b07935b257f9b2545d813edcad159ec97e9e427.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "birds",
+  "prompt": "early morning birds chirping softly after rain",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-9f14cc353e497601ec9667de1070da736b1577d2.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "dawn",
+  "prompt": "early morning birds on an empty country road at dawn, light wind",
+  "duration": 3.5,
+  "cached": true,
+  "file": "sfx-9ab56024f4e9c4a820e56cd058c3c5b01f0c98ff.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "kids",
+  "prompt": "faint eerie children laughing far off in a dark forest at night",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-73e8083ed64f5dddc85e9589c4c89bbf270ea9a9.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "whisper",
+  "prompt": "faint ghostly whisper breath",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-135dcc6fb6bf3bebf45fa8cdb4f041a3936c65a2.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "whisper",
+  "prompt": "faint overlapping ghostly whispers in the dark",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-d4c557dd9cea5ba8b1c84c52d39fff5a8ae61cf9.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "whoosh",
+  "prompt": "fast smooth cinematic whoosh",
+  "duration": 0.8,
+  "cached": true,
+  "file": "sfx-45d5a0f759b917676b3296b55980654a12812da6.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "flare",
+  "prompt": "flare igniting with a pop and fizzing hiss",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-b023e11ae388b9f3b29d84d1283bda4791536358.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "leaves",
+  "prompt": "footsteps crunching on dry autumn leaves along a sidewalk, a wind chime far away",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-64876b2be100eb5e6aa50099007b05edbb8540f7.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "footsteps",
+  "prompt": "footsteps crunching through dry leaves and twigs in a forest",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-f1988ad4641789b0a92c8d76b80cc8e7ec70dc69.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "steps",
+  "prompt": "footsteps of three people walking up wooden stage steps",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-91264aa3346876558eb024e9f9fc007c67616668.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "steps",
+  "prompt": "footsteps on a wooden staircase descending into a cellar, echoing",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-f960892f8f288f13e486cad862fd17817231b66c.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "glitch",
+  "prompt": "harsh digital video glitch burst",
+  "duration": 0.6,
+  "cached": true,
+  "file": "sfx-49bdba7ed0ab75147d0b30752a034b93e9a34806.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "stamp",
+  "prompt": "heavy rubber stamp thumping down on paper",
+  "duration": 0.6,
+  "cached": true,
+  "file": "sfx-7042ccbf92bd2a6543b1c70f179d807ee4b01e7e.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "shutters",
+  "prompt": "heavy steel security shutters rolling down fast and slamming shut, metal clanks, one after another",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-d09c7aed88b7bca1376829a5cfb6703e0f31df70.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "stone",
+  "prompt": "heavy stone lid scraping and sliding off a well",
+  "duration": 1.8,
+  "cached": true,
+  "file": "sfx-73821d887a4df4aefe13ac505222c15ee3e867ea.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "lid",
+  "prompt": "heavy stone lid slamming shut on a well, deep thud",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-743a2dd043085809bc60fd20bf436257dcb2e9b4.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "heat",
+  "prompt": "hot summer afternoon in the country, cicadas buzzing loudly, dry wind over empty fields",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-136f54333119f2631688179304d8be1404939dd9.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js",
+   "studio/tests/light-test/spec.js",
+   "studio/tests/motion-test/spec.js"
+  ]
+ },
+ {
+  "key": "wings",
+  "prompt": "huge leathery wings unfolding and flapping, heavy and close",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-65b5237e2d8b46cdae7ef861ccc1ea0bec3c1f86.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "tick",
+  "prompt": "loud clock ticking quickly",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-4e7e8a734b4f8779f72894626b4d3365456ca693.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "jet",
+  "prompt": "military jet flying low overhead, roaring flyby",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-b4ccbb5eedbc85956ea8d54da441507d8b93c340.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "ring",
+  "prompt": "old 1990s cordless phone ringing twice, loud in a quiet room",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-b7cc942846c8d6c59ca12b84e67a53a9cc5f934c.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "midnight",
+  "prompt": "old clock striking midnight, two deep bongs",
+  "duration": 2.2,
+  "cached": true,
+  "file": "sfx-27de63f00bce2ad1c9ffcfcdd4f325ab12ccdbc4.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "tick",
+  "prompt": "old clock ticking quickly then one soft chime",
+  "duration": 1.5,
+  "cached": true,
+  "file": "sfx-b0c4385917a1aca7341836461ff07b122a58636f.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "static",
+  "prompt": "old CRT television static hiss",
+  "duration": 2,
+  "cached": true,
+  "file": "sfx-6d059713512a984d63ab493658d2eb5cf236f2c6.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "tvon",
+  "prompt": "old CRT television turning on by itself with a thump, high-pitched whine and static",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-8c2e40641a134f47708c6c385c89aaaa6012853b.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "creak",
+  "prompt": "old rope and wood creaking as something hangs and twists in the wind",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-81b5eb6cefd84c82ee423afee9316e4e4521a8da.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/tests/light-test/spec.js"
+  ]
+ },
+ {
+  "key": "off",
+  "prompt": "old television switching off with a click and a fading whine",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-33db3e3a05bf8959f1b6c0187748d87faff2dfa8.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "creak",
+  "prompt": "old wooden floorboards creaking and a trapdoor opening",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-409be5a3700a2637e1b25972c90b468d920e26ad.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "thud",
+  "prompt": "one heavy dull thud, low and muffled",
+  "duration": 0.8,
+  "cached": true,
+  "file": "sfx-e2cc8810c3203797c6fe494e305eee573773c71a.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "map",
+  "prompt": "pencil drawing a line quickly on paper",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-55a093857863311ab51f32ab0dece874bcba0ae0.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "fold",
+  "prompt": "pop-up book paper folding up, crisp paper snap",
+  "duration": 0.6,
+  "cached": true,
+  "file": "sfx-9f09f69b9c99d92ba2783e8bf4dad86e372e35f8.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "flash",
+  "prompt": "press camera flashes popping and shutter clicks, several",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-3ad2cc2cb45703dad9e6202383e9e66b7ce757d7.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "laugh",
+  "prompt": "room of reporters laughing loudly",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-948cf3c1a3c7425b91a2b99264622fe4686c0184.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "door",
+  "prompt": "screen door creaking open and slapping shut",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-dd2b0794f20844ff0ec5b535ccf73c413ac683eb.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "blip",
+  "prompt": "short glitchy video tape distortion blip",
+  "duration": 0.5,
+  "cached": true,
+  "file": "sfx-2acbfc5de5f7e863a9f32fad42d0f1c0f129e12a.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/tests/cast-lineup/spec.js",
+   "studio/tests/lens-test/spec.js",
+   "studio/tests/motion-test/spec.js"
+  ]
+ },
+ {
+  "key": "feedback",
+  "prompt": "short microphone feedback squeal then two taps on the mic",
+  "duration": 1,
+  "cached": true,
+  "file": "sfx-53f816bbb7674f8ef4f326dfb26298dfb82a5784.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "shots",
+  "prompt": "six revolver gunshots in a quiet suburban night, echoing, evenly spaced",
+  "duration": 3.4,
+  "cached": true,
+  "file": "sfx-609a12fb1094fac17d61cee5d85110caa1e858bb.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "steps",
+  "prompt": "slow careful footsteps on wet leaves and twigs in a forest at night",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-ea2ff81e4acb7fc8e345c3e665e5374eb14bf6dc.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "stairs",
+  "prompt": "slow creak of old wooden stairs under careful footsteps in a quiet house",
+  "duration": 2.4,
+  "cached": true,
+  "file": "sfx-8ed7775ab50f1f166800e613ffcdb54aaf56cfd3.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "breath",
+  "prompt": "slow heavy breathing through a rubber mask, close and steady, unsettling",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-623075ca4dd248a9190f966a759303d4e6a8c20b.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js"
+  ]
+ },
+ {
+  "key": "stones",
+  "prompt": "small stones being stacked and settling",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-d1aa748e792f199ad412ea0af1d8a17636b758f6.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "orb",
+  "prompt": "soft low magical pop as an orange light appears",
+  "duration": 0.5,
+  "cached": true,
+  "file": "sfx-bdc995d9be54ad0a96b9148f53eb0afffb602395.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "pipe",
+  "prompt": "someone crawling through a narrow metal pipe, scraping and echoing",
+  "duration": 2.2,
+  "cached": true,
+  "file": "sfx-912e48cf2e043d10e72164b98ba6bc24f0d3e633.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "rain",
+  "prompt": "steady rain on a window at night, calm",
+  "duration": 5,
+  "cached": true,
+  "file": "sfx-25ec35018c36fde0081fba5808c76522ce84fcfb.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "sting",
+  "prompt": "sudden horror jump scare sting, a loud dissonant hit",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-7b7e0c9bc28b9b79b98dbe17cba8bc66d1866a26.wav",
+  "from": [
+   "studio/episodes/the-babysitter/spec.js",
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "sting",
+  "prompt": "sudden horror jump scare sting, a loud dissonant metallic hit",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-5c18d9fd193e6437e1d6c326e3e215876595f828.wav",
+  "from": [
+   "studio/episodes/the-hitchhiker/spec.js",
+   "studio/episodes/the-lockdown/spec.js",
+   "studio/tests/cast-test/spec.js",
+   "studio/tests/hitchhiker-pipeline/spec.js"
+  ]
+ },
+ {
+  "key": "knock",
+  "prompt": "three slow polite knocks on a heavy door",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-7b6f7ef9ab68e8ca4ab99d52cc1dd823aa2ba5fe.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "snaps",
+  "prompt": "twigs and branches snapping all around in the dark forest, circling",
+  "duration": 3,
+  "cached": true,
+  "file": "sfx-270ecf1681bd318923fdb6269640ecdac9f58b12.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js"
+  ]
+ },
+ {
+  "key": "shot",
+  "prompt": "two loud pistol shots inside a house, echoing",
+  "duration": 1.2,
+  "cached": true,
+  "file": "sfx-83f2f959abc9c2725e9b13e409b7aef499de3a08.wav",
+  "from": [
+   "studio/episodes/the-lockdown/spec.js"
+  ]
+ },
+ {
+  "key": "heart",
+  "prompt": "two slow deep heartbeats",
+  "duration": 1.6,
+  "cached": true,
+  "file": "sfx-0246c206828ac7daab501c699063dd621a1a6125.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js",
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js",
+   "studio/episodes/the-lockdown/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "vcr",
+  "prompt": "VHS tape pushed into a VCR, mechanical clunk and whir",
+  "duration": 1.4,
+  "cached": true,
+  "file": "sfx-f44e63e25c252462740b539e7f169536c630d163.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "wind",
+  "prompt": "warm desert night wind gust",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-712bf7fd358f64e8d320f19ecd0269feacd83289.wav",
+  "from": [
+   "studio/episodes/phoenix-lights-1997/spec.js"
+  ]
+ },
+ {
+  "key": "drip",
+  "prompt": "water dripping deep inside a stone well, echoing",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-c698b6a5b208d5837adb8d7cc8d2dca72b21a2b8.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "drip",
+  "prompt": "water dripping in a dark stone cellar, echoing",
+  "duration": 2.5,
+  "cached": true,
+  "file": "sfx-4bba53b6e34f9a8c0a8f6457e47846de934679fc.wav",
+  "from": [
+   "studio/episodes/the-black-woods/spec.js",
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ },
+ {
+  "key": "crawl",
+  "prompt": "wet hair dragging and fingernails scraping slowly across a wooden floor, creepy",
+  "duration": 2.2,
+  "cached": true,
+  "file": "sfx-6b47f6144f30ef720bd4fe0836e8ce8dcef676cf.wav",
+  "from": [
+   "studio/episodes/the-cursed-tape/spec.js",
+   "studio/episodes/the-cursed-tape-ps1/spec.js"
+  ]
+ },
+ {
+  "key": "church",
+  "prompt": "wind through an abandoned wooden church at dusk, creaking boards, crickets",
+  "duration": 4,
+  "cached": true,
+  "file": "sfx-3e84eae47e0a4d5056918d4fba8da4ffed4b7eb3.wav",
+  "from": [
+   "studio/episodes/the-rusted-truck/spec.js"
+  ]
+ }
+]

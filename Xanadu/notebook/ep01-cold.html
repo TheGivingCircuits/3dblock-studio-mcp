@@ -1,0 +1,179 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cloud Shift Ep1 cold open (notebook)</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="lib.js"></script>
+<script>
+const { P, lerp, eo, eio, ei, back, elastic, bounce, clamp, stroke, draw, drawAll, hatch, rect, hand, put, canvasTex, toW, U, at, st, en, COL } = NB;
+const S = NB.stage(), { scene, camera, pg } = S;
+
+// ---------- page art ----------
+const PAPER = NB.paper(42), PAPER2 = NB.paper(77, { stain: false });
+const hdr = hand('6:58 AM · Shop #3', 66, COL.blue, 5);
+// register drawing (= front face of the 3D register)
+const RX = 700, RY = 600, RW = 380, RH = 270;
+const regShape = NB.shape(RX - RW / 2, RY - RH / 2, RW, RH, '#9aa4ae', COL.ink, 11);
+const regScreen = stroke(rect(RX - 150, RY - 115, 300, 140), COL.ink, 8, 12);
+const regKeys = Array.from({ length: 8 }, (_, i) => stroke(rect(RX - 150 + (i % 4) * 78, RY + 45 + Math.floor(i / 4) * 40, 56, 26), COL.ink, 5, 20 + i));
+// router drawing
+const OX = 700, OY = 930, OW = 300, OH = 80;
+const rtShape = NB.shape(OX - OW / 2, OY - OH / 2, OW, OH, '#59616c', COL.ink, 31);
+const cable = stroke([[RX + 120, RY + RH / 2], [RX + 140, 800], [OX + 60, 830], [OX + 80, OY - OH / 2]], COL.ink, 6, 33);
+// queue of stick-figure customers
+const figs = Array.from({ length: 5 }, (_, i) => { const x = 1180 + i * 150, y = 800 - (i % 2) * 14, s = 1 - i * .05; return {
+  calm: [stroke(NB.circlePts(x, y - 230 * s, 34 * s), COL.ink, 7, 40 + i), stroke([[x, y - 196 * s], [x, y - 90 * s]], COL.ink, 7, 50 + i), stroke([[x, y - 90 * s], [x - 30 * s, y]], COL.ink, 7, 60 + i), stroke([[x, y - 90 * s], [x + 30 * s, y]], COL.ink, 7, 70 + i), stroke([[x - 40 * s, y - 120 * s], [x, y - 170 * s], [x + 44 * s, y - 130 * s]], COL.ink, 7, 80 + i), stroke(rect(x + 36 * s, y - 150 * s, 22 * s, 30 * s), COL.brown, 5, 90 + i)],
+  cheer: [stroke([[x - 48 * s, y - 250 * s], [x, y - 170 * s], [x + 48 * s, y - 250 * s]], COL.ink, 7, 100 + i)],
+  frown: stroke([[x - 14 * s, y - 214 * s], [x, y - 222 * s], [x + 14 * s, y - 214 * s]], COL.ink, 5, 110 + i), smile: stroke([[x - 14 * s, y - 222 * s], [x, y - 212 * s], [x + 14 * s, y - 222 * s]], COL.ink, 5, 120 + i) }; });
+const numbers = { '10': hand('10', 170, COL.coral, 130), '7': hand('7', 210, COL.coral, 131), '8': hand('8', 210, COL.coral, 132) };
+// sticky note drawing + phone drawing + stamps
+const SX = 1250, SY = 420, SW = 330;
+const stickyLines = ["I'M OUT.", 'PASSWORDS UNDER', 'KEYBOARD.', 'GOOD LUCK. —K'];
+const PHX = 820, PHY = 600, PHW = 250, PHH = 470;
+const phoneShape = NB.shape(PHX - PHW / 2, PHY - PHH / 2, PHW, PHH, '#3d4450', COL.ink, 140);
+const stamp90 = hand('90 DAYS', 120, COL.red, 150), stampAZ = hand('AZ-104', 120, COL.blue, 151);
+const stamp90box = stroke(rect(1265, 335, 470, 170), COL.red, 12, 152), stampAZcirc = stroke(NB.circlePts(1500, 680, 260, 32, 120), COL.blue, 12, 153);
+// motto page
+const motto1 = hand('For me,', 140, COL.blue, 160), motto2 = hand("nothing's impossible.", 150, COL.blue, 161);
+const mottoLine = stroke([[520, 760], [900, 742], [1280, 770], [1560, 748]], COL.coral, 16, 162);
+const starDoodle = stroke([[1690, 380], [1715, 440], [1780, 445], [1730, 485], [1750, 550], [1690, 512], [1630, 550], [1650, 485], [1600, 445], [1665, 440], [1690, 380]], '#e0b100', 9, 163);
+
+function shopPage(g, t) {
+  g.drawImage(PAPER, 0, 0);
+  put(g, hdr, 300, 140, eo(P(t, .1, .9)));
+  const fade = 1 - P(t, st('L4') + 1.2, .5);           // register/router/customers fade out for the sticky note
+  if (fade > 0) {
+    g.globalAlpha = fade;
+    const regDrawn = P(t, .4, 1.1), regGone = t > at('L1', 'frozen') && t < st('L4') + .35;
+    if (!regGone) { NB.drawShape(g, regShape, regDrawn); draw(g, regScreen, P(t, .8, .5)); regKeys.forEach((k, i) => draw(g, k, P(t, 1.0 + i * .05, .2))); }
+    draw(g, cable, P(t, at('L2', 'router') - .6, .5));
+    const rtGone = t > at('L2', 'router') && t < st('L4') + .35;
+    if (!rtGone) NB.drawShape(g, rtShape, P(t, at('L2', 'router') - .7, .5));
+    const cheer = t >= at('L3', 'back');
+    figs.forEach((f, i) => { const p = P(t, at('L1', 'line') - .2 + i * .18, .5); drawAll(g, cheer ? [...f.calm.slice(0, 4), ...f.cheer, f.calm[5]] : f.calm, p); draw(g, cheer ? f.smile : f.frown, p); });
+    g.globalAlpha = 1;
+  }
+  // countdown numbers
+  const nAlpha = n => 1 - P(t, n, .5);
+  if (t > at('L2', 'count') && t < at('L3', 'back') + .3) put(g, numbers['10'], 1500, 330, eo(P(t, at('L2', 'count'), .4)), 'center', t < at('L3', 'seven') ? 1 : nAlpha(at('L3', 'seven')));
+  if (t > at('L3', 'seven') && t < at('L3', 'back') + .4) put(g, numbers['7'], 1420, 360, eo(P(t, at('L3', 'seven'), .3)), 'center', t < at('L3', 'eight') ? 1 : .35);
+  if (t > at('L3', 'eight') && t < at('L3', 'back') + .4) put(g, numbers['8'], 1600, 360, eo(P(t, at('L3', 'eight'), .3)), 'center', 1 - P(t, at('L3', 'back'), .4));
+  // the sticky note slides in on the page before it lifts off
+  const slideIn = eo(P(t, at('L4', 'holds'), .7)), lifted = t >= at('L4', 'sticky');
+  if (slideIn > 0 && !lifted) { g.save(); g.translate(lerp(2300, SX, slideIn), SY); g.rotate(-.05); g.fillStyle = COL.yellow; g.fillRect(-SW / 2, -SW / 2, SW, SW); draw(g, stroke(rect(-SW / 2, -SW / 2, SW, SW), '#c99a00', 7, 170), 1); stickyLines.forEach((l, i) => put(g, stickyTexts[i], 0, -SW / 2 + 110 + i * 62, 1, 'center')); g.restore(); }
+  // phone + stamps
+  const phoneOn = P(t, st('L6') - .4, .5), phoneGone = t > at('L6', 'she') + .05;
+  if (phoneOn > 0 && !phoneGone) { NB.drawShape(g, phoneShape, phoneOn); }
+  if (t > at('L6', 'ninety')) { put(g, stamp90, 1500, 470, 1, 'center', .9); draw(g, stamp90box, eo(P(t, at('L6', 'ninety'), .35))); }
+  if (t > at('L6', 'az')) { put(g, stampAZ, 1500, 735, 1, 'center', .9); draw(g, stampAZcirc, eo(P(t, at('L6', 'az'), .45))); }
+}
+const stickyTexts = stickyLines.map((l, i) => hand(l, 50, COL.ink, 171 + i, SW * .9));
+function mottoPage(g, t) {
+  g.drawImage(PAPER2, 0, 0);
+  const mx = NB.PW / 2 - motto2.width / 2 + 60;
+  put(g, motto1, mx, 470, eo(P(t, at('L7', 'for') - .1, .6)));
+  put(g, motto2, mx - 40, 700, eo(P(t, at('L7', 'nothing') - .05, 1.2)));
+  draw(g, mottoLine, eo(P(t, at('L7', 'impossible') + .5, .5)));
+  draw(g, starDoodle, eo(P(t, at('L7', 'lot'), .6)));
+}
+
+// ---------- 3D props ----------
+const ink = '#2a1c15';
+// register: gray body, live screen, keypad
+const regScreenTex = canvasTex(320, 150, () => {});
+const register = NB.boxProp(RW * U, RH * U, 1.5, {
+  front: NB.crayonFill('#a3adb7', '#87919c', 200, (g, w, h) => { for (let i = 0; i < 8; i++) { const x = 40 + (i % 4) * (w - 80) / 4, y = h * .67 + Math.floor(i / 4) * h * .15; g.fillStyle = '#e9ecef'; g.fillRect(x, y, (w - 80) / 4 - 14, h * .1); NB.draw(g, stroke(rect(x, y, (w - 80) / 4 - 14, h * .1), ink, 4, 210 + i)); } }),
+  side: NB.crayonFill('#8d97a2', '#77818c', 201), top: NB.crayonFill('#b4bdc6', '#9aa4ae', 202),
+}); scene.add(register);
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(300 * U, 140 * U), new THREE.MeshBasicMaterial({ map: regScreenTex })); screen.position.set(0, (RH / 2 - 15 - 70) * U - 0 , .76); screen.position.y = (RH / 2 - 15 - 70) * U; register.add(screen);
+function drawScreen(t) {
+  const g = regScreenTex.userData.canvas.getContext('2d'), w = 320, h = 150, ok = t >= at('L3', 'back');
+  g.fillStyle = ok ? '#dff5e6' : '#cdd5dd'; g.fillRect(0, 0, w, h);
+  if (ok) { g.strokeStyle = COL.green; g.lineWidth = 16; g.lineCap = 'round'; g.beginPath(); const k = eo(P(t, at('L3', 'back'), .3)); g.moveTo(110, 78); g.lineTo(140, 108); if (k > .4) g.lineTo(lerp(140, 205, (k - .4) / .6), lerp(108, 45, (k - .4) / .6)); g.stroke(); }
+  else { g.strokeStyle = '#5e6873'; g.lineWidth = 12; g.lineCap = 'round'; g.beginPath(); const a = t * 5; g.arc(160, 75, 34, a, a + 4.4); g.stroke(); }
+  g.strokeStyle = ink; g.lineWidth = 8; g.strokeRect(4, 4, w - 8, h - 8); regScreenTex.needsUpdate = true;
+}
+// router with two antennas
+const router = NB.boxProp(OW * U, OH * U, 1.2, { front: NB.crayonFill('#5f6873', '#4b535d', 220, (g, w, h) => { [0, 1, 2, 3].forEach(i => { g.fillStyle = i < 2 ? '#58e08a' : '#ff6b5e'; g.beginPath(); g.arc(w * .2 + i * w * .12, h / 2, h * .12, 0, 6.28); g.fill(); }); }), side: NB.crayonFill('#535b65', '#434a53', 221) }); scene.add(router);
+const antTex = canvasTex(64, 256, NB.crayonFill('#3d4450', '#2f353e', 222));
+const antennas = [-1, 1].map(s => { const a = NB.outlined(new THREE.CylinderGeometry(.06, .07, 1.1, 12), antTex); a.position.set(s * .7, .75, -.2); a.rotation.z = -s * .25; a.visible = true; router.add(a); return a; });
+// plug (pops out on "unplug", back on "plug")
+const plug = NB.boxProp(.5, .35, .35, { front: NB.crayonFill('#f2f2f2', '#d9d9d9', 230), side: NB.crayonFill('#e2e2e2', '#cfcfcf', 231) }); scene.add(plug);
+// Kevin's sticky note (3D)
+const sticky = NB.sticky3D(SW * U * 1.0, SW * U * 1.0, (g, w, h) => { g.fillStyle = COL.yellow; g.fillRect(0, 0, w, h); hatch(0, 0, w, h, '#f2cf3a', 16, -.7, 5, 240).forEach(s => draw(g, s, 1, .55)); draw(g, stroke(rect(6, 6, w - 12, h - 12), '#c99a00', 8, 241)); stickyLines.forEach((l, i) => { const c = hand(l, 56, COL.ink, 242 + i, w * .9); g.drawImage(c, w / 2 - c.width / 2, 90 + i * 88); }); }); scene.add(sticky);
+// Maya's phone with the chat bubble
+const phone = NB.boxProp(PHW * U, PHH * U, .3, { front: (g, w, h) => {
+  g.fillStyle = '#2f343c'; g.fillRect(0, 0, w, h); g.fillStyle = '#f7f4ee'; g.fillRect(w * .07, h * .06, w * .86, h * .88);
+  g.fillStyle = '#6b4430'; g.beginPath(); g.arc(w * .2, h * .14, w * .07, 0, 6.28); g.fill();
+  const n = hand('Maya Okafor', 30, COL.ink, 250), r = hand('Head of IT', 22, '#7a6656', 251); g.drawImage(n, w * .3, h * .08); g.drawImage(r, w * .3, h * .14);
+  g.fillStyle = '#d7ecfa'; g.beginPath(); g.roundRect(w * .1, h * .24, w * .8, h * .5, 18); g.fill();
+  ['I need a junior', 'cloud engineer.', 'Starting today.', '90 days to prove it,', 'and you pass', 'AZ-104.'].forEach((l, i) => { const c = hand(l, 30, COL.blue, 252 + i, w * .72); g.drawImage(c, w * .14, h * .26 + i * h * .075); });
+  NB.draw(g, stroke(rect(6, 6, w - 12, h - 12), ink, 10, 260));
+}, side: NB.crayonFill('#3d4450', '#2f353e', 261) }); scene.add(phone);
+// title letters
+const TITLE = 'CLOUD SHIFT', letters = [...TITLE].map((ch, i) => {
+  if (ch === ' ') return null;
+  const col = i < 5 ? COL.teal : COL.coral;
+  const L = NB.boxProp(1.0, 1.28, .5, { front: (g, w, h) => { g.fillStyle = '#fffaf0'; g.fillRect(0, 0, w, h); hatch(0, 0, w, h, '#efe3c8', 16, -.8, 5, 300 + i).forEach(s => draw(g, s, 1, .5)); g.font = `bold ${h * .78}px ${NB.HAND}`; g.fillStyle = col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, w / 2, h * .55); draw(g, stroke(rect(8, 8, w - 16, h - 16), ink, 10, 320 + i)); }, side: NB.crayonFill(col, NB.COL.ink, 340 + i) });
+  scene.add(L); return L;
+});
+const confetti = NB.burst(scene, 40, 900, ['#ffe066', '#e8735a', '#2f8f8a', '#7fb5dc', '#c9553f']);
+const titleConfetti = NB.burst(scene, 60, 1900, ['#ffe066', '#e8735a', '#2f8f8a', '#7fb5dc', '#fffaf0']);
+
+// ---------- seek ----------
+window.seek = function (t) {
+  const tFlip = en('L6') + .25, tTitle = en('L7') + .55, END = NB.TL.end;
+  // page + page turn
+  const flipU = P(t, tFlip, 1.05);
+  if (t < tFlip) shopPage(pg, t); else mottoPage(pg, t);
+  S.pageTex.needsUpdate = true;
+  S.flipMesh.visible = flipU > 0 && flipU < 1;
+  if (S.flipMesh.visible) { shopPage(S.fg, tFlip); S.flipTex.needsUpdate = true; S.setFlip(eio(flipU)); }
+
+  // register: inflate on "frozen", tilt, dive back into the page as the sticky note arrives
+  const regIn = P(t, at('L1', 'frozen') - .05, .85), regOut = P(t, st('L4') - .1, .45);
+  register.visible = regIn > 0 && regOut < 1;
+  if (register.visible) { NB.inflate(register, regIn * (1 - ei(regOut)), RX, RY); register.rotation.set(.18 * eo(regIn) * (1 - regOut), -.38 * eo(regIn) * (1 - regOut), 0); const hop = t > at('L3', 'back') ? Math.sin(P(t, at('L3', 'back'), .5) * Math.PI) * .5 : 0; register.position.y += hop; register.position.z += .4 * eo(regIn) * (1 - regOut); drawScreen(t); }
+  // router + plug
+  const rtIn = P(t, at('L2', 'router') - .05, .8), rtOut = P(t, st('L4') - .1, .45);
+  router.visible = rtIn > 0 && rtOut < 1;
+  if (router.visible) { NB.inflate(router, rtIn * (1 - ei(rtOut)), OX, OY); router.rotation.set(.35 * eo(rtIn) * (1 - rtOut), .25 * eo(rtIn) * (1 - rtOut), 0); antennas.forEach(a => a.scale.setScalar(clamp(rtIn * 1.4))); router.position.z += .3 * eo(rtIn) * (1 - rtOut); }
+  const out = P(t, at('L2', 'unplug'), .25) * (1 - P(t, at('L2', 'plug'), .25));
+  plug.visible = router.visible && rtIn > .6; if (plug.visible) { const [px, py] = toW(OX + 230, OY); plug.position.set(px + .9 * eo(out), py + .5 * Math.sin(out * Math.PI) + .4 * eo(out), router.position.z); plug.rotation.set(0, 0, -.6 * out); plug.scale.set(1, 1, 1); }
+  NB.runBurst(confetti, t, at('L3', 'back') + .05, [register.position.x, register.position.y + .8, register.position.z + .6]);
+
+  // Kevin's sticky note: lifts off the page, flies to camera, flutters, then spins away
+  const sIn = P(t, at('L4', 'sticky'), .9), sAway = P(t, en('L5') + .15, .7);
+  sticky.visible = sIn > 0 && sAway < 1;
+  if (sticky.visible) {
+    const [sx, sy] = toW(SX, SY), e = eio(sIn), fl = Math.sin(t * 7) * .08 + Math.sin(t * 3.1) * .05;
+    sticky.position.set(lerp(sx, 0, e) + sAway * 7, lerp(sy, .15, e) + sAway * 4, lerp(.05, 7.2, e) + sAway * 2);
+    sticky.rotation.set(lerp(0, -.08, e) + fl * e, lerp(0, .18, e) + fl * .6 * e + sAway * 5, lerp(-.05, .04, e) - sAway * 3);
+    const sc = lerp(1, 1.35, e); sticky.scale.set(sc, sc, sc);
+  }
+  // phone: inflates on "she", hands the message, dives back on "ninety"
+  const phIn = P(t, at('L6', 'she') + .05, .8), phOut = P(t, at('L6', 'az') + .45, .5);
+  phone.visible = phIn > 0 && phOut < 1;
+  if (phone.visible) { NB.inflate(phone, phIn * (1 - ei(phOut)), PHX, PHY); phone.rotation.set(.1 * eo(phIn), -.3 * eo(phIn) + .06 * Math.sin(t * 1.4), .04); phone.position.z += 2.6 * eo(phIn) * (1 - phOut); phone.position.x -= 1.4 * eo(phIn) * (1 - phOut); }
+
+  // title: CLOUD SHIFT letters pop out of the page one by one
+  letters.forEach((L, i) => { if (!L) return; const k = P(t, tTitle + i * .07, .7); L.visible = k > 0; if (!L.visible) return;
+    const x = (i - 5) * 1.12, y = -2.95 + Math.sin(t * 2.2 + i * .7) * .07 * eo(k); L.position.set(x, lerp(-6, y, back(k)), lerp(.3, 1.6, eo(k))); L.rotation.set(lerp(1.2, .12, eo(k)), lerp(-.8, 0, eo(k)) + Math.sin(t * 1.6 + i) * .05, lerp(.5 * (i % 2 ? 1 : -1), 0, eo(k))); });
+  NB.runBurst(titleConfetti, t, tTitle + .45, [0, -2.6, 2], 2.4);
+
+  // camera: wide on the page; nudges toward the action
+  let cx = 0, cy = 0, cz = 16.8, lx = 0, ly = 0;
+  const toRouter = eio(P(t, at('L2', 'router') - .4, .8)) * (1 - eio(P(t, st('L3') - .2, .6)));
+  const [rx, ry] = toW(OX, OY); cx += rx * .45 * toRouter; cy += ry * .5 * toRouter; cz -= 3 * toRouter; lx += rx * .5 * toRouter; ly += ry * .55 * toRouter;
+  const toSticky = eio(P(t, at('L4', 'kevin'), .8)) * (1 - eio(P(t, en('L5') + .1, .7))); cz -= 1.2 * toSticky;
+  const toTitle = eio(P(t, tTitle - .2, 1.2)); cz -= .5 * toTitle;
+  // keep the view on the paper: pan in parallel and clamp to the page edges for the current zoom
+  const halfH = cz * Math.tan(15 * Math.PI / 180), halfW = halfH * 16 / 9;
+  cx = clamp(cx, -(8 - halfW), 8 - halfW); cy = clamp(cy, -(4.5 - halfH), 4.5 - halfH);
+  camera.position.set(cx + Math.sin(t * .31) * .05 * (cz < 16.7 ? 1 : 0), cy + Math.sin(t * .23) * .04 * (cz < 16.7 ? 1 : 0), cz); camera.lookAt(camera.position.x, camera.position.y, 0);
+  S.renderer.render(scene, camera);
+  return true;
+};
+window.setTL = tl => { NB.TL = tl; return true; };
+window.ready = true;
+</script>

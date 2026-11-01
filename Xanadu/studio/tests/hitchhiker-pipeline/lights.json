@@ -1,0 +1,587 @@
+{
+ "note": "Gaffer's lights for the Hitchhiker pipeline test (lib/lights.js). Central Texas (Bastrop County), 18 August 1973: a hot golden afternoon into dusk, a moonlit night, then dawn. The sun's direction in each phase follows the finished episode's key light, so the blocking reads as it did; its colour and strength follow the time of day. Stops are levels at each light's aim point, 0 = the key. Haze colours are the episode's own fog colours.",
+ "date": "1973-08-18",
+ "place": {
+  "lat": 30.1,
+  "lon": -97.3,
+  "tz": -5
+ },
+ "body": "16mm",
+ "shadowSize": 14,
+ "ground": "#8a7050",
+ "sunGlow": 1.3,
+ "phases": [
+  {
+   "name": "station-night",
+   "place": "station",
+   "from": [
+    "L5",
+    null,
+    0
+   ],
+   "to": "cutBack",
+   "time": "23:10",
+   "weather": "night",
+   "sun": {
+    "azimuth": 225,
+    "elevation": -20,
+    "kelvin": 2000,
+    "stops": -9
+   },
+   "skylight": -7,
+   "interior": -1,
+   "haze": 0.06,
+   "fog": "#06080e"
+  },
+  {
+   "name": "station-day",
+   "place": "station",
+   "time": "18:40",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 225,
+    "elevation": 24.7,
+    "kelvin": 3700,
+    "stops": 0
+   },
+   "skylight": -1.3,
+   "haze": 0.013,
+   "fog": "#d0a272"
+  },
+  {
+   "name": "road-day",
+   "place": "road",
+   "time": "17:30",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 225,
+    "elevation": 26,
+    "kelvin": 3700,
+    "stops": 0
+   },
+   "skylight": -1.3,
+   "haze": 0.01,
+   "fog": "#d0a272"
+  },
+  {
+   "name": "farm-golden",
+   "place": "farm",
+   "to": [
+    "L6",
+    null,
+    0
+   ],
+   "time": "18:10",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 225,
+    "elevation": 24.7,
+    "kelvin": 3700,
+    "stops": 0
+   },
+   "skylight": -1.3,
+   "haze": 0.011,
+   "fog": "#d0a272"
+  },
+  {
+   "name": "farm-dusk",
+   "place": "farm",
+   "to": [
+    "L7",
+    "others",
+    -0.15
+   ],
+   "time": "20:15",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 37,
+    "elevation": 8,
+    "kelvin": 2400,
+    "stops": -0.6
+   },
+   "skylight": -3,
+   "haze": 0.03,
+   "fog": "#7a4a52"
+  },
+  {
+   "name": "farm-night",
+   "place": "farm",
+   "to": [
+    "L9",
+    null,
+    0
+   ],
+   "time": "22:30",
+   "weather": "moon",
+   "moon": {
+    "azimuth": 121,
+    "elevation": 45
+   },
+   "sun": {
+    "azimuth": 121,
+    "elevation": -20,
+    "kelvin": 2000,
+    "stops": -9
+   },
+   "skylight": -6.5,
+   "haze": 0.05,
+   "fog": "#05070c"
+  },
+  {
+   "name": "farm-dawn",
+   "place": "farm",
+   "time": "06:50",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 27,
+    "elevation": 3.8,
+    "kelvin": 2600,
+    "stops": -0.4
+   },
+   "skylight": -2.6,
+   "haze": 0.03,
+   "fog": "#d89a7a"
+  },
+  {
+   "name": "hall-day",
+   "place": "hall",
+   "time": "18:20",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 225,
+    "elevation": 24.7,
+    "kelvin": 3700,
+    "stops": -6
+   },
+   "skylight": -2,
+   "interior": -4,
+   "haze": 0.035,
+   "fog": "#0e0604"
+  },
+  {
+   "name": "dining-night",
+   "place": "dining",
+   "to": [
+    "L10",
+    null,
+    -0.35
+   ],
+   "time": "01:00",
+   "weather": "night",
+   "sun": {
+    "azimuth": 27,
+    "elevation": -20,
+    "kelvin": 2000,
+    "stops": -9
+   },
+   "skylight": -7,
+   "interior": -2,
+   "haze": 0.07,
+   "fog": "#0a0806"
+  },
+  {
+   "name": "dining-dawn",
+   "place": "dining",
+   "time": "06:45",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 27,
+    "elevation": 3.8,
+    "kelvin": 2600,
+    "stops": -6
+   },
+   "skylight": -3.5,
+   "interior": -3,
+   "haze": 0.06,
+   "fog": "#0a0806"
+  },
+  {
+   "name": "dawn-road",
+   "place": "dawn",
+   "time": "06:55",
+   "weather": "clear",
+   "sun": {
+    "azimuth": 0,
+    "elevation": 5.7,
+    "kelvin": 2500,
+    "stops": -0.2
+   },
+   "skylight": -2.4,
+   "haze": 0.015,
+   "fog": "#e0a070"
+  }
+ ],
+ "lights": [
+  {
+   "name": "canopy bounce",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "station-day"
+   ],
+   "at": [
+    1,
+    2.4,
+    -1.8
+   ],
+   "aim": [
+    1,
+    0,
+    -1.8
+   ],
+   "kelvin": 4200,
+   "stops": -2.2
+  },
+  {
+   "name": "shop tube",
+   "kind": "practical",
+   "fixture": "tube",
+   "phases": [
+    "station-night"
+   ],
+   "at": [
+    0,
+    2.8,
+    -8
+   ],
+   "aim": [
+    0.7,
+    1.5,
+    -7.9
+   ],
+   "kelvin": 3400,
+   "stops": 0,
+   "glowMesh": "stnLight",
+   "glowAt": 1.5,
+   "gel": "none"
+  },
+  {
+   "name": "canopy bulb",
+   "kind": "practical",
+   "fixture": "bulb",
+   "phases": [
+    "station-night"
+   ],
+   "at": [
+    0,
+    3,
+    -1.8
+   ],
+   "aim": [
+    0,
+    0,
+    -1.8
+   ],
+   "kelvin": 2900,
+   "stops": -1.4
+  },
+  {
+   "name": "generator lamp",
+   "kind": "practical",
+   "fixture": "bulb",
+   "phases": [
+    "farm-golden",
+    "farm-dusk"
+   ],
+   "at": [
+    304.4,
+    1.2,
+    -6.5
+   ],
+   "aim": [
+    304.4,
+    0,
+    -5.5
+   ],
+   "kelvin": 2600,
+   "stops": -2.6,
+   "flicker": "old-bulb"
+  },
+  {
+   "name": "house bulbs",
+   "kind": "practical",
+   "fixture": "bulb",
+   "phases": [
+    "farm-dusk",
+    "farm-night",
+    "farm-dawn"
+   ],
+   "at": [
+    300,
+    4.2,
+    -8.6
+   ],
+   "aim": [
+    300,
+    1,
+    0
+   ],
+   "kelvin": 2700,
+   "stops": -1.3
+  },
+  {
+   "name": "flashlight",
+   "kind": "practical",
+   "fixture": "flashlight",
+   "phases": [
+    "farm-night"
+   ],
+   "on": [
+    [
+     "L7",
+     "others",
+     -0.15
+    ],
+    [
+     "L8",
+     null,
+     -0.1
+    ]
+   ],
+   "at": "torch",
+   "aim": "torchAim",
+   "kelvin": 4300,
+   "stops": -0.4
+  },
+  {
+   "name": "moonlight",
+   "kind": "light",
+   "fixture": "fresnel",
+   "phases": [
+    "farm-night"
+   ],
+   "at": [
+    325,
+    30,
+    15
+   ],
+   "aim": [
+    300,
+    1,
+    0
+   ],
+   "kelvin": 9000,
+   "gel": "ctb",
+   "stops": -2.2,
+   "soft": 3,
+   "beam": 90
+  },
+  {
+   "name": "yard fill",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "farm-night"
+   ],
+   "on": [
+    [
+     "L8",
+     null,
+     -0.1
+    ],
+    null
+   ],
+   "at": [
+    299,
+    2,
+    12
+   ],
+   "aim": [
+    299,
+    0,
+    6
+   ],
+   "kelvin": 7500,
+   "stops": -3.5
+  },
+  {
+   "name": "hall bulb",
+   "kind": "practical",
+   "fixture": "bulb",
+   "phases": [
+    "hall-day"
+   ],
+   "at": [
+    450,
+    2.2,
+    -0.6
+   ],
+   "aim": [
+    450,
+    1.2,
+    -1.5
+   ],
+   "kelvin": 2700,
+   "stops": 0,
+   "flicker": "old-bulb"
+  },
+  {
+   "name": "doorway daylight",
+   "kind": "light",
+   "fixture": "hmi-window",
+   "phases": [
+    "hall-day"
+   ],
+   "at": [
+    450,
+    1.6,
+    3.2
+   ],
+   "aim": [
+    450,
+    1.3,
+    -1.5
+   ],
+   "kelvin": 5000,
+   "stops": -0.3
+  },
+  {
+   "name": "red wall bounce",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "hall-day"
+   ],
+   "at": [
+    450,
+    1.4,
+    -2.4
+   ],
+   "aim": [
+    450,
+    1.4,
+    0
+   ],
+   "kelvin": 3000,
+   "gel": "red",
+   "stops": -3
+  },
+  {
+   "name": "dinner-table bulb",
+   "kind": "practical",
+   "fixture": "bulb",
+   "phases": [
+    "dining-night",
+    "dining-dawn"
+   ],
+   "at": [
+    600,
+    1.9,
+    -0.4
+   ],
+   "aim": [
+    600,
+    1,
+    -0.4
+   ],
+   "kelvin": 2500,
+   "stops": 0,
+   "flicker": "old-bulb"
+  },
+  {
+   "name": "night window",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "dining-night"
+   ],
+   "at": [
+    602,
+    1.5,
+    1.5
+   ],
+   "aim": [
+    600,
+    1,
+    0
+   ],
+   "kelvin": 8000,
+   "stops": -3.2
+  },
+  {
+   "name": "dawn window",
+   "kind": "light",
+   "fixture": "hmi-window",
+   "phases": [
+    "dining-dawn"
+   ],
+   "at": [
+    601.3,
+    1.5,
+    -1.95
+   ],
+   "aim": [
+    600.6,
+    1.1,
+    -0.4
+   ],
+   "kelvin": 3200,
+   "stops": -0.6
+  },
+  {
+   "name": "pickup headlight L",
+   "kind": "practical",
+   "fixture": "headlights",
+   "phases": [
+    "dawn-road"
+   ],
+   "at": "pickL",
+   "aim": "pickAimL",
+   "kelvin": 4100,
+   "stops": -1.6
+  },
+  {
+   "name": "pickup headlight R",
+   "kind": "practical",
+   "fixture": "headlights",
+   "phases": [
+    "dawn-road"
+   ],
+   "at": "pickR",
+   "aim": "pickAimR",
+   "kelvin": 4100,
+   "stops": -1.6
+  },
+  {
+   "name": "road fill",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "dawn-road"
+   ],
+   "at": [
+    752,
+    2,
+    14
+   ],
+   "aim": [
+    751,
+    0,
+    6
+   ],
+   "kelvin": 6000,
+   "stops": -2.6
+  },
+  {
+   "name": "van interior fill",
+   "kind": "light",
+   "fixture": "bounce",
+   "phases": [
+    "road-day"
+   ],
+   "at": [
+    151.6,
+    1.9,
+    -26.15
+   ],
+   "aim": [
+    151.6,
+    1,
+    -26.15
+   ],
+   "kelvin": 4300,
+   "stops": -2.2
+  }
+ ],
+ "beams": 5
+}

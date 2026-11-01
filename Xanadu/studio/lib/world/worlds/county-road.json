@@ -1,0 +1,157 @@
+{
+ "name": "county-road",
+ "biome": "countryside",
+ "seed": 5,
+ "size": [
+  160,
+  160
+ ],
+ "sky": {
+  "time": "16:30",
+  "date": "1973-08-18",
+  "place": "texas",
+  "weather": "clear"
+ },
+ "atmosphere": {
+  "haze": 0.004,
+  "color": "#d0b892"
+ },
+ "pieces": [
+  {
+   "uid": "sets-1",
+   "type": "sets",
+   "fn": "countryRoad",
+   "args": {
+    "len": 160,
+    "farm": true,
+    "woods": 30,
+    "seed": 5
+   }
+  },
+  {
+   "uid": "house-1",
+   "type": "house",
+   "preset": "trailer",
+   "at": [
+    24,
+    0,
+    30
+   ],
+   "ry": -1.571,
+   "paint": "pink",
+   "seed": 8
+  },
+  {
+   "uid": "fence-1",
+   "type": "fence",
+   "fence": "barbed",
+   "path": [
+    [
+     16,
+     18
+    ],
+    [
+     34,
+     18
+    ],
+    [
+     34,
+     42
+    ],
+    [
+     16,
+     42
+    ],
+    [
+     16,
+     32
+    ]
+   ],
+   "seed": 5
+  },
+  {
+   "uid": "item-1",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    4.4,
+    0,
+    30
+   ],
+   "ry": -1.571
+  },
+  {
+   "uid": "item-2",
+   "type": "item",
+   "id": "satellite-dish",
+   "at": [
+    30,
+    0,
+    22
+   ],
+   "ry": -2.2
+  },
+  {
+   "uid": "item-3",
+   "type": "item",
+   "id": "gas-cylinder",
+   "at": [
+    27,
+    0,
+    34
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "house-2",
+   "type": "house",
+   "preset": "shed",
+   "at": [
+    30,
+    0,
+    38
+   ],
+   "ry": -1.571,
+   "paint": "weathered",
+   "seed": 9
+  },
+  {
+   "uid": "item-4",
+   "type": "item",
+   "id": "phone-booth",
+   "at": [
+    -4.6,
+    0,
+    -40
+   ],
+   "ry": 1.571
+  },
+  {
+   "uid": "clothesline-1",
+   "type": "clothesline",
+   "from": [
+    19,
+    1.9,
+    22
+   ],
+   "to": [
+    19,
+    1.9,
+    27
+   ]
+  },
+  {
+   "uid": "light-1",
+   "type": "light",
+   "kind": "flood-light",
+   "at": [
+    21.8,
+    2.2,
+    30
+   ],
+   "ry": 1.571
+  }
+ ],
+ "saved": "2026-10-26",
+ "opts": {}
+}

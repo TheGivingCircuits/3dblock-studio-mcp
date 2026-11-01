@@ -1,0 +1,602 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Conspiracy: The Sky Battle of 1561</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="/notebook/lib.js"></script>
+<script>
+// A living 1561 broadsheet: the hand-coloured woodcut stands up off the page and the sky battle plays out over Nuremberg.
+// Loop contract: the frame at t=0 and the frame at t=END are identical (everything that appears also leaves).
+const { P, lerp, eo, eio, back, clamp, rng, at, st, en } = NB;
+const W = 1080, H = 1920, PW = 1152, PH = 2048, U = 9 / PW;
+const toW = (px, py) => [(px - PW / 2) * U, (PH / 2 - py) * U];
+const INK = '#2a1f18', RED = '#b9563c', BLOOD = '#9c2a1e', BLUE = '#6f8aac', BLK = '#33261f', TAN = '#dcbc8c', OCHRE = '#e2b04e', GOLD = '#c9a23a', GREEN = '#7f9c5c', SKIN = '#efd6b0', SMOKE = '#8a9bb2', ROOF = '#a9533b', WALL = '#e6d7b6', STONE = '#c9b896';
+const LUM = 'Luminari, "Apple Chancery", serif';
+const cnv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const texOf = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; };
+const W_ = ([l, w, off = 0]) => (w ? at(l, w) : st(l)) + off;
+
+// ---------- ink tools ----------
+function inkLine(g, pts, w = 4, col = INK, seed = 1, close = false) {
+  const r = rng(seed); for (const [pass, a, off] of [[0, .92, 0], [1, .35, .9]]) {
+    g.beginPath(); const p = pts.map(([x, y]) => [x + (r() - .5) * off * 2, y + (r() - .5) * off * 2]);
+    g.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length - 1; i++) { const mx = (p[i][0] + p[i + 1][0]) / 2, my = (p[i][1] + p[i + 1][1]) / 2; g.quadraticCurveTo(p[i][0], p[i][1], mx, my); }
+    const l = p[p.length - 1]; g.lineTo(l[0], l[1]); if (close) g.closePath();
+    g.lineWidth = pass ? w * .6 : w; g.strokeStyle = col; g.globalAlpha = a; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(); }
+  g.globalAlpha = 1;
+}
+function shape(g, pts, fill, w = 4, seed = 1) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length - 1; i++) { const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2; g.quadraticCurveTo(pts[i][0], pts[i][1], mx, my); } g.lineTo(...pts[pts.length - 1]); g.closePath(); if (fill) { g.fillStyle = fill; g.fill(); } inkLine(g, [...pts, pts[0]], w, INK, seed); }
+function hatchIn(g, clipPts, x0, y0, x1, y1, gap = 9, ang = -1, lw = 1.6, alpha = .5, seed = 3) {
+  g.save(); g.beginPath(); g.moveTo(...clipPts[0]); clipPts.forEach(p => g.lineTo(...p)); g.closePath(); g.clip();
+  g.beginPath(); g.rect(x0, y0, x1 - x0, y1 - y0); g.clip();
+  const r = rng(seed), d = Math.hypot(x1 - x0, y1 - y0), ca = Math.cos(ang), sa = Math.sin(ang), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  g.strokeStyle = INK; g.lineWidth = lw; g.globalAlpha = alpha;
+  for (let o = -d; o < d; o += gap) { const ox = cx - sa * o, oy = cy + ca * o; g.beginPath(); g.moveTo(ox - ca * d + (r() - .5) * 3, oy - sa * d); g.lineTo(ox + ca * d, oy + sa * d + (r() - .5) * 3); g.stroke(); }
+  g.restore(); g.globalAlpha = 1;
+}
+function inkPoly(g, pts, w = 4, col = INK, seed = 1, close = true) {
+  const r = rng(seed), P2 = close ? [...pts, pts[0]] : pts, seg = [];
+  for (let i = 0; i < P2.length - 1; i++) { const [x0, y0] = P2[i], [x1, y1] = P2[i + 1], n = Math.max(1, Math.round(Math.hypot(x1 - x0, y1 - y0) / 40)); for (let k = 0; k < n; k++) seg.push([x0 + (x1 - x0) * k / n + (r() - .5) * 1.6, y0 + (y1 - y0) * k / n + (r() - .5) * 1.6]); }
+  seg.push(P2[P2.length - 1]);
+  for (const [a, f, off] of [[.92, 1, 0], [.35, .6, .9]]) { g.beginPath(); seg.forEach(([x, y], i) => { const xx = x + (r() - .5) * off * 2, yy = y + (r() - .5) * off * 2; i ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }); g.lineWidth = w * f; g.strokeStyle = col; g.globalAlpha = a; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(); }
+  g.globalAlpha = 1;
+}
+function block(g, pts, fill, w = 4, seed = 1) { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); g.closePath(); if (fill) { g.fillStyle = fill; g.fill(); } inkPoly(g, pts, w, INK, seed); }
+const ell = (x, y, rx, ry, rot, n = 18) => Array.from({ length: n }, (_, k) => { const a = k / n * 6.283, c = Math.cos(a) * rx, s = Math.sin(a) * ry; return [x + c * Math.cos(rot) - s * Math.sin(rot), y + c * Math.sin(rot) + s * Math.cos(rot)]; });
+const circ = (x, y, r, n = 28) => NB.circlePts(x, y, r, n);
+// hand-colouring: the wash is brushed on a little off-register from the black line, like the 1561 prints
+function wash(g, pts, col, seed, a = .92, off = 5) { const r = rng(seed), dx = (r() - .5) * off * 2, dy = (r() - .5) * off * 2; g.save(); g.globalAlpha = a; g.fillStyle = col; g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x + dx, y + dy) : g.moveTo(x + dx, y + dy)); g.closePath(); g.fill(); g.restore(); }
+function cutout(src, pad = 8) {
+  const c = cnv(src.width, src.height), g = c.getContext('2d'), tint = cnv(src.width, src.height), tg = tint.getContext('2d');
+  tg.drawImage(src, 0, 0); tg.globalCompositeOperation = 'source-in'; tg.fillStyle = '#f3ead6'; tg.fillRect(0, 0, src.width, src.height);
+  for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2; g.drawImage(tint, Math.cos(a) * pad, Math.sin(a) * pad); }
+  g.globalAlpha = .5; g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#b49b72'; g.fillRect(0, 0, c.width, c.height); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2; g.drawImage(tint, Math.cos(a) * (pad - 2.5), Math.sin(a) * (pad - 2.5)); }
+  g.drawImage(src, 0, 0); return c;
+}
+function paper(w, h, seed, edge = .4) {
+  const c = cnv(w, h), g = c.getContext('2d'), r = rng(seed);
+  const b = g.createRadialGradient(w / 2, h * .45, 50, w / 2, h / 2, Math.max(w, h) * .75); b.addColorStop(0, '#f3ebd8'); b.addColorStop(.7, '#e9dcc0'); b.addColorStop(1, '#d4c09a'); g.fillStyle = b; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < w * h / 60000; i++) { const x = r() * w, y = r() * h, rad = 50 + r() * 260, gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, `rgba(150,110,60,${.02 + r() * .05})`); gr.addColorStop(1, 'rgba(150,110,60,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }
+  for (let i = 0; i < w * h / 28; i++) { g.fillStyle = r() < .55 ? `rgba(90,60,25,${r() * .07})` : `rgba(255,250,238,${r() * .12})`; const z = 1 + r() * 2; g.fillRect(r() * w, r() * h, z, z); }
+  for (let i = 0; i < w * h / 34000; i++) { g.fillStyle = `rgba(130,80,35,${.06 + r() * .12})`; g.beginPath(); g.arc(r() * w, r() * h, 1 + r() * 4, 0, 6.283); g.fill(); }
+  if (edge) { const e = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .42, w / 2, h / 2, Math.max(w, h) * .62); e.addColorStop(0, 'rgba(70,45,20,0)'); e.addColorStop(1, `rgba(70,45,20,${edge})`); g.fillStyle = e; g.fillRect(0, 0, w, h); }
+  return c;
+}
+
+// ---------- the things in the sky (drawn like Hans Glaser's woodcut, centred on 0,0) ----------
+function drawOrb(g, R, col, seed) {
+  const dark = col === BLK;
+  wash(g, circ(0, 0, R, 30), col, seed, .97, R * .08);
+  g.save(); g.beginPath(); g.arc(0, 0, R, 0, 6.283); g.clip(); g.lineCap = 'round';
+  for (let k = 1; k <= 4; k++) { g.strokeStyle = dark ? 'rgba(170,160,150,.5)' : 'rgba(42,31,24,.55)'; g.lineWidth = Math.max(1.5, R * .045); g.beginPath(); g.arc(-k * R * .15, -k * R * .15, R, -.2 * Math.PI, .9 * Math.PI); g.stroke(); }
+  g.restore();
+  g.strokeStyle = 'rgba(255,248,232,.8)'; g.lineWidth = R * .08; g.lineCap = 'round'; g.beginPath(); g.arc(0, 0, R * .64, 3.6, 4.5); g.stroke();
+  inkLine(g, circ(0, 0, R, 26), Math.max(2.5, R * .07), INK, seed + 1);
+}
+function drawSun(g, R, seed, face = true) {
+  const F = R * .48, pt = (rr, aa) => [Math.cos(aa) * rr, Math.sin(aa) * rr];
+  for (let k = 0; k < 26; k++) { const a = k / 26 * 6.283, L = R * (k % 2 ? .8 : 1), w = .1;
+    shape(g, [pt(F * .92, a - w), pt(F + (L - F) * .35, a - w * .5 + .07), pt(F + (L - F) * .7, a - .03), pt(L, a + .04), pt(F + (L - F) * .6, a + w * .5 + .06), pt(F + (L - F) * .3, a + w * .8 - .02), pt(F * .92, a + w)], k % 2 ? OCHRE : RED, Math.max(2, R * .008), seed + k); }
+  wash(g, circ(0, 0, F, 30), '#e9c46a', seed + 40, .98, 3);
+  hatchIn(g, circ(0, 0, F * .92, 24), F * .2, -F, F, F, Math.max(5, F * .05), -1, 1.4, .4, seed + 60);
+  inkLine(g, circ(0, 0, F, 28), Math.max(2.5, F * .025), INK, seed + 41); inkLine(g, circ(0, 0, F * .9, 28), 1.6, INK, seed + 42);
+  if (!face) return;
+  const lw = Math.max(2, F * .022);
+  for (const s of [-1, 1]) { const ex = s * F * .34, ey = -F * .12;
+    inkLine(g, [[ex - F * .16, ey], [ex, ey - F * .08], [ex + F * .16, ey]], lw * 1.3, INK, seed + 43 + s);
+    inkLine(g, [[ex - F * .14, ey + F * .02], [ex, ey + F * .06], [ex + F * .14, ey + F * .02]], lw, INK, seed + 45 + s);
+    g.fillStyle = INK; g.beginPath(); g.arc(ex + F * .03, ey - F * .01, F * .045, 0, 6.283); g.fill();
+    inkLine(g, [[ex - F * .2, ey - F * .2], [ex, ey - F * .27], [ex + F * .18, ey - F * .2]], lw * 1.3, INK, seed + 47 + s); }
+  inkLine(g, [[F * .02, -F * .1], [-F * .04, F * .2], [F * .08, F * .24]], lw * 1.2, INK, seed + 50);
+  inkLine(g, [[-F * .26, F * .48], [0, F * .42], [F * .26, F * .48]], lw * 1.4, INK, seed + 51);
+  inkLine(g, [[-F * .14, F * .56], [F * .14, F * .56]], lw, INK, seed + 52);
+}
+function crescentPts(L) { const pts = [], N = 26, cy = -L * .3, Ro = L * .5;
+  for (let k = 0; k <= N; k++) { const th = (18 + k * 144 / N) * Math.PI / 180; pts.push([Math.cos(th) * Ro, cy + Math.sin(th) * Ro]); }
+  for (let k = N; k >= 0; k--) { const th = (18 + k * 144 / N) * Math.PI / 180, tt = L * .13 * Math.sin(Math.PI * k / N) + 2; pts.push([Math.cos(th) * (Ro - tt), cy + Math.sin(th) * (Ro - tt)]); }
+  return pts; }
+function drawCrescent(g, L, seed) { const pts = crescentPts(L); wash(g, pts, BLOOD, seed, .96, 5); hatchIn(g, pts, -L / 2, 0, L / 2, L * .25, 9, .9, 1.6, .45, seed + 1); inkPoly(g, pts, 4, INK, seed + 2); }
+function drawTube(g, L, seed) {
+  const R = L * .11, x0 = -L / 2 + R * .6, x1 = L / 2 - R * .45;
+  const body = [[x1, -R], [x0, -R], ...Array.from({ length: 9 }, (_, k) => { const a = -Math.PI / 2 - k / 8 * Math.PI; return [x0 + Math.cos(a) * R * .55, Math.sin(a) * R]; }), [x1, R]];
+  wash(g, body, BLUE, seed, .96, 4); hatchIn(g, body, x0 - R, R * .25, x1, R, 7, 0, 1.4, .5, seed + 1);
+  for (let k = 0; k < 4; k++) { g.save(); g.translate(x0 + R * .9 + k * (x1 - x0 - R * 1.7) / 3, 0); drawOrb(g, R * .6, RED, seed + 10 + k); g.restore(); }
+  inkPoly(g, body, 4, INK, seed + 2);
+  for (const bx of [x0 + R * .25, x1 - R * .55]) inkLine(g, [[bx, -R], [bx + R * .14, 0], [bx, R]], 3, INK, seed + 20 + bx);
+  const mo = circ(x1, 0, R * .4, 22).map(([x, y]) => [x, y * 2.5]); wash(g, mo, '#2c2a33', seed + 3, 1, 1); inkLine(g, mo, 4, INK, seed + 4);
+  g.strokeStyle = 'rgba(220,230,240,.7)'; g.lineWidth = 3; g.beginPath(); g.ellipse(x1, 0, R * .3, R * .8, 0, 3.6, 5.2); g.stroke();
+}
+function drawRod(g, L, seed) { const h = L * .04, pts = [[-L / 2, -h * .8], [L / 2, -h], [L / 2 - 6, h], [-L / 2 + 4, h * .8]]; wash(g, pts, TAN, seed, .97, 3); inkLine(g, [[-L / 2 + 8, h * .45], [L / 2 - 10, h * .55]], 5, RED, seed + 1);
+  for (let k = 0; k < 4; k++) inkLine(g, [[-L / 2 + 30 + k * 70, -h * .3], [-L / 2 + 170 + k * 120, -h * .25]], 1.4, 'rgba(42,31,24,.5)', seed + 2 + k); inkPoly(g, pts, 3.5, INK, seed + 9); }
+function drawCross(g, S, seed) { const a = S * .5, b = S * .12, pts = [[-b, -a], [b, -a], [b, -b], [a, -b], [a, b], [b, b], [b, a], [-b, a], [-b, b], [-a, b], [-a, -b], [-b, -b]]; wash(g, pts, RED, seed, .96, 4); hatchIn(g, pts, -a, 0, a, a, 7, -.8, 1.4, .45, seed + 1); inkPoly(g, pts, 4, INK, seed + 2); }
+function drawSpear(g, L, seed) { const pts = [[-L / 2, 0], [L * .3, -L * .055], [L * .34, -L * .085], [L / 2, -L * .1], [L * .43, 0], [L / 2, L * .1], [L * .34, L * .085], [L * .3, L * .055]]; wash(g, pts, '#251b16', seed, 1, 3); inkPoly(g, pts, 4, INK, seed + 1);
+  g.strokeStyle = 'rgba(250,244,228,.85)'; g.lineWidth = 4; for (const s of [-1, 1]) { g.beginPath(); g.arc(L * .37, s * L * .025, L * .045, s > 0 ? .4 : -1.6, s > 0 ? 1.6 : -.4); g.stroke(); } }
+function drawBurst(g, R, seed) { const r = rng(seed), out = [], inn = [];
+  for (let k = 0; k < 28; k++) { const a = k / 28 * 6.283, rr = k % 2 ? R * (.42 + r() * .1) : R * (.8 + r() * .2); out.push([Math.cos(a) * rr, Math.sin(a) * rr]); inn.push([Math.cos(a) * rr * .55, Math.sin(a) * rr * .55]); }
+  wash(g, out, OCHRE, seed, .97, 3); wash(g, inn, RED, seed + 1, .92, 2); inkPoly(g, out, 3.5, INK, seed + 2); g.fillStyle = '#fbf3dc'; g.beginPath(); g.arc(0, 0, R * .16, 0, 6.283); g.fill(); }
+function flamePts(Hh, f, sc = 1) { const pts = []; for (let i = 0; i <= 30; i++) { const t = i / 30 * 6.283, y = -Math.cos(t) * Hh * .5 * sc, wv = Math.sin(y * .05 + f * 2.3) * Hh * .06 * (1 - Math.cos(t)) * .5; pts.push([Math.sin(t) * Math.pow(Math.sin(t / 2), 1.6) * Hh * .3 * sc + (y < 0 ? wv : 0), y + Hh * (1 - sc) * .22]); } return pts; }
+function drawFlame(g, Hh, f, seed) { const o = flamePts(Hh, f), m = flamePts(Hh, f + 1, .64), c = flamePts(Hh, f + 2, .32); wash(g, o, RED, seed, .96, 2); wash(g, m, OCHRE, seed + 1, .96, 2); wash(g, c, '#fbefc8', seed + 2, .96, 1); inkLine(g, o, 3.5, INK, seed + 3); inkLine(g, m, 2, 'rgba(42,31,24,.6)', seed + 4); }
+function drawIce(g, R, seed) { const hex = Array.from({ length: 6 }, (_, k) => [Math.cos(k * Math.PI / 3) * R, Math.sin(k * Math.PI / 3) * R]); wash(g, hex, '#d6e6f2', seed, .94, 2);
+  for (let k = 0; k < 3; k++) inkLine(g, [hex[k], hex[k + 3]], 1.6, 'rgba(42,31,24,.55)', seed + k); inkPoly(g, hex.map(([x, y]) => [x * .5, y * .5]), 1.6, 'rgba(42,31,24,.55)', seed + 5); inkPoly(g, hex, 3, INK, seed + 6);
+  g.fillStyle = '#fffbea'; g.beginPath(); g.arc(-R * .3, -R * .35, R * .1, 0, 6.283); g.fill(); }
+function spriteTex(w, h, draw, pad = 5) { const c = cnv(w, h), g = c.getContext('2d'); g.save(); g.translate(w / 2, h / 2); draw(g); g.restore(); return texOf(cutout(c, pad)); }
+
+// ---------- page: a 1561 broadsheet (static: everything here is on screen at t=0 AND at the end) ----------
+const base = paper(PW, PH, 11, .5);
+(() => {
+  const g = base.getContext('2d'), r = rng(12);
+  inkLine(g, [[130, 80], [PW - 130, 80]], 5, INK, 1); inkLine(g, [[130, 94], [PW - 130, 94]], 1.8, INK, 2);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `bold 122px ${LUM}`; g.fillStyle = INK; g.fillText('The Sky Battle', PW / 2, 188);
+  g.font = `42px ${LUM}`; g.fillStyle = RED; g.fillText('Nürnberg · den XIIII. Aprilis · MDLXI', PW / 2, 280);
+  for (const s of [-1, 1]) { const x = PW / 2 + s * 492, y = 280; block(g, [[x, y - 12], [x + 12, y], [x, y + 12], [x - 12, y]], RED, 2.5, 5 + s); for (const d of [-1, 1]) { g.fillStyle = GREEN; g.beginPath(); g.ellipse(x + s * 24, y + d * 10, 13, 6, d * .5, 0, 6.283); g.fill(); } }
+  inkPoly(g, [[90, 330], [PW - 90, 330], [PW - 90, 1310], [90, 1310]], 7, INK, 3); inkPoly(g, [[100, 340], [PW - 100, 340], [PW - 100, 1300], [100, 1300]], 2.5, INK, 4);
+  // fields and a road under the skyline (mostly hidden by the town)
+  for (let k = 0; k < 6; k++) { const y0 = 1110 + k * 32; wash(g, [[100, y0], [PW - 100, y0 + 6], [PW - 100, y0 + 30], [100, y0 + 26]], k % 2 ? GREEN : '#cdb27a', 20 + k, .55, 3); inkLine(g, [[100, y0 + 28], [PW - 100, y0 + 32]], 1.5, 'rgba(42,31,24,.5)', 30 + k); }
+  // decorated initial + two columns of black-letter text (unreadable on purpose)
+  block(g, [[116, 1346], [236, 1346], [236, 1466], [116, 1466]], '#e6c879', 3.5, 40); for (let i = 0; i < 10; i++) inkLine(g, NB.circlePts(140 + r() * 72, 1370 + r() * 72, 7 + r() * 8, 10), 2, 'rgba(42,31,24,.55)', 41 + i);
+  g.font = `bold 108px ${LUM}`; g.fillStyle = INK; g.fillText('A', 176, 1412);
+  g.fillStyle = INK; for (let y = 1372; y < 1890; y += 38) for (const [x0, x1] of [[y < 1480 ? 252 : 116, 556], [596, 1036]]) { let x = x0; while (x < x1 - 20) { const wl = 26 + r() * 80; g.globalAlpha = .7; for (let k = 0; k < wl && x + k < x1; k += 7) { const hgt = r() < .16 ? 22 : 12; g.fillRect(x + k, y - hgt, 3, hgt); if (r() < .45) g.fillRect(x + k, y - 12, 6, 2.5); } x += wl + 13; } }
+  g.globalAlpha = 1; g.font = `32px ${LUM}`; g.fillText('§ Bey Hanns Glaser, Brieffmaler zu Nürnberg.', PW / 2, 1938);
+})();
+const pageC = cnv(PW, PH), pg = pageC.getContext('2d'), pageTex = texOf(pageC);
+const titleGlow = cnv(PW, 340); (() => { const g = titleGlow.getContext('2d'); g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `bold 122px ${LUM}`; g.fillStyle = RED; g.fillText('The Sky Battle', PW / 2, 188); })();
+let lastGlow = -1;
+function drawPage(t) {
+  const glow = P(t, at('L13', 'look') - .05, .35) * (1 - P(t, en('L13') + .3, .5)); if (Math.abs(glow - lastGlow) < .002) return; lastGlow = glow;
+  pg.drawImage(base, 0, 0); if (glow > 0) { pg.globalAlpha = glow; pg.drawImage(titleGlow, 0, 0); pg.globalAlpha = 1; } pageTex.needsUpdate = true;
+}
+
+// ---------- the sky: a tall card that stands up out of the picture, with a flap that unfolds above it ----------
+const SKW = 7.44, SKH = 5.94, FLH = 6.2, SCW = 1280, SCH = 1022;
+function skyArt(w, h, seed, stops, flap) {
+  const c = paper(w, h, seed, 0), g = c.getContext('2d'), r = rng(seed + 1), gr = g.createLinearGradient(0, 0, 0, h); stops.forEach(([s, col]) => gr.addColorStop(s, col));
+  g.globalAlpha = .8; g.fillStyle = gr; g.fillRect(0, 0, w, h); g.globalAlpha = 1;
+  for (let y = 5; y < h * (flap ? 1 : .8);) { const gap = flap ? 7 + y / h * 5 : 9 + (y / h) * 22; inkLine(g, [[0, y + (r() - .5) * 2], [w * .33, y + (r() - .5) * 2.5], [w * .66, y + (r() - .5) * 2.5], [w, y + (r() - .5) * 2]], 1.5, 'rgba(42,31,24,.28)', seed + y); y += gap; }
+  if (!flap) for (const [cx, cy, s] of [[230, 610, 1], [700, 660, 1.25], [1090, 600, .9]]) {   // curly woodcut clouds just above the rooftops
+    const C = []; for (let k = 0; k < 8; k++) { const a = k / 7; C.push([cx + (a - .5) * 300 * s, cy - Math.sin(a * Math.PI) * 50 * s + (r() - .5) * 10, (24 + Math.sin(a * Math.PI) * 26) * s]); }
+    g.lineWidth = 5; g.strokeStyle = INK; C.forEach(([x, y, rad]) => { g.beginPath(); g.arc(x, y, rad, 0, 6.283); g.stroke(); });
+    g.fillStyle = '#f1e8d6'; C.forEach(([x, y, rad]) => { g.beginPath(); g.arc(x, y, rad - 2.5, 0, 6.283); g.fill(); });
+    g.lineWidth = 2; for (let k = 1; k < 7; k += 2) { const [x, y, rad] = C[k]; g.beginPath(); g.arc(x, y, rad * .5, .5, 3.6); g.stroke(); } }
+  inkPoly(g, flap ? [[6, h], [6, 6], [w - 6, 6], [w - 6, h]] : [[6, h], [6, 0], [w - 6, 0], [w - 6, h]], 6, INK, seed + 2, false);
+  return c;
+}
+const skyBase = skyArt(SCW, SCH, 300, [[0, '#9fb3cf'], [.45, '#c1cddd'], [.75, '#ecd2b0'], [1, '#f2d898']], false);
+const flapArt = skyArt(SCW, Math.round(SCW * FLH / SKW), 310, [[0, '#7f95b8'], [1, '#9fb3cf']], true);
+// the printed battle, exactly as the broadsheet shows it while the card lies flat
+const skyPrint = cnv(SCW, SCH);
+(() => { const g = skyPrint.getContext('2d'), r = rng(320), put = (x, y, rot, f) => { g.save(); g.translate(x, y); g.rotate(rot); f(); g.restore(); };
+  for (const [x, y, rot] of [[180, 140, .5], [1110, 120, -.55], [140, 560, -.35], [1130, 520, .42]]) put(x, y, rot, () => drawTube(g, 300, x));
+  for (const [x, y, rot] of [[420, 90, .12], [900, 300, -.5], [260, 360, -.7], [1000, 720, .1]]) put(x, y, rot, () => drawRod(g, 290, x + 1));
+  const used = [[690, 410, 250]];
+  for (let i = 0; i < 70; i++) { let x, y, R, n = 0; do { x = 40 + r() * 1200; y = 40 + r() * 760; R = 13 + r() * 13; n++; } while (n < 60 && used.some(([ux, uy, ur]) => Math.hypot(x - ux, y - uy) < ur + R + 8)); used.push([x, y, R]);
+    put(x, y, 0, () => drawOrb(g, R, [RED, BLK, BLUE][i % 3], 330 + i)); }
+  for (let i = 0; i < 6; i++) put(150 + i * 190 + r() * 40, 200 + (i % 3) * 190 + r() * 40, (r() - .5) * .5, () => drawCross(g, 54, 410 + i));
+  put(470, 470, -1.1, () => drawCrescent(g, 420, 420)); put(910, 470, 1.1, () => drawCrescent(g, 420, 430));
+  put(690, 410, 0, () => drawSun(g, 210, 440));
+  put(560, 780, -.03, () => drawSpear(g, 820, 450));
+})();
+const skyFace = cnv(SCW, SCH), skyG = skyFace.getContext('2d'), skyTex = texOf(skyFace); let lastPK = -1;
+function drawSky(pk) { if (Math.abs(pk - lastPK) < .002) return; lastPK = pk; skyG.drawImage(skyBase, 0, 0); if (pk > 0) { skyG.globalAlpha = pk; skyG.drawImage(skyPrint, 0, 0); skyG.globalAlpha = 1; } skyTex.needsUpdate = true; }
+
+// ---------- towns ----------
+function tower(g, x, w, top, bas, roofH, seed, col = WALL, roof = ROOF) {
+  const body = [[x, bas], [x, top], [x + w, top], [x + w, bas]]; block(g, body, col, 4, seed); hatchIn(g, body, x + w * .55, top, x + w, bas, 8, 0, 1.4, .45, seed + 1);
+  for (let y = top + 26; y < bas - 24; y += 44) block(g, [[x + w * .44, y], [x + w * .56, y], [x + w * .56, y + 18], [x + w * .44, y + 18]], INK, 1.5, seed + y);
+  if (roofH) { const rf = [[x - 8, top], [x + w / 2, top - roofH], [x + w + 8, top]]; block(g, rf, roof, 4, seed + 2); hatchIn(g, rf, x + w / 2, top - roofH, x + w + 8, top, 9, .9, 1.4, .5, seed + 3); inkLine(g, [[x + w / 2, top - roofH], [x + w / 2, top - roofH - 20]], 3, INK, seed + 4); }
+}
+function house(g, x, w, h, bas, seed) {
+  const top = bas - h, rt = top - w * .75, wall = [WALL, '#efe2c4', '#d9c49a'][seed % 3];
+  block(g, [[x, bas], [x, top], [x + w, top], [x + w, bas]], wall, 3.5, seed); const rf = [[x - 6, top], [x + w / 2, rt], [x + w + 6, top]]; block(g, rf, seed % 2 ? ROOF : '#b8654a', 3.5, seed + 1); hatchIn(g, rf, x - 6, rt, x + w + 6, top, 10, -.35, 1.6, .5, seed + 2);
+  inkLine(g, [[x, top + h * .5], [x + w, top + h * .5]], 3, '#4a3020', seed + 3); for (let k = 0; k <= 2; k++) inkLine(g, [[x + k * w / 2, top], [x + k * w / 2, bas]], 3, '#4a3020', seed + 4 + k);
+  for (let wy = top + 12; wy < bas - 20; wy += 34) for (let wx = x + 8; wx < x + w - 18; wx += 22) block(g, [[wx, wy], [wx + 10, wy], [wx + 10, wy + 14], [wx, wy + 14]], '#3a2a1c', 1.6, (wx + wy) | 0);
+}
+function church(g, x, w, top, bas, spire, seed, stone, spireCol) {   // a Gothic tower with a tall spire
+  const body = [[x, bas], [x, top], [x + w, top], [x + w, bas]]; block(g, body, stone, 4, seed); hatchIn(g, body, x + w * .6, top, x + w, bas, 7, 0, 1.4, .45, seed + 1);
+  for (let y = top + 30; y < bas - 60; y += 70) block(g, [[x + w * .3, y + 40], [x + w * .3, y + 10], [x + w * .5, y], [x + w * .7, y + 10], [x + w * .7, y + 40]], '#3a2418', 2.5, seed + y);
+  const sp = [[x - 4, top], [x + w / 2, top - spire], [x + w + 4, top]]; block(g, sp, spireCol, 4, seed + 2); hatchIn(g, sp, x - 4, top - spire, x + w + 4, top, 8, .95, 1.4, .45, seed + 3);
+  for (let k = 1; k < 6; k++) { const yy = top - spire + k * spire / 6, hw = (k / 6) * (w / 2 + 4); inkLine(g, [[x + w / 2 - hw - 6, yy + 3], [x + w / 2 - hw, yy - 5]], 2.5, INK, seed + 10 + k); inkLine(g, [[x + w / 2 + hw + 6, yy + 3], [x + w / 2 + hw, yy - 5]], 2.5, INK, seed + 20 + k); }
+  inkLine(g, [[x + w / 2, top - spire], [x + w / 2, top - spire - 26]], 4, INK, seed + 4); g.fillStyle = GOLD; g.beginPath(); g.arc(x + w / 2, top - spire - 28, 6, 0, 6.283); g.fill();
+}
+const CTW = 1536, CTH = 537;
+const nurembergArt = (() => {
+  const c = cnv(CTW, CTH), g = c.getContext('2d'), r = rng(500);
+  let x = 6; while (x < CTW - 40) { const w = 58 + r() * 46; house(g, x, w, 60 + r() * 80, 420, (x | 0) + 7); x += w + 2; }
+  // the castle on its sandstone rock (Kaiserburg, with the round Sinwell tower)
+  const rock = [[880, 470], [890, 390], [930, 350], [990, 340], [1060, 312], [1150, 318], [1210, 350], [1240, 400], [1250, 470]]; block(g, rock, STONE, 4, 520); hatchIn(g, rock, 880, 312, 1250, 470, 9, -.8, 1.5, .45, 521);
+  block(g, [[930, 350], [930, 250], [1080, 250], [1080, 318]], WALL, 4, 522); const pr = [[920, 250], [1005, 160], [1090, 250]]; block(g, pr, ROOF, 4, 523); hatchIn(g, pr, 920, 160, 1090, 250, 10, -.35, 1.6, .5, 524);
+  for (let k = 0; k < 4; k++) block(g, [[948 + k * 34, 280], [962 + k * 34, 280], [962 + k * 34, 304], [948 + k * 34, 304]], '#3a2a1c', 1.6, 525 + k);
+  tower(g, 1110, 64, 150, 330, 92, 530, '#e3d2ae'); block(g, [[1102, 190], [1182, 190], [1182, 206], [1102, 206]], '#8a5a34', 2.5, 535);
+  inkLine(g, [[1142, 38], [1142, 4]], 3, INK, 536); block(g, [[1142, 6], [1178, 12], [1142, 22]], RED, 2, 537);
+  tower(g, 1190, 46, 260, 360, 44, 538, '#d8c39c');
+  // St. Lorenz (twin spires, like the woodcut) and St. Sebald
+  church(g, 380, 62, 170, 430, 150, 540, '#d9b98e', ROOF); church(g, 470, 62, 170, 430, 150, 550, '#d9b98e', ROOF);
+  block(g, [[442, 430], [442, 250], [470, 250], [470, 430]], '#d9b98e', 3, 560); const nave = [[532, 300], [560, 230], [700, 230], [720, 300]]; block(g, nave, ROOF, 4, 561); block(g, [[532, 430], [532, 300], [720, 300], [720, 430]], '#d9b98e', 4, 562);
+  church(g, 760, 50, 220, 430, 110, 570, '#d4b48a', '#7d8ea0'); church(g, 822, 50, 220, 430, 110, 580, '#d4b48a', '#7d8ea0');
+  // town wall with round gate towers, and a grassy bank in front
+  const wall = [[0, 476], [0, 404], [CTW, 404], [CTW, 476]]; block(g, wall, '#d6c29a', 4, 590); hatchIn(g, wall, 0, 404, CTW, 476, 10, -.8, 1.4, .35, 591);
+  for (let mx = 6; mx < CTW; mx += 30) block(g, [[mx, 404], [mx, 388], [mx + 15, 388], [mx + 15, 404]], '#d6c29a', 2.5, 600 + mx);
+  for (const tx of [220, 640, 1300]) tower(g, tx, 76, 312, 476, 84, 700 + tx, '#ddc8a0');
+  const bank = [[0, CTH], [0, 470], [300, 462], [700, 474], [1100, 460], [CTW, 470], [CTW, CTH]]; wash(g, bank, GREEN, 710, .95, 3); hatchIn(g, bank, 0, 460, CTW, CTH, 9, -.5, 1.4, .4, 711); inkLine(g, bank.slice(1, -1), 4, INK, 712);
+  return cutout(c, 7);
+})();
+const baselArt = (() => {
+  const c = cnv(CTW, CTH), g = c.getContext('2d'), r = rng(800), SAND = '#c4735a';
+  let x = 6; while (x < CTW - 40) { const w = 58 + r() * 46; if (x < 470 || x > 1000) house(g, x, w, 60 + r() * 90, 440, (x | 0) + 9); x += w + 2; }
+  // Basel Minster: red sandstone, twin openwork towers, a roof of glazed diamond tiles
+  const roof = [[700, 300], [730, 200], [960, 200], [1000, 300]]; block(g, roof, OCHRE, 4, 810);
+  g.save(); g.beginPath(); roof.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); g.closePath(); g.clip(); for (let yy = 200; yy < 300; yy += 22) for (let xx = 700 + ((yy / 22) % 2) * 15; xx < 1000; xx += 30) { g.fillStyle = [GREEN, BLOOD, '#e7d27a'][((xx + yy) / 15 | 0) % 3]; g.beginPath(); g.moveTo(xx, yy); g.lineTo(xx + 15, yy + 11); g.lineTo(xx, yy + 22); g.lineTo(xx - 15, yy + 11); g.closePath(); g.fill(); } g.restore(); inkPoly(g, roof, 4, INK, 811);
+  block(g, [[700, 470], [700, 300], [1000, 300], [1000, 470]], SAND, 4, 812); hatchIn(g, [[700, 470], [700, 300], [1000, 300], [1000, 470]], 850, 300, 1000, 470, 8, 0, 1.4, .4, 813);
+  for (let k = 0; k < 4; k++) block(g, [[730 + k * 70, 420], [730 + k * 70, 350], [748 + k * 70, 330], [766 + k * 70, 350], [766 + k * 70, 420]], '#3a2418', 2.5, 814 + k);
+  church(g, 520, 74, 160, 470, 140, 820, SAND, '#b9654c'); church(g, 640, 74, 172, 470, 132, 830, SAND, '#b9654c');
+  block(g, [[594, 470], [594, 240], [640, 240], [640, 470]], SAND, 3.5, 840); g.fillStyle = BLUE; g.beginPath(); g.arc(617, 300, 18, 0, 6.283); g.fill(); inkLine(g, NB.circlePts(617, 300, 18, 14), 3, INK, 841);
+  // Spalentor gate
+  tower(g, 1080, 96, 220, 470, 0, 850, '#c88a62'); const gr = [[1070, 220], [1128, 110], [1186, 220]]; block(g, gr, GREEN, 4, 851); hatchIn(g, gr, 1070, 110, 1186, 220, 9, .9, 1.5, .45, 852);
+  for (const tx of [1046, 1176]) tower(g, tx, 40, 300, 470, 46, 853 + tx, '#c88a62');
+  block(g, [[1100, 470], [1100, 400], [1128, 380], [1156, 400], [1156, 470]], '#3a2418', 3, 860);
+  // the Rhine and its bridge
+  for (let k = 0; k < 6; k++) { const bx = 40 + k * 84; block(g, [[bx, 482], [bx, 456], [bx + 84, 456], [bx + 84, 482], [bx + 70, 482], [bx + 70, 474], [bx + 14, 474], [bx + 14, 482]], STONE, 3, 870 + k); }
+  block(g, [[30, 456], [540, 456], [540, 444], [30, 444]], '#8a5a34', 3, 880);
+  const river = [[0, CTH], [0, 480], [CTW, 480], [CTW, CTH]]; wash(g, river, BLUE, 881, .95, 3); for (let k = 0; k < 4; k++) inkLine(g, [[20 + k * 37, 496 + k * 10], [CTW * .5, 492 + k * 10], [CTW - 20, 498 + k * 10]], 2, 'rgba(42,31,24,.45)', 882 + k); inkLine(g, [[0, 480], [CTW, 480]], 4, INK, 890);
+  return cutout(c, 7);
+})();
+
+// ---------- woodcut people: each frame is a 400x640 sheet, feet at the bottom, facing right ----------
+const SB = [132, 205], SF = [188, 205];
+function person(o, f) {
+  const c = cnv(400, 640), g = c.getContext('2d'), s = o.seed * 31 + f * 7, cx = 160, q = o.pose(f), sway = q.sway || 0, long = !o.male || o.robe;
+  g.translate(40, 0);
+  const shoe = (x, y, dir, lift) => { g.save(); g.translate(x, y); g.rotate(lift); shape(g, [[-14, 0], [0, -14], [16 * dir + 10, -10], [44 * dir, 0], [14 * dir, 8], [-12, 8]], '#3a2616', 3, s + x); g.restore(); };
+  if (!long) { const hose = o.hose || '#5a3d2a';
+    for (const [lx, fx, fy, dir] of [[146, 132, 598, -1], [174, 190, 598, 1]]) { shape(g, [[lx - 12, 420], [lx + 12, 420], [(lx + fx) / 2 + 9, 520], [fx + 8, fy - 6], [fx - 8, fy - 6], [(lx + fx) / 2 - 9, 520]], hose, 3.5, s + lx); shoe(fx, fy, dir, 0); }
+  } else { shoe(cx - 34 + sway, 600, -1, 0); shoe(cx + 34 + sway, 604, 1, 0); }
+  const sleeve = ([sh, el, hd]) => { for (const [w, col] of [[30, INK], [23, o.dress]]) { g.beginPath(); g.moveTo(...sh); g.quadraticCurveTo(...el, ...hd); g.lineWidth = w; g.strokeStyle = col; g.lineCap = 'round'; g.stroke(); } };
+  q.arms.forEach(sleeve);
+  const hem = long ? 600 : 430, flare = long ? (o.robe ? 76 : 92) : 52;
+  const body = [[122, 196], [198, 196], [186, 270], [cx + flare + sway, hem - 6], [cx + flare * .5 + sway, hem + 8], [cx + sway, hem - 4], [cx - flare * .5 + sway, hem + 8], [cx - flare + sway, hem - 6], [134, 270]];
+  shape(g, body, o.dress, 4.5, s + 1);
+  hatchIn(g, body, cx + 6, 190, 320, hem + 20, 8, -1.05, 1.5, .45, s + 2);
+  for (const k of [-.45, 0, .45]) inkLine(g, [[cx + k * 30, 280], [cx + k * flare * .9 + sway * .6, (280 + hem) / 2], [cx + k * flare * 1.1 + sway, hem - 8]], 2, 'rgba(43,29,18,.6)', s + 3 + k * 10);
+  inkLine(g, [[134, 272], [cx, 278], [186, 272]], 4, INK, s + 4);
+  if (o.male && !o.robe) { g.fillStyle = '#5a3d2a'; g.fillRect(176, 278, 16, 22); }
+  if (o.robe) { shape(g, [[120, 200], [200, 200], [204, 236], [cx, 250], [116, 236]], o.collar || '#6b4a2e', 3.5, s + 18); }   // fur collar
+  q.front && q.front(g, s);
+  q.arms.forEach(([, , hd], i) => { g.fillStyle = SKIN; g.beginPath(); g.arc(hd[0], hd[1], 11, 0, 6.283); g.fill(); inkLine(g, NB.circlePts(hd[0], hd[1], 11, 12), 2.5, INK, s + 5 + i); });
+  q.over && q.over(g, s);
+  if (!o.male) shape(g, [[116, 112], [cx, 84], [204, 112], [214, 200], [cx, 214], [106, 200]], '#f3ead6', 3.5, s + 9);
+  g.fillStyle = SKIN; g.beginPath(); g.arc(cx, 140, 33, 0, 6.283); g.fill(); inkLine(g, NB.circlePts(cx, 140, 33, 18), 3.5, INK, s + 10);
+  const ey = q.look ? 123 : 131;   // looking up at the sky: eye and brow lift
+  g.fillStyle = INK; g.fillRect(166, ey, 6, 6); inkLine(g, q.look ? [[158, ey - 9], [176, ey - 14]] : [[160, 124], [174, 122]], 2.5, INK, s + 11); inkLine(g, [[178, 136], [186, 150], [178, 153]], 2.5, INK, s + 12);
+  g.beginPath(); g.ellipse(174, 162, 5, q.mouth ?? o.mouth ?? 6, 0, 0, 6.283); g.fill();
+  if (o.beard) shape(g, [[146, 158], [160, 176], [184, 170], [176, 196], [150, 194]], o.beard, 3, s + 8);
+  g.fillStyle = 'rgba(180,60,40,.25)'; g.beginPath(); g.arc(184, 152, 6, 0, 6.283); g.fill();
+  if (!o.male) shape(g, [[124, 128], [cx, 100], [196, 128], [190, 112], [cx, 92], [130, 112]], '#f3ead6', 3, s + 13);
+  else if (o.hat === 'barett') { shape(g, ell(cx + 4, 104, 64, 15, -.08, 20), o.hatCol, 3.5, s + 14); shape(g, ell(cx, 94, 34, 15, 0, 16), o.hatCol, 3, s + 15); inkLine(g, [[192, 92], [222, 62], [248, 50]], 7, '#f1e6c9', s + 16); inkLine(g, [[192, 92], [222, 62], [248, 50]], 2, INK, s + 17); }
+  else if (o.hat === 'doctor') { block(g, [[118, 114], [202, 114], [196, 80], [124, 80]], '#2a2420', 3.5, s + 14); g.fillStyle = RED; g.beginPath(); g.arc(160, 76, 8, 0, 6.283); g.fill(); }
+  else if (o.hat === 'hood') shape(g, [[118, 150], [124, 104], [cx, 92], [204, 110], [236, 90], [212, 150], [200, 196], [120, 196]], o.hatCol, 3.5, s + 16);
+  else shape(g, [[126, 124], [130, 100], [cx, 92], [190, 100], [194, 124]], o.hatCol || '#3a2616', 3, s + 17);
+  return cutout(c);
+}
+// townsfolk: 0 = pointing at the sky, 1 = both hands up, 2 = cowering under the battle
+const lookPose = f => [
+  { look: true, mouth: 8, sway: -2, arms: [[SB, [120, 300], [128, 384]], [SF, [236, 150], [276, 50]]] },
+  { look: true, mouth: 13, sway: 3, arms: [[SB, [96, 152], [80, 66]], [SF, [232, 150], [258, 60]]] },
+  { look: false, mouth: 11, sway: 7, arms: [[SB, [104, 128], [148, 98]], [SF, [226, 126], [180, 92]]] },
+][f];
+// Hans Glaser carving the block: 0 = knife up, 1 = cutting (chips fly)
+const carvePose = f => { const kn = f ? [226, 272] : [206, 234];
+  return { mouth: 4, arms: [[SB, [116, 296], [140, 302]], [SF, [240, 300], kn]],
+    front: (g, s) => { const b = [[124, 262], [214, 252], [220, 320], [130, 330]]; block(g, b, '#c8a06a', 3.5, s + 310); for (let k = 0; k < 5; k++) inkLine(g, [[138 + k * 15, 268 + k * 2], [144 + k * 15, 318 - k]], 2, 'rgba(42,31,24,.7)', s + 311 + k); inkLine(g, NB.circlePts(176, 292, 14, 12), 2.5, INK, s + 318); },
+    over: (g, s) => { const tip = [kn[0] - 34, kn[1] - 20]; inkLine(g, [kn, tip], 5, '#7b7f86', s + 320); inkLine(g, [kn, [kn[0] + 18, kn[1] + 12]], 9, '#5a3d2a', s + 321);
+      if (f) for (let k = 0; k < 6; k++) { const a = -2.6 + k * .4, x = tip[0] + Math.cos(a) * (22 + k * 7), y = tip[1] + Math.sin(a) * (22 + k * 7); block(g, [[x, y], [x + 9, y - 3], [x + 11, y + 2], [x + 2, y + 5]], '#e0b882', 1.5, s + 330 + k); } } }; };
+// the scholar with his book, pointing at the halo
+const scholarPose = f => ({ look: true, mouth: f ? 10 : 5, arms: [[SB, [148, 292], [166, 300]], [SF, [236, 150], [272, 56 + f * 8]]],
+  over: (g, s) => { block(g, [[132, 286], [204, 278], [210, 336], [138, 344]], BLOOD, 3.5, s + 300); inkLine(g, [[170, 282], [174, 340]], 2, '#f1e6c9', s + 301); } });
+// Glaser's wooden screw press: 0 = platen up, 1 = pressed
+function pressArt(f) {
+  const c = cnv(520, 720), g = c.getContext('2d'), WD = '#8a5a34', WD2 = '#a0703f';
+  for (const fx of [40, 380]) block(g, [[fx, 700], [fx + 100, 700], [fx + 100, 650], [fx, 650]], WD, 3.5, 401 + fx);
+  for (const ux of [70, 410]) { const p = [[ux, 650], [ux + 40, 650], [ux + 40, 40], [ux, 40]]; block(g, p, WD2, 4, 403 + ux); hatchIn(g, p, ux + 22, 40, ux + 40, 650, 7, 0, 1.4, .45, 404 + ux); }
+  block(g, [[30, 30], [490, 30], [490, 92], [30, 92]], WD, 4, 405); block(g, [[60, 150], [460, 150], [460, 196], [60, 196]], WD, 4, 406);
+  const py = f ? 418 : 300;
+  block(g, [[246, 196], [274, 196], [274, py], [246, py]], '#6b6f78', 3, 407); for (let y = 206; y < py - 6; y += 14) inkLine(g, [[246, y], [274, y + 8]], 2, INK, 408 + y);
+  inkLine(g, f ? [[260, py - 50], [480, py - 120]] : [[110, py - 56], [480, py - 56]], 13, '#5a3d2a', 409); g.fillStyle = '#5a3d2a'; g.beginPath(); g.arc(480, f ? py - 120 : py - 56, 14, 0, 6.283); g.fill();
+  block(g, [[150, py], [370, py], [370, py + 44], [150, py + 44]], WD2, 4, 410);
+  block(g, [[50, 470], [470, 470], [470, 520], [50, 520]], WD, 4, 411); block(g, [[140, 462], [380, 462], [380, 470], [140, 470]], '#f4ecd8', 2, 412);
+  for (const [bx, by] of [[100, 560], [420, 560]]) { inkLine(g, [[bx, 520], [bx, by - 22]], 4, '#5a3d2a', 413 + bx); shape(g, NB.circlePts(bx, by, 24, 14), '#3a2a1c', 3, 414 + bx); }   // ink balls
+  return cutout(c, 7);
+}
+
+// ---------- scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.outputEncoding = THREE.sRGBEncoding; renderer.autoClear = false; (document.body || document.documentElement).appendChild(renderer.domElement);
+const BG = '#1b120a', TINT = [], TINT_SKY = [];
+const scene = new THREE.Scene(); scene.background = new THREE.Color(BG); scene.fog = new THREE.Fog(BG, 26, 50);
+const camera = new THREE.PerspectiveCamera(30, W / H, .1, 120);
+const pageMat = new THREE.MeshBasicMaterial({ map: pageTex }); scene.add(new THREE.Mesh(new THREE.PlaneGeometry(9, 16), pageMat)); TINT.push(pageMat);
+const desk = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ color: '#2a1b10' })); desk.position.z = -.03; scene.add(desk);
+function sprite(tex, w, h, o = {}) { const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: o.alphaTest ?? .3, side: THREE.DoubleSide, depthWrite: o.depthWrite ?? true }); const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.visible = false; scene.add(m); if (o.tint !== false) TINT_SKY.push(mat); return m; }
+const spriteW = (tex, w, o) => sprite(tex, w, w * tex.image.height / tex.image.width, o);
+function standee(cans, px, py, h, o = {}) {
+  const w = h * cans[0].width / cans[0].height, pivot = new THREE.Group(), [x, y] = toW(px, py), texs = cans.map(texOf);
+  const mat = new THREE.MeshBasicMaterial({ map: texs[0], transparent: true, alphaTest: .3, side: THREE.DoubleSide });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.y = h / 2; if (o.flip) m.scale.x = -1; pivot.add(m); pivot.position.set(x, y, o.z ?? .01); pivot.rotation.order = 'ZXY'; scene.add(pivot); TINT.push(mat);
+  return { o, pivot, m, mat, texs, h, w };
+}
+const doll = o => { const d = standee(Array.from({ length: o.nf || 1 }, (_, f) => person(o, f)), o.px, o.py, o.h || 2.2, o); d.pivot.visible = false; return d; };
+const setTex = (d, f) => { if (d.mat.map !== d.texs[f]) { d.mat.map = d.texs[f]; d.mat.needsUpdate = true; } };
+
+const skyCard = (() => { const pivot = new THREE.Group(), [x, y] = toW(576, 1100), mat = new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.DoubleSide });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(SKW, SKH), mat); m.position.y = SKH / 2; pivot.add(m);
+  const flapPivot = new THREE.Group(); flapPivot.position.set(0, SKH - .002, 0); pivot.add(flapPivot);
+  const fmat = new THREE.MeshBasicMaterial({ map: texOf(flapArt), side: THREE.DoubleSide }), fm = new THREE.Mesh(new THREE.PlaneGeometry(SKW, FLH), fmat); fm.position.y = FLH / 2; flapPivot.add(fm);
+  pivot.position.set(x, y, .008); scene.add(pivot); TINT.push(mat, fmat); return { pivot, flapPivot, fm }; })();
+const nurCard = standee([nurembergArt], 576, 1300, 2.6, { z: .02 });
+const basCard = standee([baselArt], 576, 1300, 2.6, { z: .026 }); basCard.pivot.visible = false;
+
+const FOLK = [[250, 1520, false, '#9c3a2a', 'barett', '#2b1d12', true], [372, 1600, false, '#3d5a7a', null, null, false], [470, 1500, false, '#c9a640', 'hood', '#4f7a5a', true], [600, 1590, true, '#4f7a5a', 'barett', '#9c3a2a', true],
+  [700, 1505, true, '#6e2f45', null, null, false], [826, 1600, true, '#7a5236', 'cap', '#3d5a7a', true], [935, 1520, true, '#8a5a2b', 'barett', '#4f7a5a', true], [520, 1690, false, '#7b7466', null, null, false]];
+const folks = FOLK.map(([px, py, flip, dress, hat, hatCol, male], i) => doll({ px, py, flip, dress, hat, hatCol, male, h: 2.15 + (i % 3) * .1, hose: ['#5a3d2a', '#3a4a5a', '#6b3a2a'][i % 3], seed: 20 + i, nf: 3, pose: lookPose, beard: male && i % 2 ? '#6b4a2e' : null }));
+const glaser = doll({ px: 330, py: 1770, h: 2.45, dress: '#3a3346', male: true, robe: true, hat: 'barett', hatCol: '#2b1d12', beard: '#8a7a6a', seed: 150, nf: 2, pose: carvePose });
+const press = standee([pressArt(0), pressArt(1)], 520, 1790, 2.6); press.pivot.visible = false;
+const scholar = doll({ px: 760, py: 1700, h: 2.4, dress: '#2a2a3a', male: true, robe: true, hat: 'doctor', beard: '#d8d0c0', seed: 160, nf: 2, pose: scholarPose, flip: true });
+
+// ---------- the sky battle ----------
+const TX = {
+  orb: Object.fromEntries([['red', RED], ['black', BLK], ['blue', BLUE]].map(([k, col]) => [k, [0, 1].map(v => spriteTex(160, 160, g => drawOrb(g, 66, col, 10 + v * 3 + col.length)))])),
+  sun: spriteTex(720, 720, g => drawSun(g, 340, 20)), mock: spriteTex(300, 300, g => drawSun(g, 136, 30, false)),
+  crescent: spriteTex(980, 430, g => { g.translate(0, -25); drawCrescent(g, 900, 40); }), tube: spriteTex(780, 210, g => drawTube(g, 720, 50)), rod: spriteTex(780, 90, g => drawRod(g, 720, 60)),
+  cross: spriteTex(230, 230, g => drawCross(g, 190, 70)), spear: spriteTex(1260, 270, g => drawSpear(g, 1180, 80)),
+  burst: [0, 1].map(k => spriteTex(360, 360, g => drawBurst(g, 160, 90 + k))), flame: [0, 1, 2].map(f => spriteTex(170, 290, g => drawFlame(g, 250, f, 100))), ice: [0, 1].map(k => spriteTex(170, 170, g => drawIce(g, 70, 110 + k))),
+};
+const smokeTex = (() => { const c = cnv(256, 200), g = c.getContext('2d'), r = rng(880), C = [];
+  for (let k = 0; k < 9; k++) { const a = k / 8; C.push([40 + a * 176 + (r() - .5) * 16, 140 - Math.sin(a * Math.PI) * 70 + (r() - .5) * 14, 26 + Math.sin(a * Math.PI) * 26]); }
+  g.lineWidth = 6; g.strokeStyle = INK; C.forEach(([x, y, rad]) => { g.beginPath(); g.arc(x, y, rad, 0, 6.283); g.stroke(); });
+  g.fillStyle = SMOKE; C.forEach(([x, y, rad]) => { g.beginPath(); g.arc(x, y, rad - 2.5, 0, 6.283); g.fill(); });
+  g.lineWidth = 2.5; g.strokeStyle = 'rgba(42,31,24,.6)'; for (let k = 0; k < 4; k++) { const [x, y, rad] = C[1 + k * 2]; g.beginPath(); g.arc(x, y, rad * .5, .5, 4.4); g.stroke(); } return texOf(c); })();
+const haloTex = (() => { const c = cnv(1024, 1024), g = c.getContext('2d'), R = 440;
+  for (const [rr, col, w] of [[R - 26, BLOOD, 18], [R - 6, OCHRE, 22], [R + 16, '#d9e3ec', 26]]) { g.globalAlpha = .6; g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.arc(512, 512, rr, 0, 6.283); g.stroke(); }
+  g.globalAlpha = 1; inkLine(g, circ(512, 512, R - 38, 60), 3, INK, 990); inkLine(g, circ(512, 512, R + 32, 60), 2, 'rgba(42,31,24,.6)', 991); return texOf(c); })();
+
+const SUN = { x: .45, y: -1.3, z: 4.4 }, VORT = [[-1.1, -2, 5.6], [1.2, -2, 6.8], [.1, -2, 4.3]];
+const OBJ = [], homeR = rng(777);
+function skyHome() { for (let n = 0; n < 80; n++) { const x = (homeR() - .5) * 5.2, z = 3.1 + homeR() * 6.2, y = -3.1 + homeR() * 2.1; if (Math.hypot(x - SUN.x, z - SUN.z) < 1.35 || (Math.abs(x - SUN.x) < 2.5 && Math.abs(z - SUN.z) < 1.05)) continue; if (OBJ.some(o => Math.hypot(o.home[0] - x, o.home[2] - z) < .34)) continue; return [x, y, z]; } return [(homeR() - .5) * 5, -2, 3 + homeR() * 6]; }
+const mk = (kind, tex, w, o) => { const ob = { kind, m: spriteW(tex, w), w, i: OBJ.length, ph: homeR() * 6.28, v: OBJ.length % 3, rot: 0, ...o }; OBJ.push(ob); return ob; };
+// "the sky was full" / "Hundreds of spheres. Red. Black. Blue."
+[['L2', 'full', null, 18, .03], ['L3', 'hundreds', null, 16, .03], ['L3', 'red', 'red', 20, .025], ['L3', 'black', 'black', 20, .025], ['L3', 'blue', 'blue', 20, .025]].forEach(([line, wd, col, n, gap], wi) => {
+  for (let k = 0; k < n; k++) { const c = col || ['red', 'black', 'blue'][(k + wi) % 3], R = .15 + homeR() * .15; mk('orb', TX.orb[c][k % 2], R * 2 * 160 / 132, { home: skyHome(), when: [line, wd, -.06 + k * gap], R }); } });
+for (let j = 0; j < 6; j++) mk('cross', TX.cross, .66, { home: skyHome(), rot: (homeR() - .5) * .6, when: ['L4', 'crosses', -.12 + j * .07], R: .3 });
+const TUBES = [[-1.75, -1.6, 7.9, .5], [1.85, -1.9, 8.6, -.55], [-1.95, -2.5, 4.2, -.4], [1.95, -2.3, 4.9, .42]].map(([x, y, z, rot], j) => mk('tube', TX.tube, 2.1, { home: [x, y, z], rot, from: [x + (x < 0 ? -4 : 4), y, z + 1.5], when: ['L4', 'tubes', -.15 + j * .12], slide: .55 }));
+[[-.6, -1.3, 9.3, .12], [1.0, -2.8, 3.4, -.08], [-1.3, -2.9, 6.3, -.7], [1.3, -1.2, 6.0, .9]].forEach(([x, y, z, rot], j) => mk('rod', TX.rod, 1.9, { home: [x, y, z], rot, from: [x + (j % 2 ? 5 : -5), y, z], when: ['L4', 'long', -.1 + j * .1], slide: .5 }));
+TUBES.forEach((tb, j) => { for (let k = 0; k < 8; k++) { const c = k % 3 ? 'red' : (j % 2 ? 'blue' : 'black'), R = .13 + homeR() * .1; mk('orb', TX.orb[c][k % 2], R * 2 * 160 / 132, { home: skyHome(), src: tb, when: ['L4', 'pouring', -.3 + k * .13 + j * .04], R }); } });
+[-1, 1].forEach((s, j) => mk('crescent', TX.crescent, 2.0, { home: [SUN.x * .78 + s * 1.2, -3.3, SUN.z * .86], rot: s * 1.1, from: [SUN.x + s * 5, -3.3, SUN.z + 1.2], when: ['L5', 'moons', -.4 + j * .1], slide: .7 }));
+mk('spear', TX.spear, 5.4, { home: [-.25, -2.5, 3.15], rot: .02, from: [6.8, -2.5, 3.3], when: ['L5', 'spear', -.32], slide: .55 });
+const FLAMES = OBJ.map(() => spriteW(TX.flame[0], .6, { depthWrite: false }));
+const BURSTS = Array.from({ length: 8 }, () => spriteW(TX.burst[0], 1.5, { depthWrite: false }));
+const SMK = Array.from({ length: 14 }, (_, i) => { const r = rng(1400 + i); return { x: .1 + r() * 3.1, z0: .5 + r() * .5, u: r(), m: sprite(smokeTex, 1.3, 1.02, { depthWrite: false, alphaTest: .02 }) }; });
+const sunM = spriteW(TX.sun, 2.4, { tint: false }), haloM = sprite(haloTex, 4, 4, { alphaTest: .02, depthWrite: false, tint: false }), MOCK = [0, 1].map(() => spriteW(TX.mock, .8, { tint: false }));
+const BAS = Array.from({ length: 54 }, (_, i) => { const r = rng(1700 + i), R = .16 + r() * .18; return { m: spriteW(TX.orb.black[i % 2], R * 2 * 160 / 132), home: [(r() - .5) * 5.2, -3 + r() * 2, 3.2 + r() * 6], ph: r() * 6.28 }; });
+const ICE = Array.from({ length: 22 }, (_, i) => { const r = rng(1900 + i); return { m: spriteW(TX.ice[i % 2], .3 + r() * .2, { tint: false }), p: [-1.3 + r() * 3.2, -6 + r() * 2.6, 2.4 + r() * 4.4], spin: (r() - .5) * 2 }; });
+const LONE = spriteW(TX.orb.black[0], 1.0 * 160 / 132);
+let bigPrint = null, basPrint = null, COPIES = [];
+
+// position of one sky object: entry, idle bob, the battle (three wheeling vortices + head-on rams), then the burning fall
+let TF0 = 0, TFALL = 0, DUELS = null;
+function mouthOf(tb) { const c = Math.cos(tb.rot), s = Math.sin(tb.rot); return [tb.home[0] + c * tb.w * .46, tb.home[1], tb.home[2] + s * tb.w * .46]; }
+function basePos(ob, t) {
+  const t0 = ob.tIn; let p = ob.home.slice(), sc = 1, rot = ob.rot;
+  if (ob.src) { const k = eo(P(t, t0, .9)), mo = mouthOf(ob.src); p = p.map((v, i) => lerp(mo[i], v, k)); sc = clamp(P(t, t0, .12)) * (.5 + .5 * k); }
+  else if (ob.from) { const k = eo(P(t, t0, ob.slide)); p = p.map((v, i) => lerp(ob.from[i], v, k)); if (ob.kind === 'crescent') sc = .35 + .65 * k; }
+  else { const k = P(t, t0, .35); sc = back(k); p[2] += (1 - eo(k)) * .35; if (ob.kind === 'cross') rot += (1 - eo(k)) * 2.5; }
+  p[0] += Math.sin(t * .8 + ob.ph) * .05; p[2] += Math.sin(t * 1.1 + ob.ph * 2) * .07;
+  const dtF = t - TF0; if (dtF > 0) { const c = VORT[ob.v], th = ob.spd * dtF * eo(clamp(dtF / 1.2)), dx = p[0] - c[0], dz = p[2] - c[2], ca = Math.cos(th), sa = Math.sin(th); p[0] = c[0] + dx * ca - dz * sa; p[2] = c[2] + dx * sa + dz * ca; if (ob.kind !== 'orb') rot += th * .35; }
+  return { p, sc, rot };
+}
+function objState(ob, t) {
+  if (t < ob.tf) { const s = basePos(ob, t);
+    for (const d of ob.duels) { const u = t - d.tau; if (u < -.32 || u > .45) continue; const w = u < 0 ? eio(1 + u / .32) : 1 - eio(u / .45), tgt = d.a === ob ? d.ma : d.mb; s.p = s.p.map((v, i) => lerp(v, tgt[i], w * .92)); }
+    return s; }
+  const s = basePos(ob, ob.tf), dt = t - ob.tf, G = 5.4, vz = .9, z0 = s.p[2], T = (vz + Math.sqrt(vz * vz + 2 * G * Math.max(.1, z0 - .2))) / G;
+  return { p: [lerp(s.p[0], ob.land, Math.min(1, dt / T)), lerp(s.p[1], -1.15, eio(clamp(dt / (T * .7)))), z0 + vz * dt - .5 * G * dt * dt], sc: s.sc, rot: s.rot + dt * ob.spin, fall: dt, vx: (ob.land - s.p[0]) / T, vz: vz - G * dt };
+}
+function prepare() {
+  SHOTS = shots(); TF0 = at('L6', 'fight') - .12; TFALL = at('L8', 'fell') - .08;
+  const r = rng(31337);
+  OBJ.forEach(ob => { ob.tIn = W_(ob.when); ob.duels = []; ob.spd = (ob.kind === 'orb' || ob.kind === 'cross' ? .9 + r() * 1.1 : .25 + r() * .2) * (ob.v === 1 ? -1 : 1); ob.tf = TFALL + (ob.kind === 'spear' ? 0 : ob.kind === 'crescent' ? .15 : .05 + r() * 1.25); ob.land = .2 + r() * 2.9; ob.spin = (r() - .5) * 6; });
+  DUELS = []; const N = 30, span = TFALL - TF0 - .7, cand = OBJ.filter(o => o.kind === 'orb' || o.kind === 'cross');
+  for (let k = 0; k < N; k++) { const tau = TF0 + .45 + span * (k + r() * .6) / N, a = cand[Math.floor(r() * cand.length)], pa = basePos(a, tau).p; let b = null, bd = 1e9;
+    for (let n = 0; n < 10; n++) { const c = cand[Math.floor(r() * cand.length)]; if (c === a) continue; const pc = basePos(c, tau).p, d = Math.hypot(pc[0] - pa[0], pc[1] - pa[1], pc[2] - pa[2]); if (d < bd && d > .3) { bd = d; b = c; } }
+    if (!b) continue; const pb = basePos(b, tau).p, m = pa.map((v, i) => (v + pb[i]) / 2), dir = pa.map((v, i) => v - pb[i]), dl = Math.hypot(...dir) || 1, gap = (a.R + b.R) * .5;
+    const d = { tau, m, a, b, ma: m.map((v, i) => v + dir[i] / dl * gap), mb: m.map((v, i) => v - dir[i] / dl * gap) }; DUELS.push(d); a.duels.push(d); b.duels.push(d); }
+}
+
+// ---------- HUD ----------
+const hud = cnv(W, H), hg = hud.getContext('2d'), hudTex = texOf(hud);
+const hudScene = new THREE.Scene(), hudCam = new THREE.OrthographicCamera(-.5, .5, .5, -.5, 0, 1);
+hudScene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: hudTex, transparent: true, depthTest: false })));
+const word = (s, size, fill, stroke = INK) => { const c = cnv(1000, size * 1.6), g = c.getContext('2d'); g.font = `bold ${size}px ${LUM}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = size * .12; g.strokeStyle = '#f1e4c4'; g.strokeText(s, 500, size * .8); g.lineWidth = size * .05; g.strokeStyle = stroke; g.strokeText(s, 500, size * .8); g.fillStyle = fill; g.fillText(s, 500, size * .8); return c; };
+const BIG = { date: word('April 14, 1561', 108, RED), nur: word('Nuremberg', 150, INK), hundreds: word('Hundreds', 170, INK), fight: word('They Fought', 150, RED), y61: word('1561', 230, INK), y66: word('1566', 230, RED), dogs: word('Sun Dogs?', 150, INK), who: word('Who?', 240, RED),
+  red: word('Red', 130, RED), black: word('Black', 130, BLK), blue: word('Blue', 130, BLUE), hour: word('One Hour', 110, INK) };
+const big = (c, x, y, p, a = 1, rot = 0, sc = 1) => { if (p <= 0 || a <= 0) return; hg.save(); hg.globalAlpha = clamp(a); hg.translate(x, y); hg.rotate(rot); const s = (1 + .2 * (1 - eo(clamp(p * 1.5)))) * sc; hg.scale(s, s); hg.beginPath(); hg.rect(-500, -400, 1000 * p, 800); hg.clip(); hg.drawImage(c, -500, -c.height / 2); hg.restore(); hg.globalAlpha = 1; };
+function tag(s, x, y, a, size = 40) { if (a <= 0) return; hg.save(); hg.globalAlpha = clamp(a); hg.font = `bold ${size}px ${LUM}`; const w = hg.measureText(s).width + 56, h = size * 1.55; hg.translate(x, y); hg.rotate(-.02);
+  hg.fillStyle = '#efe3c4'; hg.fillRect(-w / 2, -h / 2, w, h); hg.strokeStyle = INK; hg.lineWidth = 3.5; hg.strokeRect(-w / 2, -h / 2, w, h); hg.strokeStyle = RED; hg.lineWidth = 1.5; hg.strokeRect(-w / 2 + 7, -h / 2 + 7, w - 14, h - 14);
+  hg.fillStyle = INK; hg.textAlign = 'center'; hg.textBaseline = 'middle'; hg.fillText(s, 0, 2); hg.restore(); }
+function hourglass(x, y, k, a) {
+  if (a <= 0) return; hg.save(); hg.globalAlpha = clamp(a); hg.translate(x, y); const Hh = 240, Wd = 130, hw = yy => 9 + (Wd / 2 - 9) * Math.abs(yy) / (Hh / 2);
+  for (const s of [-1, 1]) block(hg, [[-Wd * .78, s * Hh / 2], [Wd * .78, s * Hh / 2], [Wd * .78, s * (Hh / 2 + 24)], [-Wd * .78, s * (Hh / 2 + 24)]], '#8a5a34', 3.5, 901 + s);
+  for (const s of [-1, 1]) inkLine(hg, [[s * Wd * .68, -Hh / 2], [s * Wd * .68, Hh / 2]], 8, '#5a3d2a', 903 + s);
+  const glass = [[-Wd / 2, -Hh / 2], [Wd / 2, -Hh / 2], [9, 0], [Wd / 2, Hh / 2], [-Wd / 2, Hh / 2], [-9, 0]];
+  hg.fillStyle = 'rgba(232,240,244,.8)'; hg.beginPath(); glass.forEach((p, i) => i ? hg.lineTo(...p) : hg.moveTo(...p)); hg.closePath(); hg.fill();
+  hg.save(); hg.clip(); hg.fillStyle = '#d8b25c'; const ys = -(Hh / 2 - 8) * (1 - k); if (k < 1) { hg.beginPath(); hg.moveTo(-hw(ys), ys); hg.lineTo(hw(ys), ys); hg.lineTo(9, 0); hg.lineTo(-9, 0); hg.closePath(); hg.fill(); }
+  const mh = (Hh / 2 - 10) * k * .9; hg.beginPath(); hg.moveTo(-Wd / 2, Hh / 2); hg.lineTo(Wd / 2, Hh / 2); hg.lineTo(0, Hh / 2 - mh - 6); hg.closePath(); hg.fill(); if (k > 0 && k < 1) hg.fillRect(-2, 0, 4, Hh / 2); hg.restore();
+  inkPoly(hg, glass, 4, INK, 905); hg.restore();
+}
+function rayDiagram(x, y, k, a) {
+  if (a <= 0) return; hg.save(); hg.globalAlpha = clamp(a); hg.translate(x, y);
+  hg.fillStyle = '#efe3c4'; hg.beginPath(); hg.arc(0, 0, 200, 0, 6.283); hg.fill(); inkLine(hg, circ(0, 0, 200, 40), 5, INK, 920); inkLine(hg, circ(0, 0, 186, 40), 1.6, RED, 921);
+  hg.save(); hg.translate(-130, -110); drawSun(hg, 48, 922, false); hg.restore();
+  const hex = Array.from({ length: 6 }, (_, i) => [Math.cos(i * Math.PI / 3) * 92, Math.sin(i * Math.PI / 3) * 92 + 10]); wash(hg, hex, '#d6e6f2', 923, .95, 2); inkPoly(hg, hex, 4, INK, 924);
+  const path = [[-118, -84], [-62, -30], [52, 40], [150, 142]], L = path.slice(1).reduce((s, p, i) => s + Math.hypot(p[0] - path[i][0], p[1] - path[i][1]), 0); let left = L * k; const pts = [path[0]];
+  for (let i = 1; i < path.length && left > 0; i++) { const d = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]), u = Math.min(1, left / d); pts.push([lerp(path[i - 1][0], path[i][0], u), lerp(path[i - 1][1], path[i][1], u)]); left -= d; }
+  if (pts.length > 1) { hg.lineCap = 'round'; hg.lineJoin = 'round'; for (const [w, col] of [[16, INK], [10, OCHRE]]) { hg.beginPath(); pts.forEach((p, i) => i ? hg.lineTo(...p) : hg.moveTo(...p)); hg.lineWidth = w; hg.strokeStyle = col; hg.stroke(); } }
+  hg.restore();
+}
+let CHUNKS = null; const CAPY = 1440;
+function buildChunks() { CHUNKS = []; for (const l of Object.values(NB.TL.lines)) { let cur = []; const ws = l.words.filter(w => !/^\[/.test(w.w)); ws.forEach((w, i) => { cur.push({ ...w, s: l.start + w.s, e: l.start + w.e }); if (/[.,!?…]$/.test(w.w) || cur.length >= 3 || i === ws.length - 1) { CHUNKS.push(cur); cur = []; } }); }
+  CHUNKS.forEach((c, i) => { c.t0 = c[0].s - .05; c.t1 = CHUNKS[i + 1] ? Math.min(CHUNKS[i + 1][0].s - .05, c.at(-1).e + .55) : c.at(-1).e + .5; }); }
+function captions(t) {
+  if (!CHUNKS) buildChunks(); const c = CHUNKS.find(c => t >= c.t0 && t < c.t1); if (!c) return;
+  const y = CAPY, a = Math.min(1, (t - c.t0) / .08, (c.t1 - t) / .1); hg.globalAlpha = clamp(a);
+  hg.font = `bold 70px ${LUM}`; hg.textBaseline = 'middle'; const ws = c.map(w => w.w), wd = ws.map(w => hg.measureText(w).width), gap = 22, tw = wd.reduce((x, y) => x + y, 0) + gap * (ws.length - 1);
+  const bw = Math.max(520, tw + 120), x0 = W / 2 - bw / 2;
+  hg.fillStyle = '#b8955e'; for (const s of [-1, 1]) { const ex = s < 0 ? x0 + 10 : x0 + bw - 10; hg.beginPath(); hg.moveTo(ex, y - 40); hg.lineTo(ex + s * 70, y - 26); hg.lineTo(ex + s * 46, y + 10); hg.lineTo(ex + s * 70, y + 46); hg.lineTo(ex, y + 56); hg.closePath(); hg.fill(); }
+  const rb = hg.createLinearGradient(0, y - 56, 0, y + 56); rb.addColorStop(0, '#f1e4c4'); rb.addColorStop(1, '#dcc28e'); hg.fillStyle = rb; hg.beginPath(); hg.moveTo(x0, y - 50); hg.quadraticCurveTo(W / 2, y - 66, x0 + bw, y - 50); hg.lineTo(x0 + bw, y + 50); hg.quadraticCurveTo(W / 2, y + 34, x0, y + 50); hg.closePath(); hg.fill();
+  hg.strokeStyle = INK; hg.lineWidth = 3; hg.stroke();
+  let x = W / 2 - tw / 2; ws.forEach((w, i) => { const now = t >= c[i].s && t < (c[i + 1] ? c[i + 1].s : c.t1); hg.fillStyle = now ? RED : INK; hg.textAlign = 'left'; hg.fillText(w, x, y - 4); x += wd[i] + gap; });
+  hg.globalAlpha = 1;
+}
+const proj = v => { const p = v.clone().project(camera); return [(p.x + 1) / 2 * W, (1 - p.y) / 2 * H]; };
+let HUDX = {};
+function hudDraw(t) {
+  hg.clearRect(0, 0, W, H);
+  const show = (k, t0, t1, y = 430, rot = -.03, x = W / 2, sc = 1) => { if (t < t0 || t > t1 + .35) return; big(BIG[k], x, y, eo(P(t, t0, .4)), 1 - P(t, t1, .35), rot, sc); };
+  show('date', at('L1', 'april') - .1, at('L1', 'nuremberg') - .3, 440); show('nur', at('L1', 'nuremberg') - .05, at('L1', 'just') + .3, 400, .03);
+  show('hundreds', at('L3', 'hundreds') - .05, at('L3', 'red') - .15, 400);
+  const cEnd = en('L3') + .25; [['red', -300], ['black', 0], ['blue', 300]].forEach(([k, dx], i) => show(k, at('L3', k) - .05, cEnd, 410 + (i % 2) * 40, (i - 1) * .06, W / 2 + dx, .9));
+  show('fight', at('L6', 'fight') - .05, en('L6') + .5, 420, -.05);
+  { const t0 = at('L7', 'full') - .15, t1 = en('L7') + .15, a = P(t, t0, .3) * (1 - P(t, t1, .35)); hourglass(W / 2, 400, eio(P(t, at('L7', 'hour'), en('L7') - at('L7', 'hour'))), a); if (a > 0) big(BIG.hour, W / 2, 610, eo(P(t, t0, .4)), a, .02, .9); }
+  show('y61', at('L10', 'five') - .05, at('L10', 'later') + .05, 420); show('y66', at('L10', 'later') + .1, at('L10', 'black') - .1, 420, .03);
+  show('dogs', at('L11', 'sun') - .05, at('L11', 'ice') - .2, 400);
+  rayDiagram(W / 2, 430, eio(P(t, at('L11', 'bending') - .15, .9)), P(t, at('L11', 'ice') - .15, .3) * (1 - P(t, en('L11') + .25, .35)));
+  show('who', at('L12', 'who') - .05, en('L12') + .45, 420, -.04);
+  if (HUDX.glaser) tag('Hans Glaser · printer of Nuremberg', ...HUDX.glaser);
+  if (HUDX.print) tag('The real broadsheet · Nuremberg 1561', ...HUDX.print, 36);
+  if (HUDX.basel) tag('The real broadsheet · Basel 1566', ...HUDX.basel, 36);
+  captions(t);
+  const v = hg.createRadialGradient(W / 2, H * .46, H * .3, W / 2, H * .46, H * .8); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(16,10,6,.58)'); hg.fillStyle = v; hg.fillRect(0, 0, W, H);
+  for (let i = 0; i < 40; i++) { const r = rng(900 + i), x = (r() * W + Math.sin(t * .3 + i) * 40) % W, y = (r() * H - t * (8 + r() * 14) % H + H) % H; hg.fillStyle = `rgba(255,240,205,${.06 + r() * .12})`; hg.beginPath(); hg.arc(x, y, 1.5 + r() * 2.5, 0, 6.283); hg.fill(); }
+  const gr = rng(Math.floor(t * 30) + 3); hg.fillStyle = 'rgba(40,20,5,0.05)'; for (let i = 0; i < 1600; i++) hg.fillRect(gr() * W, gr() * H, 2, 2);
+}
+
+// ---------- animation ----------
+let t_ = 0, SHOTS = null;
+function faceCamera(d) { const up = clamp(d.pivot.rotation.x / (Math.PI / 2)); d.pivot.rotation.z = Math.atan2(camera.position.x - d.pivot.position.x, Math.max(.5, d.pivot.position.y - camera.position.y)) * .35 * up; }
+function hinge(d, tUp, tDown, z, dur = .45) { const up = back(P(t_, tUp, dur)), down = eio(P(t_, tDown, .6)); d.pivot.visible = up > 0 && down < 1; d.mat.opacity = 1 - down; d.pivot.position.z = z; d.pivot.rotation.x = Math.PI / 2 * up * (1 - down); faceCamera(d); return up > .9 && down < .05; }
+// camera: [start, duration, position, look-at, roll]; each move eases from wherever the previous one left off
+function shots() { return [
+  [0, 1, [0, -15.6, 3.3], [0, -1.6, 3.3], 0],                                           // Nuremberg at dawn
+  [at('L2', 'whole') - .25, 1.5, [0, -15.2, 2.3], [0, -1.6, 4.2], 0],                  // the townsfolk come out
+  [at('L2', 'looked') - .1, 1.7, [0, -13.6, 1.4], [0, -1.4, 6.4], 0],                   // ... and look up
+  [at('L3', 'hundreds') - .25, 1.5, [0, -16.6, 2.2], [0, -1.6, 5.5], 0],               // the sky is full
+  [at('L4', 'tubes') - .3, 1.3, [-.5, -15.2, 2.3], [.1, -1.6, 5.7], -.03],
+  [at('L5', 'two') - .25, 1.3, [.3, -14.2, 2.8], [.45, -1.3, 4.6], 0],                 // the sun and its blood-red moons
+  [at('L5', 'spear') - .3, .9, [0, -15.8, 2.2], [0, -1.9, 3.7], 0],                    // the spear over the roofs
+  [at('L6', 'then') - .1, 1.5, [0, -14.6, 1.9], [0, -1.6, 5.3], 0],
+  [at('L7', 'smashed') - .25, 1.1, [.5, -13.4, 1.25], [0, -1.8, 4.3], .05],             // above the rooftops
+  [at('L8', 'fell') - .2, 1.1, [.3, -17, 3.1], [.6, -1.6, 3.4], 0],                   // they fall; smoke rises
+  [at('L9', 'hans') - .35, 1.3, [-1.2, -15.6, 2.8], [-1.2, -5.9, 1.45], 0],            // Hans Glaser and his press
+  [at('L9', 'whole') - .25, 1.4, [0, -18.6, 4.4], [0, -2, 3.9], 0],                    // copies for the whole city
+  [at('L10', 'five') - .2, 1.4, [0, -15.8, 3.4], [0, -1.6, 4.0], 0],                   // Basel's skyline
+  [at('L10', 'black') - .25, 1.2, [0, -15.6, 2.6], [0, -1.6, 5.2], 0],                // black spheres fill its sky
+  [at('L11', 'scientists') - .3, .9, [1.0, -14.4, 2.7], [1.1, -4.5, 2.7], 0],          // the scientist
+  [at('L11', 'sun') - .05, 1.3, [.5, -15.8, 2.6], [.5, -1.3, 4.7], 0],                // halo and sun dogs
+  [at('L12', 'so') - .2, 2.6, [.3, -12.6, 2.2], [.4, -1.5, 5.0], 0],                   // who was up there?
+]; }
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+
+window.seek = function (t) {
+  t_ = t; if (!SHOTS) prepare(); drawPage(t);
+  const tFold = at('L1', 'nuremberg') - .4, closeUp = st('L13') + .4;
+  // camera first (the cut-outs turn to face it)
+  let cp = SHOTS[0][2].slice(), cl = SHOTS[0][3].slice(), roll = 0;
+  for (const [t0, d, p, l, r] of SHOTS) { const k = eio(P(t, t0, d)); if (k <= 0) break; cp = cp.map((v, i) => lerp(v, p[i], k)); cl = cl.map((v, i) => lerp(v, l[i], k)); roll = lerp(roll, r, k); }
+  const tilt = eio(P(t, tFold, 1.6)) * (1 - eio(P(t, closeUp - .1, 2.4)));
+  let shake = 0; for (const hit of [at('L6', 'fight'), at('L7', 'smashed'), at('L7', 'other'), at('L7', 'rooftops'), at('L8', 'fell'), at('L9', 'printed') - .08]) { const d = t - hit; if (d > 0 && d < .45) shake += Math.exp(-d * 11) * .22; }
+  for (const d of DUELS) { const u = t - d.tau; if (u > 0 && u < .3) shake += Math.exp(-u * 14) * .06; }
+  camera.position.set(lerp(0, cp[0] + Math.sin(t * .5) * .25, tilt) + Math.sin(t * 47) * shake, lerp(0, cp[1], tilt) + Math.cos(t * 39) * shake * .5, lerp(29.86, cp[2], tilt) + Math.cos(t * 43) * shake);
+  camera.up.set(0, 1 - tilt, tilt).normalize(); camera.lookAt(lerp(0, cl[0], tilt), lerp(0, cl[1], tilt), lerp(0, cl[2], tilt)); camera.rotateZ(roll * tilt); camera.updateMatrixWorld(true);
+  const cq = camera.quaternion, fwd = V3(0, 0, -1).applyQuaternion(cq), upv = V3(0, 1, 0).applyQuaternion(cq);
+
+  // dawn light: blue before sunrise, eerie again for "who was up there", and back to pre-dawn for "tomorrow"
+  const nk = clamp(1 - P(t, at('L1', 'just') - .2, 4.2) + .45 * P(t, at('L12', 'so') - .2, 1.2) + P(t, st('L13') + .3, 1.6)) * tilt;
+  const tc = new THREE.Color(1 - .45 * nk, 1 - .38 * nk, 1 - .16 * nk), sc2 = new THREE.Color(1 - .22 * nk, 1 - .18 * nk, 1 - .08 * nk);
+  TINT.forEach(m => m.color.copy(tc)); TINT_SKY.forEach(m => m.color.copy(sc2));
+
+  // the cards: sky (+ flap) and Nuremberg stand up; Basel replaces Nuremberg five years later
+  const tSkyUp = at('L1', 'nuremberg') - .3, tSkyDown = closeUp + .45;
+  drawSky(clamp(1 - P(t, tSkyUp - .1, .45) + P(t, tSkyDown + .2, .7)));
+  skyCard.pivot.rotation.x = Math.PI / 2 * back(P(t, tSkyUp, .7)) * (1 - eio(P(t, tSkyDown, .9)));
+  const fk = back(P(t, at('L1', 'just') - .15, .8)) * (1 - eio(P(t, closeUp + .1, .7))); skyCard.flapPivot.rotation.x = -Math.PI * (1 - fk); skyCard.fm.visible = fk > .02;
+  nurCard.pivot.rotation.x = Math.PI / 2 * back(P(t, at('L1', 'nuremberg') - .05, .7)) * (1 - eio(P(t, at('L10', 'later') - .3, .6)));
+  { const up = back(P(t, at('L10', 'later') + .15, .7)), down = eio(P(t, closeUp + .05, .7)); basCard.pivot.visible = up > 0 && down < 1; basCard.mat.opacity = 1 - down; basCard.pivot.rotation.x = Math.PI / 2 * up * (1 - down); }
+
+  // the sun with its face rises behind the town (and sinks again for "tomorrow, before sunrise")
+  const sunZ = lerp(-1.2, SUN.z, eio(P(t, at('L1', 'just') - .3, 5))) - (SUN.z + 1.4) * eio(P(t, st('L13') + .1, 1.8));
+  sunM.visible = sunZ > -1.1; sunM.position.set(SUN.x, SUN.y, sunZ); sunM.quaternion.copy(cq); sunM.rotateZ(Math.sin(t * .4) * .04);
+
+  // everything in the sky
+  OBJ.forEach((ob, i) => { const m = ob.m, fl = FLAMES[i]; fl.visible = false;
+    if (t < ob.tIn - .01) { m.visible = false; return; }
+    const s = objState(ob, t); m.visible = !(s.fall !== undefined && s.p[2] < .2) && s.sc > .001; if (!m.visible) return;
+    m.position.set(...s.p); m.quaternion.copy(cq); m.rotateZ(s.rot); m.scale.set(s.sc, s.sc, 1);
+    if (s.fall !== undefined) { const sp = Math.hypot(s.vx, s.vz) || 1, ux = -s.vx / sp, uz = -s.vz / sp, bg = Math.min(2.2, ob.w * .55 + .25);
+      fl.visible = true; fl.position.set(s.p[0] + ux * bg * .45, s.p[1] - .05, s.p[2] + uz * bg * .45); fl.quaternion.copy(cq); fl.rotateZ(Math.atan2(uz, ux) - Math.PI / 2);
+      fl.scale.setScalar(Math.max(.001, bg * clamp(s.fall / .15) * (1 + .12 * Math.sin(t * 30 + i)))); fl.material.map = TX.flame[Math.floor(t * 14 + i) % 3]; } });
+  let bi = 0; for (const d of DUELS) { const u = t - d.tau; if (u < 0 || u > .5 || bi >= BURSTS.length) continue; const b = BURSTS[bi++], s = back(clamp(u / .14)) * (1 - P(u, .25, .25));
+    b.visible = s > .01; b.position.set(d.m[0], d.m[1] - .12, d.m[2]); b.quaternion.copy(cq); b.rotateZ(d.tau * 7); b.scale.setScalar(Math.max(.001, s)); b.material.map = TX.burst[Math.floor(u * 16) % 2]; }
+  for (; bi < BURSTS.length; bi++) BURSTS[bi].visible = false;
+  SMK.forEach((s, i) => { const t0 = lerp(at('L8', 'burning') - .2, at('L8', 'smoke') + .3, s.u), k = (t - t0) / 3.2; s.m.visible = k > 0 && k < 1; if (!s.m.visible) return;
+    s.m.position.set(s.x + k * .6, -1.35 - i * .01, s.z0 + eo(k) * 3.6); s.m.quaternion.copy(cq); s.m.rotateZ(Math.sin(k * 3 + i) * .2); s.m.scale.setScalar(.5 + eo(k) * 1.6); s.m.material.opacity = Math.min(1, k * 6) * (1 - P(k, .5, .5)); });
+
+  // Basel, 1566: black spheres pour in, then melt into the scientists' explanation
+  BAS.forEach((b, i) => { const t0 = at('L10', 'black') - .2 + i * .022, k = eo(P(t, t0, .7)), out = P(t, at('L11', 'scientists') - .2 + (i % 12) * .03, .45); b.m.visible = k > 0 && out < 1; if (!b.m.visible) return;
+    b.m.position.set(b.home[0] + Math.sin(t * .8 + b.ph) * .06, b.home[1], b.home[2] + (1 - k) * 5 + Math.sin(t * 1.1 + b.ph) * .08); b.m.quaternion.copy(cq); b.m.scale.setScalar(Math.max(.001, 1 - out)); });
+  const hk = P(t, at('L11', 'sun') - .15, .6) * (1 - P(t, at('L12', 'so') - .2, .7));
+  haloM.visible = hk > 0; haloM.material.opacity = hk; haloM.position.set(SUN.x, SUN.y - .08, sunZ); haloM.quaternion.copy(cq); haloM.scale.setScalar(.85 + .15 * eo(hk));
+  MOCK.forEach((m, j) => { const k = back(P(t, at('L11', 'dogs') - .1 + j * .1, .45)) * (1 - P(t, at('L12', 'so') - .2, .6)); m.visible = k > .01; m.position.set(SUN.x + (j ? 1 : -1) * 1.72, SUN.y - .1, sunZ); m.quaternion.copy(cq); m.scale.setScalar(Math.max(.001, k)); });
+  ICE.forEach((ic, i) => { const k = back(P(t, at('L11', 'ice') - .2 + i * .03, .4)) * (1 - P(t, at('L12', 'so') - .3 + i * .01, .5)); ic.m.visible = k > .01; if (!ic.m.visible) return;
+    ic.m.position.set(ic.p[0] + Math.sin(t * .7 + i) * .1, ic.p[1], ic.p[2] + Math.sin(t * .9 + i * 2) * .12 - (t - at('L11', 'ice')) * .15); ic.m.quaternion.copy(cq); ic.m.rotateZ(t * ic.spin); ic.m.scale.setScalar(k * (.85 + .2 * Math.sin(t * 5 + i))); });
+  // "So who was up there?": one black sphere drifts down out of the sky toward us, then shoots away
+  { const t0 = at('L12', 'who') - .45, k = eio(P(t, t0, 2.4)), away = P(t, st('L13') + .15, .55), start = V3(SUN.x - .3, -1.0, 7.5), tgt = camera.position.clone().addScaledVector(fwd, 6).addScaledVector(upv, .2);
+    LONE.visible = t > t0 - .4 && away < 1; if (LONE.visible) { LONE.position.lerpVectors(start, tgt, k); LONE.position.z += eo(away) * 9; LONE.quaternion.copy(cq); LONE.scale.setScalar(Math.max(.001, clamp((t - t0 + .4) / .4) * (1 - away * .5))); } }
+
+  // the townsfolk: point, gasp, cower
+  folks.forEach((d, i) => { hinge(d, at('L2', 'city') - .2 + i * .06, closeUp - .1 + i * .025, .012, .45); if (!d.pivot.visible) return;
+    let f = 0; if (t > at('L2', 'full') - .1 && t < at('L3', 'red')) f = 1; if (i % 3 === 1 && t > at('L3', 'red') && t < TF0) f = 1; if (t > TF0 && t < at('L8', 'smoke')) f = 2;
+    if (t > at('L10', 'black') && t < at('L10', 'basel') + (i % 2) * .4) f = 1; if (t > at('L12', 'who') && t < st('L13')) f = i % 2 ? 1 : 0;
+    setTex(d, f); d.m.rotation.set(0, 0, Math.sin(t * 1.2 + i) * .025 + (f === 2 ? Math.sin(t * 40 + i) * .03 : 0)); d.m.position.y = d.h / 2 + (f === 1 ? Math.abs(Math.sin(t * 6 + i)) * .03 : 0); });
+  // Hans Glaser carves the block, the press slams, and the real broadsheet comes off it
+  if (hinge(glaser, at('L9', 'hans') - .25, st('L10') + .05, .012, .5) && t > at('L9', 'carved') - .1 && t < at('L9', 'printed') - .1) setTex(glaser, Math.floor((t - at('L9', 'carved')) / .16) % 2 ? 1 : 0); else setTex(glaser, 0);
+  hinge(press, at('L9', 'exactly') - .2, st('L10') + .1, .012, .5); const slam = at('L9', 'printed') - .08; setTex(press, t > slam && t < slam + .45 ? 1 : 0);
+  if (hinge(scholar, at('L11', 'scientists') - .2, at('L12', 'so') - .15, .012, .5)) setTex(scholar, Math.floor(t / .5) % 2); else setTex(scholar, 0);
+  HUDX = {};
+  { const tg = glaser.pivot.position.clone(); tg.z += 2.7; const a = P(t, at('L9', 'hans') - .1, .3) * (1 - P(t, at('L9', 'printed') - .2, .3)); if (a > 0) { const [x, y] = proj(tg); HUDX.glaser = [clamp(x, 300, W - 300), y, a]; } }
+  const bed = V3(-.44, -6.1, .95);
+  if (bigPrint) { const kS = eo(P(t, at('L9', 'printed') + .05, .7)), kOut = eio(P(t, en('L9') + .1, .6)); bigPrint.visible = kS > 0 && kOut < 1;
+    if (bigPrint.visible) { const tgt = camera.position.clone().addScaledVector(fwd, 4.4).addScaledVector(upv, .2); bigPrint.position.lerpVectors(bed, tgt, kS).addScaledVector(upv, eo(kOut) * 3); bigPrint.quaternion.copy(cq); bigPrint.rotateZ((1 - kS) * .5 + Math.sin(t * 2) * .015 + kOut * .4); bigPrint.scale.setScalar(.25 + .75 * kS); bigPrint.material.opacity = 1 - kOut;
+      const a = P(kS, .85, .15) * (1 - kOut * 3); if (a > 0) { const [x, y] = proj(bigPrint.position.clone().addScaledVector(upv, .76)); HUDX.print = [x, y, a]; } } }
+  COPIES.forEach((m, i) => { const r = rng(1500 + i), t0 = at('L9', 'whole') - .3 + i * .045, k = P(t, t0, 1.1), fade = P(t, st('L10') + .1 + i * .02, .5); m.visible = k > 0 && fade < 1; if (!m.visible) return;
+    const e = eo(k), tx = -3 + r() * 6, ty = -3 + r() * 1.6, tz = 2.2 + r() * 3.5;
+    m.position.set(lerp(bed.x, tx, e), lerp(bed.y, ty, e), lerp(bed.z, tz, e) + Math.sin(k * Math.PI) * 1.4 - eo(P(t, t0 + 1.1, 2)) * 1.0); m.quaternion.copy(cq); m.rotateZ(Math.sin(t * 3 + i) * .5); m.rotateY(Math.sin(t * 4 + i * 2) * .7); m.material.opacity = 1 - fade; m.scale.setScalar(.4 + .6 * clamp(k * 3)); });
+  if (basPrint) { const kb = back(P(t, at('L10', 'basel') - .3, .55)), kbo = eio(P(t, st('L11') + .35, .5)); basPrint.visible = kb > 0 && kbo < 1;
+    if (basPrint.visible) { const tgt = camera.position.clone().addScaledVector(fwd, 4.4).addScaledVector(upv, .1); basPrint.position.copy(tgt).addScaledVector(upv, -(1 - Math.min(1, kb)) * 2.6 + eo(kbo) * 3); basPrint.quaternion.copy(cq); basPrint.rotateZ(-.05 + kbo * .3); basPrint.material.opacity = 1 - kbo;
+      const a = P(kb, .8, .2) * (1 - kbo * 3); if (a > 0) { const [x, y] = proj(basPrint.position.clone().addScaledVector(upv, .92)); HUDX.basel = [x, y, a]; } } }
+
+  scene.updateMatrixWorld(true);
+  renderer.setClearColor(BG); renderer.clear(); renderer.render(scene, camera);
+  hudDraw(t); hudTex.needsUpdate = true; renderer.clearDepth(); renderer.render(hudScene, hudCam);
+  return true;
+};
+window.setTL = tl => { NB.TL = tl; CHUNKS = null; SHOTS = null; lastGlow = -1; lastPK = -1; return true; };
+
+// the two real broadsheets (public domain, Wikimedia Commons) become paper cards
+const loadImg = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+function printCard(img, w, h) { const c = cnv(w + 60, h + 60), g = c.getContext('2d'); g.fillStyle = '#efe6cf'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 30, 30, w, h); inkPoly(g, [[6, 6], [c.width - 6, 6], [c.width - 6, c.height - 6], [6, c.height - 6]], 3, 'rgba(42,31,24,.5)', 5); return c; }
+const printMesh = (c, h, tex = texOf(c)) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(h * c.width / c.height, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide })); m.visible = false; scene.add(m); return m; };
+Promise.all([loadImg('/studio/sky-battle/prints/nuremberg-1561.jpg'), loadImg('/studio/sky-battle/prints/basel-1566.jpg'), document.fonts.load(`88px ${LUM}`)]).then(([nur, bas]) => {
+  if (nur) { const c = printCard(nur, 800, 900); bigPrint = printMesh(c, 1.36); const tx = bigPrint.material.map; COPIES = Array.from({ length: 16 }, () => printMesh(c, .62, tx)); }
+  if (bas) basPrint = printMesh(printCard(bas, 519, 800), 1.65);
+  window.ready = true;
+});
+</script>

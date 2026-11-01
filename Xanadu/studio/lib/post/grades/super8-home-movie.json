@@ -1,0 +1,3 @@
+{ "name": "super8-home-movie", "note": "A faded Kodachrome home movie: warm, lifted, soft contrast, heavy grain, weave, flicker, dust and light leaks. From PS1.GRADES.warm.",
+  "lift": [0.05, 0.03, 0.0], "gamma": 1.0, "gain": [1.06, 0.97, 0.84], "sat": 0.9, "contrast": 0.96, "temp": 0.3, "print": 0.2, "vibrancy": 0.5,
+  "film": { "stock": "super8", "grain": 1.0, "halation": 0.45, "bloom": 0.35, "rolloff": 0.9, "weave": 1.4, "flicker": 0.6, "dust": 1.2, "leaks": 0.35, "vignette": 1.4, "fringe": 1.2 } }

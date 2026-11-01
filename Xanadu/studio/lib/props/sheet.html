@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Prop sheets</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="/notebook/lib.js"></script>
+<script src="/studio/lib/ps1.js"></script>
+<script src="/studio/lib/lights.js"></script>
+<script src="/studio/lib/camera.js"></script>
+<script src="/studio/lib/props/all.js"></script>
+<script>
+// the prop sheet stage: one prop on a grey sweep in three-point light; window.SHEET(id) swaps it. Views: HERO (3/4), SIDE, TOP.
+// The collision shape is drawn as green wire, the grip point as a red cube; the HUD prints the definition.
+(function () { const { V } = PS1; LIGHTS.use(); const M = LIGHTS.mat; let G = null, D = null, R = 1;
+  window.SHEET = id => { if (G) PS1.scene.remove(G); D = PROPS.defs[id]; G = new THREE.Group(); PS1.scene.add(G); const p = PROPS.make(id, { parent: G }); const b = new THREE.Box3().setFromObject(p), sz = b.getSize(V(0, 0, 0)); R = Math.max(sz.x, sz.y, sz.z, .08);
+    const s = D.shape, c = V(...(D.center || [0, 0, 0])), geo = s.type === 'sphere' ? new THREE.SphereGeometry(s.r, 8, 6) : s.type === 'cylinder' ? new THREE.CylinderGeometry(s.r, s.r, s.h, 8) : new THREE.BoxGeometry(...s.size);
+    const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: 0x3aff6a })); wire.position.copy(c); wire.userData.fx = 'overlay'; G.add(wire);
+    const gp = new THREE.Mesh(new THREE.BoxGeometry(.012 + R * .04, .012 + R * .04, .012 + R * .04), new THREE.MeshBasicMaterial({ color: 0xff2a2a })); gp.position.set(...D.grip); gp.userData.fx = 'overlay'; G.add(gp); CAM.mark('prop', V(0, sz.y / 2, 0)); return true; };
+  NB.TL = { end: 3, lines: {} };
+  CAM.episode({
+    hud(t, S, q) { if (!D) return; q.save(); q.textAlign = 'center'; q.lineWidth = 4; q.strokeStyle = '#000'; const L = (s, y, f, c) => { q.font = f; q.fillStyle = c; q.strokeText(s, 180, y); q.fillText(s, 180, y); };
+      L(D.name.toUpperCase(), 30, 'bold 16px Arial', '#ffd23a'); L(`${D.id} · ${D.room} · ${D.era.join(', ')}`, 50, 'bold 11px Arial', '#f2f0ea'); L(`${D.mass} kg · ${D.shape.type} · foley: ${D.foley}`, 66, 'bold 11px Arial', '#f2f0ea');
+      L(D.tags.join(' · '), 600, 'bold 11px Arial', '#c8c4b8'); L(['HERO', 'SIDE', 'TOP'][Math.min(2, Math.floor(t))] + '   green: collision · red: grip', 620, 'bold 10px Arial', '#c8c4b8'); q.restore(); },
+    build(S) { PS1.add(PS1.plane(10, 10, 4, 4, .5), M(PS1.color('#77767a')), 0, 0, 0).rotation.x = -Math.PI / 2; PS1.add(PS1.plane(10, 6, 4, 2, .5), M(PS1.color('#5c5e66')), 0, 3, -3);
+      window.SHEET('cup'); LIGHTS.sky({ time: '12:00', sun: { azimuth: 150, elevation: 50, kelvin: 5200, stops: -1 }, skylight: -1.0, interior: -1, shadowSize: 3 }); LIGHTS.setup('three-point', { subject: 'prop', stops: -1.4 }); },
+    shots: S => [0, 1, 2].map(i => ({ id: ['HERO', 'SIDE', 'TOP'][i], at: i, dur: 1, lens: '50mm', stop: 'f/8', exposure: .9, pos: t => [V(1, .7, 1.4), V(1.7, .35, 0), V(.01, 1.8, .25)][i].multiplyScalar(R * 2.6 + .12).add(V(0, R * .3, 0)), look: t => V(0, R * .3, 0), subject: t => V(0, R * .3, 0) })),
+    update(t, S) {},
+  });
+})();
+</script>

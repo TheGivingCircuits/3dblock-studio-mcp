@@ -1,0 +1,3 @@
+{ "name": "dawn-pink", "note": "The survivor's sunrise: pink-orange highlights, lifted lavender shadows, soft contrast and gentle bloom; for the morning-after escape.",
+  "lift": [0.03, 0.0, 0.03], "gamma": 1.0, "gain": [1.1, 0.94, 0.92], "sat": 1.12, "contrast": 1.05, "temp": 0.22, "print": 0.3, "vibrancy": 0.55,
+  "film": { "stock": "16mm", "grain": 0.9, "halation": 0.45, "bloom": 0.45, "rolloff": 0.85, "weave": 0.3, "flicker": 0.08, "dust": 0.15, "leaks": 0.05, "vignette": 1.1, "fringe": 0.9 } }
