@@ -1,0 +1,47 @@
+// CONSPIRACY #1 — The Sky Battle over Nuremberg (1561): a hand-coloured woodcut broadsheet that comes alive.
+// Perfect loop: the flat broadsheet is the first and last frame; "...look up." flows into "April fourteenth".
+(typeof window !== 'undefined' ? window : globalThis).SPEC = {
+  size: [1080, 1920],
+  voice: 'dJEJK85lIc4heqoIhReh', model: 'eleven_v4', settings: { speed: 1.08 },   // "Diego": deep, calm, quietly unsettling
+  lines: [
+    { id: 'L1', at: .35, text: 'April fourteenth, fifteen sixty-one. Nuremberg... just before sunrise.' },
+    { id: 'L2', gap: .3, text: 'The whole city looked up... and the sky was full.' },
+    { id: 'L3', gap: .3, text: 'Hundreds of spheres. Red. Black. Blue.' },
+    { id: 'L4', gap: .3, text: 'Giant crosses. Long tubes... and out of the tubes, even more spheres came pouring.' },
+    { id: 'L5', gap: .3, text: 'Two blood-red moons. And one huge black spear.' },
+    { id: 'L6', gap: .45, text: 'Then... they started to fight.' },
+    { id: 'L7', gap: .25, text: 'For a full hour, they smashed into each other above the rooftops.' },
+    { id: 'L8', gap: .3, text: 'Then they fell. Burning... and vanished in smoke.' },
+    { id: 'L9', gap: .4, text: 'A man named Hans Glaser carved exactly what he saw... and printed it for the whole city.' },
+    { id: 'L10', gap: 1.0, text: 'Five years later... black spheres filled the sky over Basel.' },
+    { id: 'L11', gap: .35, text: 'Scientists blame sun dogs. Ice crystals bending the sunlight.' },
+    { id: 'L12', gap: .35, text: "But sunlight doesn't fight. So who was up there?" },
+    { id: 'L13', gap: .6, text: 'Tomorrow, just before sunrise... look up.' },
+  ],
+  tail: 1.2,
+  loop: { fold: 2.6 },
+  music: { prompt: 'Eerie mysterious documentary score: a slow minor-key Renaissance lute and viol melody over a low unsettling synth drone, faint distant choir, soft ticking tension, conspiracy mystery mood, instrumental', gain: .46, duck: .2 },
+  beds: [{ prompt: 'Chaotic Renaissance battle music: pounding war drums, booming timpani, frantic strings and brass stabs, tense and loud, instrumental, 120 BPM', seconds: 16, at: ['L6', 'fight', -.15], until: ['L8', '$end', .3], gain: .4, duck: .2, fadeIn: .1, fadeOut: 1.2 }],
+  sfx: {
+    bell: ['single distant medieval church bell toll at dawn with long ringing decay', 4], rooster: ['a rooster crowing at dawn in the distance', 2], fold: ['pop-up book paper folding up, crisp paper snap', .6],
+    gasp: ['crowd of townspeople gasping in shock together', 1.6], murmur: ['frightened crowd murmuring in an old town street', 4], hum: ['deep eerie otherworldly humming drone, slowly pulsing, low frequency', 5],
+    bloop: ['soft deep magical pop as a glowing orb appears', .5], whoosh: ['fast smooth cinematic whoosh', .8], clang: ['heavy metal objects clashing in the sky with a thunderous boom', 1.4],
+    boom: ['distant deep cannon boom like thunder', 2], fire: ['fireballs falling through the sky, roaring flames and whistling', 2.5], smoke: ['smoke hissing with crackling embers', 3],
+    carve: ['knife carving into a wooden block, wood chips', 1.4], press: ['old wooden printing press screw turning then pressing down with a heavy thunk', 1.2], paper: ['many paper sheets fluttering in the wind', 1.6],
+    ice: ['delicate ice crystals tinkling, shimmering sparkle', 2.2], wind: ['cold eerie wind gust through an empty street', 2.5], whisper: ['faint ghostly whisper breath', 1.2], heart: ['two slow deep heartbeats', 1.6],
+  },
+  cues: [
+    ['bell', ['L1', 'april', -.3], .4], ['fold', ['L1', 'nuremberg', -.3], .55], ['fold', ['L1', 'nuremberg', .05], .45], ['rooster', ['L1', 'sunrise', -.1], .35], ['fold', ['L1', 'just', -.1], .35],
+    ['murmur', ['L2', 'city', -.2], .3], ['fold', ['L2', 'city', -.1], .4], ['gasp', ['L2', 'looked', .1], .5], ['hum', ['L2', 'full', -.3], .5], ['bloop', ['L2', 'full', -.05], .45],
+    ['bloop', ['L3', 'hundreds'], .4], ['bloop', ['L3', 'red'], .45], ['bloop', ['L3', 'black'], .45], ['bloop', ['L3', 'blue'], .45],
+    ['whoosh', ['L4', 'crosses', -.15], .35], ['whoosh', ['L4', 'tubes', -.2], .45], ['bloop', ['L4', 'pouring', -.25], .4], ['bloop', ['L4', 'pouring', .15], .35],
+    ['whoosh', ['L5', 'moons', -.4], .45], ['hum', ['L5', 'black', -.2], .4], ['whoosh', ['L5', 'spear', -.35], .55],
+    ['boom', ['L6', 'fight', -.05], .7], ['gasp', ['L6', 'fight', .2], .35], ['clang', ['L7', 'smashed', -.05], .6], ['clang', ['L7', 'other', -.05], .5], ['boom', ['L7', 'rooftops'], .55],
+    ['fire', ['L8', 'fell', -.1], .6], ['fire', ['L8', 'burning', -.1], .5], ['boom', ['L8', 'vanished'], .4], ['smoke', ['L8', 'smoke', -.2], .55],
+    ['fold', ['L9', 'hans', -.25], .45], ['carve', ['L9', 'carved', -.1], .6], ['fold', ['L9', 'exactly', -.2], .4], ['press', ['L9', 'printed', -.3], .7], ['paper', ['L9', 'whole', -.3], .55], ['whoosh', ['L9', '$end', .1], .3],
+    ['whoosh', ['L10', 'five', -.2], .4], ['fold', ['L10', 'later', .15], .5], ['hum', ['L10', 'black', -.3], .5], ['bloop', ['L10', 'filled', -.1], .4], ['paper', ['L10', 'basel', -.3], .4],
+    ['fold', ['L11', 'scientists', -.2], .4], ['ice', ['L11', 'ice', -.2], .5], ['ice', ['L11', 'bending'], .35],
+    ['wind', ['L12', null, -.1], .35], ['heart', ['L12', 'who', -.1], .65], ['hum', ['L12', 'who', -.3], .5], ['whisper', ['L12', 'up', .2], .4],
+    ['whoosh', ['L13', 'tomorrow', -.1], .45], ['fold', ['L13', 'tomorrow', .3], .4], ['bell', ['L13', 'look', .05], .45],
+  ],
+};

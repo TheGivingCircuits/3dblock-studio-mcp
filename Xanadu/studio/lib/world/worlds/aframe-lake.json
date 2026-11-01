@@ -1,0 +1,317 @@
+{
+ "name": "aframe-lake",
+ "biome": "woods",
+ "seed": 8,
+ "size": [
+  180,
+  180
+ ],
+ "sky": {
+  "time": "19:50",
+  "date": "1980-06-13",
+  "place": "maine",
+  "weather": "clear"
+ },
+ "atmosphere": {
+  "haze": 0.012,
+  "color": "#8a9a8a"
+ },
+ "pieces": [
+  {
+   "uid": "ground-1",
+   "type": "ground",
+   "rect": [
+    -90,
+    90,
+    -90,
+    90
+   ],
+   "tex": "mud"
+  },
+  {
+   "uid": "ground-2",
+   "type": "ground",
+   "rect": [
+    -17,
+    17,
+    -17,
+    21
+   ],
+   "tex": "grass",
+   "y": 0.004
+  },
+  {
+   "uid": "house-1",
+   "type": "house",
+   "preset": "a-frame",
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "ry": 0,
+   "paint": "tan",
+   "seed": 625192
+  },
+  {
+   "uid": "street-1",
+   "type": "street",
+   "kind": "dirt",
+   "from": [
+    -0.5,
+    6.5
+   ],
+   "to": [
+    -3.1,
+    70
+   ],
+   "seed": 8
+  },
+  {
+   "uid": "sets-1",
+   "type": "sets",
+   "fn": "woods",
+   "rect": [
+    -90,
+    90,
+    -90,
+    -17
+   ],
+   "n": 188,
+   "seed": -172
+  },
+  {
+   "uid": "sets-2",
+   "type": "sets",
+   "fn": "woods",
+   "rect": [
+    -90,
+    90,
+    21,
+    90
+   ],
+   "n": 177,
+   "seed": -61
+  },
+  {
+   "uid": "sets-3",
+   "type": "sets",
+   "fn": "woods",
+   "rect": [
+    -90,
+    -17,
+    -17,
+    21
+   ],
+   "n": 40,
+   "seed": -99
+  },
+  {
+   "uid": "sets-4",
+   "type": "sets",
+   "fn": "woods",
+   "rect": [
+    17,
+    90,
+    -17,
+    21
+   ],
+   "n": 40,
+   "seed": 8
+  },
+  {
+   "uid": "tree-1",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    9,
+    5
+   ],
+   "h": 9,
+   "seed": 13
+  },
+  {
+   "uid": "tire-swing-1",
+   "type": "tire-swing",
+   "at": [
+    9.8,
+    4.1,
+    5.2
+   ]
+  },
+  {
+   "uid": "firepit-1",
+   "type": "firepit",
+   "at": [
+    -6,
+    7
+   ]
+  },
+  {
+   "uid": "item-1",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -4.2,
+    0,
+    7
+   ],
+   "ry": -1.571,
+   "color": "#3a5a9a"
+  },
+  {
+   "uid": "item-2",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -6.91,
+    0,
+    8.55
+   ],
+   "ry": -3.671,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "item-3",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -6.88,
+    0,
+    5.43
+   ],
+   "ry": -5.771,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "house-2",
+   "type": "house",
+   "preset": "shed",
+   "at": [
+    -8,
+    0,
+    -6
+   ],
+   "ry": 0.4,
+   "paint": "barn",
+   "seed": 17
+  },
+  {
+   "uid": "item-4",
+   "type": "item",
+   "id": "picnic-table",
+   "at": [
+    6,
+    0,
+    -5
+   ],
+   "ry": 0.3
+  },
+  {
+   "uid": "light-1",
+   "type": "light",
+   "kind": "lantern",
+   "at": [
+    1.4,
+    2.3,
+    3.7
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "clothesline-1",
+   "type": "clothesline",
+   "from": [
+    7,
+    1.9,
+    -9
+   ],
+   "to": [
+    12,
+    1.9,
+    -7
+   ]
+  },
+  {
+   "uid": "tree-2",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    8.67,
+    -7.1
+   ],
+   "h": 0.55,
+   "seed": 48
+  },
+  {
+   "uid": "tree-3",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    -11.96,
+    0.39
+   ],
+   "h": 0.34,
+   "seed": 49
+  },
+  {
+   "uid": "tree-4",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    1.89,
+    -7.61
+   ],
+   "h": 0.38,
+   "seed": 50
+  },
+  {
+   "uid": "tree-5",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    12.37,
+    5.26
+   ],
+   "h": 0.35,
+   "seed": 51
+  },
+  {
+   "uid": "tree-6",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    -10.12,
+    -12.53
+   ],
+   "h": 0.58,
+   "seed": 52
+  },
+  {
+   "uid": "tree-7",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    -1.52,
+    6.87
+   ],
+   "h": 0.69,
+   "seed": 53
+  },
+  {
+   "uid": "tree-8",
+   "type": "tree",
+   "kind": "rock",
+   "at": [
+    -12.52,
+    -1.25
+   ],
+   "h": 0.48,
+   "seed": 54
+  }
+ ],
+ "saved": "2026-10-26",
+ "opts": {
+  "house": "a-frame"
+ }
+}

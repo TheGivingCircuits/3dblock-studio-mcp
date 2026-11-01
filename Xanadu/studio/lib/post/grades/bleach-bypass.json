@@ -1,0 +1,28 @@
+{
+ "name": "bleach-bypass",
+ "note": "Silver retained: low saturation, hard contrast, bright gritty highlights. From PS1.GRADES.bleach.",
+ "lift": [
+  -0.025,
+  -0.025,
+  -0.025
+ ],
+ "gamma": 1.04,
+ "gain": [
+  1.0,
+  0.98,
+  0.9
+ ],
+ "sat": 0.45,
+ "contrast": 1.42,
+ "temp": 0.1,
+ "print": 0.55,
+ "vibrancy": 0.3,
+ "film": {
+  "grain": 1.2,
+  "halation": 0.15,
+  "bloom": 0.25,
+  "rolloff": 0.72,
+  "vignette": 1.1,
+  "fringe": 0.8
+ }
+}

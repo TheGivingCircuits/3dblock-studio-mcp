@@ -1,0 +1,3 @@
+{ "name": "70s-texas-sun", "note": "Hot, dusty 1970s Texas daylight on 16mm: warm gain, lifted amber blacks, soft print curve, coarse grain and strong halation. From PS1.GRADES.golden.",
+  "lift": [0.03, 0.01, -0.03], "gamma": 1.0, "gain": [1.08, 0.97, 0.8], "sat": 1.05, "contrast": 1.06, "temp": 0.35, "print": 0.35, "vibrancy": 0.55,
+  "film": { "stock": "16mm", "grain": 1.0, "halation": 0.4, "bloom": 0.3, "rolloff": 0.85, "weave": 0.5, "flicker": 0.15, "dust": 0.3, "leaks": 0.05, "vignette": 1.2, "fringe": 1.0 } }

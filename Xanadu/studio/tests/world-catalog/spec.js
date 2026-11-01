@@ -1,0 +1,1 @@
+(typeof window !== 'undefined' ? window : globalThis).SPEC = { meta: { series: 'Studio Tests', n: 7, title: 'World Catalog', cut: null, year: null }, size: [1080, 1920], crf: 18, lines: [], tail: 0, sfx: {}, cues: [] };

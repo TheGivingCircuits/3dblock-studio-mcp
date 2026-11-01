@@ -1,0 +1,263 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tech: The PS3</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="/notebook/lib.js"></script>
+<script>
+// Real launch-era photos as glossy prints that pop up off a piano-black floor along a 2005 -> 2010 timeline,
+// under a flowing light-ribbon sky. Loop contract: the frame at t=0 equals the frame at t=END (home hero shot + title).
+const { P, lerp, eo, eio, back, clamp, rng, at, st, en } = NB;
+const W = 1080, H = 1920, TAU = Math.PI * 2;
+const FONT = '"Avenir Next", "Helvetica Neue", Arial, sans-serif', COND = '"DIN Condensed", "Avenir Next Condensed", "Arial Narrow", sans-serif';
+const BLUE = '#57b1ff', ORANGE = '#ff8a1c', RED = '#ff3b3b', GOLD = '#ffd25a';
+const cnv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const texOf = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; };
+const load = f => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('missing ' + f)); im.src = '/tech/ps3/photos/' + f; });
+const END = () => NB.TL.end;
+
+// ---------- renderer, sky, floor ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.outputEncoding = THREE.sRGBEncoding; renderer.autoClear = false; (document.body || document.documentElement).appendChild(renderer.domElement);
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(32, W / H, .1, 200); camera.up.set(0, 0, 1);
+// the sky: a dark gradient with flowing ribbons of light (all motion is periodic over the video length, so it loops)
+const skyMat = new THREE.ShaderMaterial({ depthTest: false, depthWrite: false,
+  uniforms: { uPh: { value: 0 }, uA: { value: new THREE.Color('#2a5ca8') }, uB: { value: new THREE.Color('#040914') }, uDay: { value: 0 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }',
+  fragmentShader: `varying vec2 vUv; uniform float uPh, uDay; uniform vec3 uA, uB;
+    float band(vec2 p, float y0, float f1, float f2, float k, float ph, float th) {
+      float y = y0 + .05 * sin(p.x * f1 + uPh * k + ph) + .022 * sin(p.x * f2 - uPh * (k + 1.) + ph * 2.);
+      return smoothstep(th, 0., abs(p.y - y)); }
+    void main() {
+      vec2 p = vUv; vec3 top = mix(uA, vec3(1., .86, .6), uDay * .55);
+      vec3 col = mix(uB, top, smoothstep(.2, 1.05, p.y));
+      float w = 0.;
+      for (int i = 0; i < 7; i++) { float fi = float(i); w += band(p, .7 + fi * .007, 2.1 + fi * .33, 5.3 + fi * .21, 1. + mod(fi, 3.), fi * 1.3, .003 + fi * .003) * (.6 - fi * .07); }
+      float sheet = smoothstep(.09, 0., abs(p.y - (.69 + .045 * sin(p.x * 2.3 + uPh)))) * .22;
+      col += vec3(.85, .93, 1.) * (w * .5 + sheet);
+      col *= 1. - .38 * length((p - vec2(.5, .62)) * vec2(1.1, .9));
+      gl_FragColor = vec4(col, 1.); }` });
+const skyScene = new THREE.Scene(), skyCam = new THREE.Camera(); skyScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), skyMat));
+const grad = (stops, w = 4, h = 512) => { const c = cnv(w, h), g = c.getContext('2d'), gr = g.createLinearGradient(0, h, 0, 0); stops.forEach(([o, col]) => gr.addColorStop(o, col)); g.fillStyle = gr; g.fillRect(0, 0, w, h); return new THREE.CanvasTexture(c); };
+// piano-black floor: dark glass that the reflections show through, fading into the sky far away
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 60), new THREE.MeshBasicMaterial({ color: '#05070b', transparent: true, opacity: .72, depthWrite: false, alphaMap: grad([[0, '#fff'], [.5, '#fff'], [.72, '#000'], [1, '#000']]) }));
+floor.position.set(30, 12, 0); floor.renderOrder = 1; scene.add(floor);
+// the timeline: a glowing rail with ticks, and the years lying on the floor
+const rail = (() => { const c = cnv(256, 64), g = c.getContext('2d'); g.fillStyle = 'rgba(87,177,255,.25)'; g.fillRect(0, 24, 256, 16); g.fillStyle = '#bfe0ff'; g.fillRect(0, 30, 256, 4); g.fillRect(0, 14, 4, 36);
+  const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.repeat.x = 80; const m = new THREE.Mesh(new THREE.PlaneGeometry(80, .5), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  m.position.set(28, -2.3, .01); m.renderOrder = 3; scene.add(m); return m; })();
+const floorLabel = (s, x, sub) => { const c = cnv(1024, 256), g = c.getContext('2d'); g.textAlign = 'left'; g.textBaseline = 'middle'; g.shadowColor = BLUE; g.shadowBlur = 24; g.fillStyle = '#e8f3ff'; g.font = `bold 150px ${COND}`; g.fillText(s, 20, 120);
+  if (sub) { g.font = `600 52px ${FONT}`; g.fillStyle = 'rgba(200,225,255,.8)'; g.fillText(sub, 26, 218); }
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(4, 1), new THREE.MeshBasicMaterial({ map: texOf(c), transparent: true, depthWrite: false, opacity: .9 })); m.position.set(x + 2, -3.2, .012); m.renderOrder = 3; scene.add(m); };
+floorLabel('2005', 4.6, 'the promise'); floorLabel('MAY 2006', 19.6, 'E3'); floorLabel('NOV 2006', 29.4, 'launch'); floorLabel('THE COST', 41.2); floorLabel('2010', 50.2, 'the afterlife');
+
+// ---------- prints: real photos on glossy paper with a camera date stamp and the credit ----------
+const fade = grad([[0, '#fff'], [.5, '#000'], [1, '#000']], 4, 256);
+function printCanvas(img, date, credit) {
+  const CW = 1600, b = 34, foot = 64, pw = CW - 2 * b, ph = Math.round(pw * img.height / img.width), CH = ph + b + foot, c = cnv(CW, CH), g = c.getContext('2d');
+  g.fillStyle = '#f3f3ee'; g.fillRect(0, 0, CW, CH); g.drawImage(img, b, b, pw, ph); g.strokeStyle = 'rgba(0,0,0,.3)'; g.lineWidth = 2; g.strokeRect(b, b, pw, ph);
+  if (date) { g.font = `bold 72px ${COND}`; g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.shadowColor = 'rgba(255,110,0,.95)'; g.shadowBlur = 16; g.fillStyle = ORANGE; g.fillText(date, b + pw - 32, b + ph - 28); g.shadowBlur = 0; }
+  g.font = `500 27px ${FONT}`; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillStyle = '#5d5d5d'; g.fillText(credit, b + 4, CH - 21);
+  const gl = g.createLinearGradient(0, 0, CW, CH); gl.addColorStop(0, 'rgba(255,255,255,.2)'); gl.addColorStop(.32, 'rgba(255,255,255,0)'); gl.addColorStop(.75, 'rgba(255,255,255,0)'); gl.addColorStop(1, 'rgba(255,255,255,.1)'); g.fillStyle = gl; g.fillRect(0, 0, CW, CH);
+  return c;
+}
+// a stand-up that hinges off the floor (fold 0 = lying flat and hidden, 1 = standing), with a mirror image under the glass
+function standee(src, w, x, y, yaw = 0, alpha = false) {
+  const tex = texOf(src), h = w * src.height / src.width, geo = new THREE.PlaneGeometry(w, h);
+  const mk = () => { const p = new THREE.Group(); p.rotation.order = 'ZXY'; p.position.set(x, y, .004); p.rotation.z = yaw; return p; };
+  const pivot = mk(), m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: alpha, alphaTest: alpha ? .5 : 0, side: THREE.DoubleSide })); m.position.y = h / 2; pivot.add(m); scene.add(pivot);
+  const mirror = new THREE.Group(), rpiv = mk(), rm = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, alphaMap: fade, transparent: true, opacity: .42, side: THREE.DoubleSide, depthWrite: false })); rm.position.y = h / 2; rpiv.add(rm); mirror.add(rpiv); mirror.scale.z = -1; scene.add(mirror);
+  const s = { pivot, m, rpiv, mirror, w, h, x, y, set(f, lift = 0) { pivot.rotation.x = rpiv.rotation.x = Math.PI / 2 * f; pivot.visible = mirror.visible = f > .015; pivot.position.z = rpiv.position.z = .004 + lift; } };
+  s.set(0); return s;
+}
+const PR = [   // key, file, x, y, width, yaw, camera date stamp, credit, pops on [line, word, offset]
+  ['tgs', 'tgs-2005.jpg', 7, 0, 4.4, .05, "'05 9 18", 'Photo: drdemento · CC BY 2.0 · Wikimedia Commons', ['L1', 'promised', -.3]],
+  ['e305', 'e3-2005.jpg', 11.0, .5, 3.8, -.06, "'05 5 20", 'Photo: Samm · CC BY-SA 2.0 · Wikimedia Commons', ['L2', 'controller', -.3]],
+  ['boom', 'boomerang.jpg', 12.9, -1.2, 2.6, .1, "'06 1 7", 'Photo: Elisabeth R · CC BY-SA 2.0', ['L2', 'boomerang', -.15]],
+  ['cell', 'cell-chip.jpg', 17, 0, 4.6, -.04, null, 'Photo: Greenpro · CC BY-SA 3.0 · Wikimedia Commons', ['L3', 'chip', -.25]],
+  ['hall', 'e3-2006-hall.jpg', 22.5, 0, 4.6, .05, "'06 5 10", 'Photo: Barry Mulling · CC BY-SA 2.0 · Wikimedia Commons', ['L4', 'e3', -.3]],
+  ['units', 'e3-2006-units.jpg', 25.6, .9, 3.8, -.07, "'06 5 12", 'Photo: Ville Miettinen · CC BY 2.0 · Wikimedia Commons', ['L5', 'five', -.2]],
+  ['line', 'launch-line.jpg', 32, 0, 4.6, .04, "'06 11 16", 'Photo: Royalbroil · CC BY-SA 2.5 · Wikimedia Commons', ['L6', 'lined', -.25]],
+  ['syd', 'sydney-midnight.jpg', 35.8, .8, 3.8, -.07, "'07 3 22", 'Photo: Charlie Brewer · CC BY-SA 2.0 · Wikimedia Commons', ['L8', 'launch', -.2]],
+  ['ship', 'ready-to-ship.jpg', 37.7, -1.1, 3.0, .1, "'06 9 23", 'Photo: joka2000 · CC BY 2.0 · Wikimedia Commons', ['L8', 'resold', -.2]],
+  ['condor', 'condor-cluster.png', 53, .4, 4.2, 0, "'10", 'Photo: U.S. Air Force · Public domain', ['L11', 'air', -.25]],
+];
+const ST = {}; let hero, hero2, receipt, printer, wall, leds, racks = [];
+const HOME = [[.3, -16.6, 4.3], [0, 0, 1.45]];
+
+// ---------- HUD ----------
+const hud = cnv(W, H), hg = hud.getContext('2d'), hudTex = texOf(hud);
+const hudScene = new THREE.Scene(), hudCam = new THREE.OrthographicCamera(-.5, .5, .5, -.5, 0, 1);
+hudScene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: hudTex, transparent: true, depthTest: false })));
+function chrome(s, size, tint = '#ffffff', font = COND, glow = BLUE) {
+  const c0 = cnv(10, 10).getContext('2d'); c0.font = `bold ${size}px ${font}`; const tw = Math.ceil(c0.measureText(s).width) + size, c = cnv(tw, Math.ceil(size * 1.5)), g = c.getContext('2d');
+  g.font = `bold ${size}px ${font}`; g.textAlign = 'center'; g.textBaseline = 'middle'; const cx = tw / 2, cy = size * .78;
+  g.shadowColor = glow; g.shadowBlur = size * .25; g.lineJoin = 'round'; g.lineWidth = size * .07; g.strokeStyle = '#060a12'; g.strokeText(s, cx, cy); g.shadowBlur = 0;
+  const gr = g.createLinearGradient(0, cy - size * .45, 0, cy + size * .45); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.46, tint); gr.addColorStop(.5, '#5d6676'); gr.addColorStop(.78, tint); gr.addColorStop(1, '#ffffff'); g.fillStyle = gr; g.fillText(s, cx, cy); return c;
+}
+const BIGS = {}; const big = (k, s, size, tint, glow) => BIGS[k] || (BIGS[k] = chrome(s, size, tint, COND, glow));
+function drawBig(c, x, y, a = 1, sc = 1, rot = 0) { if (a <= 0) return; hg.save(); hg.globalAlpha = clamp(a); hg.translate(x, y); hg.rotate(rot); hg.scale(sc, sc); hg.drawImage(c, -c.width / 2, -c.height / 2); hg.restore(); hg.globalAlpha = 1; }
+const DIG = Array.from({ length: 10 }, (_, d) => chrome(String(d), 250, '#dfe6f0'));
+function slotDigit(x, y, v) {   // a rolling counter wheel showing value v (fractional = between digits)
+  const d0 = ((Math.floor(v) % 10) + 10) % 10, f = v - Math.floor(v), ch = DIG[0].height * .62; hg.save(); hg.beginPath(); hg.rect(x - 90, y - ch / 2, 180, ch); hg.clip();
+  for (const [d, off] of [[d0, -f], [(d0 + 1) % 10, 1 - f]]) hg.drawImage(DIG[d], x - DIG[d].width / 2, y - DIG[d].height / 2 - off * ch); hg.restore(); }
+const STAMP = (() => { const c = cnv(900, 300), g = c.getContext('2d'), r = rng(9); g.translate(450, 150); g.strokeStyle = RED; g.fillStyle = RED; g.lineWidth = 14; g.strokeRect(-420, -120, 840, 240); g.lineWidth = 5; g.strokeRect(-396, -96, 792, 192);
+  g.font = `bold 150px ${COND}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('SOLD AT A LOSS', 0, 12); g.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 900; i++) { g.beginPath(); g.arc((r() - .5) * 860, (r() - .5) * 260, r() * 4 + .5, 0, TAU); g.fill(); } return c; })();
+let CHUNKS = null;
+function buildChunks() { CHUNKS = []; for (const l of Object.values(NB.TL.lines)) { let cur = []; const ws = l.words.filter(w => !/^\[/.test(w.w)); ws.forEach((w, i) => { cur.push({ ...w, s: l.start + w.s, e: l.start + w.e }); if (/[.,!?…]$/.test(w.w) || cur.length >= 3 || i === ws.length - 1) { CHUNKS.push(cur); cur = []; } }); }
+  CHUNKS.forEach((c, i) => { c.t0 = c[0].s - .05; c.t1 = CHUNKS[i + 1] ? Math.min(CHUNKS[i + 1][0].s - .05, c.at(-1).e + .55) : c.at(-1).e + .5; }); }
+function captions(t) {
+  if (!CHUNKS) buildChunks(); const c = CHUNKS.find(c => t >= c.t0 && t < c.t1); if (!c) return;
+  const y = 1490, a = Math.min(1, (t - c.t0) / .08, (c.t1 - t) / .1), pop = 1 + .06 * (1 - eo(clamp((t - c.t0) / .15)));
+  hg.save(); hg.globalAlpha = clamp(a); hg.translate(W / 2, y); hg.scale(pop, pop);
+  hg.font = `bold 68px ${FONT}`; hg.textBaseline = 'middle'; const ws = c.map(w => w.w), wd = ws.map(w => hg.measureText(w).width), gap = 20, tw = wd.reduce((x, y) => x + y, 0) + gap * (ws.length - 1), bw = tw + 90, bh = 112;
+  const rr = (x, y, w, h, r) => { hg.beginPath(); hg.moveTo(x + r, y); hg.arcTo(x + w, y, x + w, y + h, r); hg.arcTo(x + w, y + h, x, y + h, r); hg.arcTo(x, y + h, x, y, r); hg.arcTo(x, y, x + w, y, r); hg.closePath(); };
+  rr(-bw / 2, -bh / 2, bw, bh, bh / 2); hg.fillStyle = 'rgba(8,12,20,.78)'; hg.fill(); hg.lineWidth = 2.5; hg.strokeStyle = 'rgba(140,200,255,.55)'; hg.stroke();
+  const gl = hg.createLinearGradient(0, -bh / 2, 0, 0); gl.addColorStop(0, 'rgba(255,255,255,.22)'); gl.addColorStop(1, 'rgba(255,255,255,0)'); rr(-bw / 2 + 6, -bh / 2 + 5, bw - 12, bh / 2 - 6, bh / 2 - 8); hg.fillStyle = gl; hg.fill();
+  let x = -tw / 2; ws.forEach((w, i) => { const now = t >= c[i].s && t < (c[i + 1] ? c[i + 1].s : c.t1); hg.fillStyle = now ? BLUE : '#ffffff'; hg.shadowColor = now ? BLUE : 'transparent'; hg.shadowBlur = now ? 18 : 0; hg.textAlign = 'left'; hg.fillText(w, x, 2); x += wd[i] + gap; });
+  hg.restore();
+}
+const VIG = (() => { const c = cnv(W, H), g = c.getContext('2d'), v = g.createRadialGradient(W / 2, H * .48, H * .3, W / 2, H * .48, H * .78); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = v; g.fillRect(0, 0, W, H); return c; })();
+const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+function hudDraw(t) {
+  hg.clearRect(0, 0, W, H);
+  // title (same at the first and the last frame)
+  const ta = Math.max(1 - P(t, .25, .6), P(t, at('L12', 'promise') + .3, .8));
+  if (ta > 0) { drawBig(big('t1', "SONY'S", 92, '#dfe6f0'), W / 2, 300, ta); drawBig(big('t2', '$599 GAMBLE', 200, '#e4ecf7'), W / 2, 450, ta); }
+  // $599: the first wheel lands on 5 at "five", the last two spin to 99 at "ninety-nine"
+  const s0 = at('L5', 'five') - .15, s1 = at('L5', 'ninety') - .1, sOut = at('L6', 'stunned');
+  if (t > s0 && t < at('L6', 'and')) {
+    const a = P(t, s0, .2) * (1 - P(t, sOut + .25, .5)), drop = eio(P(t, sOut, .8)) * 260, punch = 1 + .14 * Math.exp(-Math.max(0, t - at('L5', 'dollars')) * 9) * (t > at('L5', 'dollars') ? 1 : 0);
+    hg.save(); hg.globalAlpha = a; hg.translate(W / 2, 470 + drop); hg.rotate(eio(P(t, sOut, .8)) * .12); hg.scale(punch, punch);
+    const dollar = big('dollar', '$', 250, '#dfe6f0'); hg.drawImage(dollar, -250 - dollar.width / 2, -dollar.height / 2);
+    slotDigit(-125, 0, lerp(0, 5, eo(P(t, s0, .6)))); const k = eo(P(t, s1, .9)); slotDigit(0, 0, lerp(0, 39, k)); slotDigit(125, 0, lerp(0, 59, k));
+    hg.restore(); hg.globalAlpha = 1;
+    drawBig(big('usd', 'U.S. DOLLARS', 70, '#dfe6f0'), W / 2, 640 + drop, P(t, at('L5', 'us') - .05, .25) * (1 - P(t, sOut + .25, .5)));
+  }
+  // camping: a camera-style day counter
+  const days = [at('L7', 'camped'), at('L7', 'stores'), at('L7', 'days')];
+  if (t > days[0] - .1 && t < en('L7') + .5) { const n = t > days[2] ? 3 : t > days[1] ? 2 : 1, a = P(t, days[0] - .1, .15) * (1 - P(t, en('L7') + .2, .3)); drawBig(big('day' + n, 'DAY ' + n, 210, '#ffd7a8', ORANGE), W / 2, 420, a, 1 + .1 * Math.exp(-(t - days[n - 1]) * 10)); }
+  // resale prices climbing
+  const r0 = at('L8', 'resold') - .1;
+  if (t > r0 && t < en('L8') + .6) { const v = lerp(599, 2000, eio(P(t, r0, at('L8', 'thousands') + .3 - r0))), a = P(t, r0, .2) * (1 - P(t, en('L8') + .3, .3)); drawBig(chrome(fmt(v) + (v > 1999 ? '+' : ''), 220, '#ffe6a0', COND, GOLD), W / 2, 420, a); drawBig(big('resale', 'RESALE PRICE', 64, '#ffe6a0', GOLD), W / 2, 560, a); }
+  // the stamp and the loss per console
+  const tS = at('L9', 'one') - .04; if (t > tS && t < st('L10') + .5) { const k = P(t, tS, .12); drawBig(STAMP, W / 2, 900, k * (1 - P(t, st('L10') + .2, .3)), lerp(2.2, 1, eo(k)), -.12); }
+  const tL = at('L10', 'per') - .08; if (t > tL && t < en('L10') + .9) { const a = P(t, tL, .15) * (1 - P(t, en('L10') + .5, .35)); drawBig(big('loss', '-$241', 220, '#ffd0d0', RED), 330, 330, a, 1 + .15 * Math.exp(-(t - tL) * 10)); drawBig(big('per', 'PER CONSOLE (EST.)', 50, '#ffd0d0', RED), 330, 470, a); }
+  // 1,760 PS3s
+  const c0 = at('L11', 'seventeen') - .1, c1 = at('L11', 'sixty') + .45;
+  if (t > c0 && t < en('L11') + .6) { const a = P(t, c0, .2) * (1 - P(t, en('L11') + .3, .3)), n = Math.round(1760 * P(t, c0, c1 - c0)); drawBig(chrome(n.toLocaleString('en-US'), 230, '#d8f1ff', COND, '#3cd2ff'), W / 2, 400, a); drawBig(big('ps3s', 'PS3s', 80, '#d8f1ff', '#3cd2ff'), W / 2, 545, a); }
+  // rewind streaks
+  const rw = P(t, at('L12', 'all') - .15, .2) * (1 - P(t, at('L12', 'all') + 1.25, .3));
+  if (rw > 0) { const r = rng(Math.floor(t * 30)); hg.globalAlpha = rw * .5; hg.fillStyle = '#cfe6ff'; for (let i = 0; i < 40; i++) hg.fillRect(r() * W, r() * H, 120 + r() * 380, 2 + r() * 3); hg.globalAlpha = rw; drawBig(big('rw', '◀◀', 110, '#ffffff'), 150, 150, rw); }
+  captions(t);
+  hg.drawImage(VIG, 0, 0);
+}
+
+// ---------- build (after the photos load) ----------
+async function build() {
+  const imgs = {}; await Promise.all([...PR.map(p => p[1]), 'ps3-launch-model.png'].map(async f => { imgs[f] = await load(f); }));
+  for (const [k, f, x, y, w, yaw, date, credit, pop] of PR) ST[k] = Object.assign(standee(printCanvas(imgs[f], date, credit), w, x, y, yaw), { pop });
+  hero = standee(imgs['ps3-launch-model.png'], 5, 0, 0, 0, true); hero.set(1);
+  hero2 = standee(imgs['ps3-launch-model.png'], 4.2, 44.0, 0, 0, true); ST.hero2 = hero2;
+  // the receipt: Sony's estimated cost to build one (iSuppli teardown, 2006)
+  const rc = cnv(400, 1000), g = rc.getContext('2d'); g.fillStyle = '#f7f4ec'; g.fillRect(0, 0, 400, 1000); g.fillStyle = '#1d1d1d'; g.textBaseline = 'alphabetic';
+  const row = (y, l, r, font = `600 25px Menlo, monospace`, col = '#1d1d1d') => { g.font = font; g.fillStyle = col; g.textAlign = 'left'; g.fillText(l, 24, y); if (r) { g.textAlign = 'right'; g.fillText(r, 376, y); } };
+  const dash = y => { g.fillStyle = '#1d1d1d'; for (let x = 24; x < 376; x += 14) g.fillRect(x, y, 8, 2.5); };
+  row(80, '   PLAYSTATION 3', null, `bold 30px Menlo, monospace`); row(118, '   60GB  ·  NOV 2006'); row(160, ' EST. COST TO BUILD'); dash(185);
+  row(235, 'CELL PROCESSOR', '$89'); row(280, 'RSX GRAPHICS', '$129'); row(325, 'BLU-RAY DRIVE', '$125'); row(370, 'EVERYTHING ELSE', '$497'); dash(400);
+  row(450, 'COST', '$840', `bold 30px Menlo, monospace`); row(495, 'PRICE', '$599', `bold 30px Menlo, monospace`); dash(525); dash(533);
+  row(600, 'LOSS', '-$241', `bold 46px Menlo, monospace`, '#c01818'); row(640, 'PER CONSOLE'); dash(680);
+  row(740, ' THANK YOU FOR', null); row(778, ' PLAYING', null); row(900, ' SOURCE: iSUPPLI', null, `500 21px Menlo, monospace`, '#666'); row(930, ' TEARDOWN, 2006', null, `500 21px Menlo, monospace`, '#666');
+  for (let x = 0; x < 400; x += 20) { g.clearRect(x, 0, 10, 8); g.clearRect(x + 10, 992, 10, 8); }
+  const rtex = texOf(rc); rtex.wrapT = THREE.ClampToEdgeWrapping;
+  const rgeo = new THREE.PlaneGeometry(1, 1); rgeo.translate(0, .5, 0);
+  receipt = new THREE.Mesh(rgeo, new THREE.MeshBasicMaterial({ map: rtex, transparent: true, alphaTest: .4, side: THREE.DoubleSide })); const rp = new THREE.Group(); rp.rotation.x = Math.PI / 2 - .1; rp.position.set(46.4, -1.7, .36); rp.add(receipt); scene.add(rp); receipt.userData.grp = rp;
+  printer = new THREE.Mesh(new THREE.BoxGeometry(1.5, .8, .36), new THREE.MeshBasicMaterial({ color: '#1b1f26' })); printer.position.set(46.4, -1.7, .18); scene.add(printer);
+  const slot = new THREE.Mesh(new THREE.PlaneGeometry(1.3, .06), new THREE.MeshBasicMaterial({ color: '#000' })); slot.position.set(0, 0, .181); printer.add(slot);
+  const led = new THREE.Mesh(new THREE.PlaneGeometry(.08, .08), new THREE.MeshBasicMaterial({ color: '#39ff7a' })); led.position.set(.6, -.28, .181); printer.add(led);
+  // 1,760 tiny PS3s racked into a supercomputer behind the real photo: 8 racks x 4 across x 55 shelves
+  const mini = texOf(imgs['ps3-launch-model.png']); mini.repeat.set(.7, 1); mini.offset.set(.3, 0);
+  const mg = new THREE.PlaneGeometry(.15, .085); mg.rotateX(Math.PI / 2);
+  wall = new THREE.InstancedMesh(mg, new THREE.MeshBasicMaterial({ map: mini, transparent: true, alphaTest: .5, side: THREE.DoubleSide }), 1760); wall.userData.slots = [];
+  for (let i = 0; i < 1760; i++) { const sh = Math.floor(i / 32), j = i % 32, rk = Math.floor(j / 4), cl = j % 4; wall.userData.slots.push([53 - 2.95 + rk * .75 + cl * .16 + .1, 3.2, .12 + sh * .1]); }
+  wall.frustumCulled = false; scene.add(wall);
+  const lg = new THREE.PlaneGeometry(.05, .05); lg.rotateX(Math.PI / 2);
+  leds = new THREE.InstancedMesh(lg, new THREE.MeshBasicMaterial({ color: '#46d6ff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 1760); leds.frustumCulled = false; scene.add(leds);
+  const rackTex = (() => { const c = cnv(128, 1024), g = c.getContext('2d'); g.fillStyle = '#14171c'; g.fillRect(0, 0, 128, 1024); g.fillStyle = '#2a2f37'; for (let y = 0; y < 1024; y += 18.6) g.fillRect(0, y, 128, 3); g.fillRect(0, 0, 6, 1024); g.fillRect(122, 0, 6, 1024); return texOf(c); })();
+  const gc = cnv(256, 256), gg = gc.getContext('2d'), rg = gg.createRadialGradient(128, 128, 0, 128, 128, 128); rg.addColorStop(0, 'rgba(70,200,255,.9)'); rg.addColorStop(1, 'rgba(70,200,255,0)'); gg.fillStyle = rg; gg.fillRect(0, 0, 256, 256);
+  const glowGeo = new THREE.PlaneGeometry(10, 9); glowGeo.rotateX(Math.PI / 2); wall.userData.glow = new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(gc), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  wall.userData.glow.position.set(53, 3.6, 3); scene.add(wall.userData.glow);
+  for (let rk = 0; rk < 8; rk++) { const geo = new THREE.PlaneGeometry(.7, 5.6); geo.rotateX(Math.PI / 2); geo.translate(0, 0, 2.8); const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: rackTex })); m.position.set(53 - 2.95 + rk * .75 + .32, 3.32, 0); m.visible = false; scene.add(m); racks.push(m); }
+}
+const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), V = new THREE.Vector3(), S = new THREE.Vector3(), ZERO = new THREE.Vector3(0, 0, 0);
+
+// ---------- camera path ----------
+let SHOTS = null;
+function shots() {
+  const F = (k, d = 15, dx = 0, dz = 0) => { const s = ST[k], cz = s.h * .5; return [[s.x + .25 + dx, s.y - d, cz + 1.1 + d * .07 + dz], [s.x + dx, s.y, cz]]; };
+  return [
+    [0, 1, ...HOME],
+    [at('L1', '2005') - .1, 1.9, ...F('tgs')],
+    [at('L2', 'controller') - .45, .9, ...F('e305', 13.5, .7)],
+    [at('L2', 'boomerang') - .1, .8, ...F('boom', 8.2)],
+    [at('L3', 'chip') - .45, 1.0, ...F('cell')],
+    [at('L3', 'built'), 1.6, ...F('cell', 10.5)],
+    [at('L4', 'then') - .1, 1.5, ...F('hall')],
+    [at('L5', 'five') - .35, .9, ...F('units', 16.5, -.3, 1.0)],
+    [at('L5', 'dollars') - .05, .25, ...F('units', 14, -.3, .7)],
+    [at('L6', 'stunned') - .05, .45, ...F('units', 19.5, -.3, 1.4)],
+    [at('L6', 'and') - .1, 1.6, ...F('line')],
+    [at('L7', 'camped') - .2, 2.8, ...F('line', 9.5, -.3, -.4)],
+    [at('L8', 'launch') - .35, 1.0, ...F('syd', 15.5, 1.0)],
+    [at('L9', 'but') - .1, 1.8, ...F('hero2', 14.5, .9, .3)],
+    [at('L11', 'and') - .1, 1.6, ...F('condor')],
+    [at('L11', 'seventeen') - .2, 2.4, [53.2, -18.5, 7.2], [53, 2.6, 3.0]],
+    [at('L11', 'supercomputer') - .2, 1.0, [53.2, -16.8, 6.5], [53, 2.6, 3.0]],
+    [at('L12', 'all') - .15, 1.6, ...HOME],
+  ];
+}
+const SKY = () => [[0, '#2a5ca8', '#040914'], [at('L4', 'then') - .1, '#6b3fb5', '#0b0616'], [at('L6', 'and') - .1, '#c2661a', '#120902'], [at('L9', 'but') - .1, '#a3222b', '#130304'], [at('L11', 'and') - .1, '#1a93ad', '#021015'], [at('L12', 'all') - .15, '#2a5ca8', '#040914']];
+const cA = new THREE.Color(), cB = new THREE.Color(), tmpC = new THREE.Color();
+
+window.seek = function (t) {
+  if (!SHOTS) SHOTS = shots();
+  const E = END(), ph = TAU * t / E;
+  // camera
+  let cp = SHOTS[0][2].slice(), cl = SHOTS[0][3].slice();
+  for (const [t0, d, p, l] of SHOTS) { const k = eio(P(t, t0, d)); if (k <= 0) break; cp = cp.map((v, i) => lerp(v, p[i], k)); cl = cl.map((v, i) => lerp(v, l[i], k)); }
+  const live = P(t, .4, 1) * (1 - P(t, E - 1.6, 1.2));   // handheld drift, zero at both ends of the loop
+  let shake = 0; for (const hit of [at('L5', 'dollars'), at('L9', 'one'), at('L11', 'supercomputer')]) { const d = t - hit; if (d > 0 && d < .45) shake += Math.exp(-d * 10) * .12; }
+  camera.position.set(cp[0] + Math.sin(ph * 3) * .25 * live + Math.sin(t * 53) * shake, cp[1], cp[2] + Math.sin(ph * 4 + 1) * .12 * live + Math.cos(t * 41) * shake);
+  camera.lookAt(cl[0], cl[1], cl[2]);
+  // sky colour per chapter, plus three day/night flashes while they camp
+  const SK = SKY(); cA.set(SK[0][1]); cB.set(SK[0][2]); for (const [t0, a, b] of SK) { const k = eio(P(t, t0, .9)); if (k <= 0) break; cA.lerp(tmpC.set(a), k); cB.lerp(tmpC.set(b), k); }
+  skyMat.uniforms.uA.value.copy(cA); skyMat.uniforms.uB.value.copy(cB); skyMat.uniforms.uPh.value = ph;
+  skyMat.uniforms.uDay.value = ['camped', 'stores', 'days'].reduce((s, w) => s + Math.exp(-Math.pow((t - at('L7', w) - .15) / .28, 2)), 0);
+  floor.material.color.copy(cB).multiplyScalar(.6);
+  // prints pop up on their word and fold back down as the rewind passes them
+  const camX = camera.position.x, rewinding = t > at('L12', 'all') - .2;
+  const passed = x => rewinding ? clamp((x + 1.5 - camX) / 3) : 0;
+  for (const s of Object.values(ST)) { if (!s.pop) continue; const [id, w, off] = s.pop; s.set(back(P(t, at(id, w) + off, .5)) * (1 - passed(s.x))); }
+  hero2.set(back(P(t, at('L9', 'sony') - .2, .55)) * (1 - passed(hero2.x)));
+  const rOut = passed(46);
+  printer.visible = t > at('L10', 'hundreds') - .5 && rOut < 1; printer.scale.z = Math.max(.01, back(P(t, at('L10', 'hundreds') - .5, .4)) * (1 - rOut));
+  const f = eo(P(t, at('L10', 'hundreds') - .2, at('L10', 'per') - at('L10', 'hundreds') + .1)) * (1 - rOut);
+  receipt.visible = f > .01 && printer.visible; receipt.scale.set(1.15, 2.9 * f, 1); receipt.material.map.repeat.y = Math.max(.001, f); receipt.material.map.offset.y = 1 - f; receipt.userData.grp.position.z = .36 * printer.scale.z;
+  // the supercomputer: consoles fly into the racks shelf by shelf, then the status lights come on
+  const w0 = at('L11', 'seventeen') - .1, w1 = at('L11', 'sixty') + .45, wOut = P(t, at('L12', 'all') - .15, .5), on = t > at('L11', 'supercomputer') - .1 && wOut < 1;
+  racks.forEach(r => { r.visible = t > w0 - .2 && wOut < 1; r.scale.z = clamp(P(t, w0 - .2, .4)) * (1 - wOut) || .001; });
+  const sl = wall.userData.slots;
+  for (let i = 0; i < 1760; i++) { const ti = lerp(w0, w1, i / 1760), k = eo(P(t, ti, .35)) * (1 - eio(clamp(wOut * 1.6 - (i % 97) / 160))), [x, y, z] = sl[i];
+    V.set(x, lerp(y - 9, y, k), lerp(z + 2.5, z, k)); S.setScalar(k > .001 ? 1 : 0); M4.compose(V, Q, S); wall.setMatrixAt(i, M4);
+    const blink = on && ((i * 7919 + Math.floor(t * 9) * 104729) % 13) > 3; V.set(x + .05, y - .01, z + .02); S.setScalar(blink && k > .99 ? 1 : 0); M4.compose(V, Q, S); leds.setMatrixAt(i, M4); }
+  wall.instanceMatrix.needsUpdate = true; leds.instanceMatrix.needsUpdate = true;
+  const gl = wall.userData.glow; gl.material.opacity = P(t, at('L11', 'supercomputer') - .1, .3) * (1 - wOut) * (.8 + .2 * Math.sin(t * 13)); gl.visible = gl.material.opacity > .005;
+  ST.condor.m.material.color.setScalar(1 + (on ? .25 * (.5 + .5 * Math.sin(t * 20)) : 0));
+  // draw: sky, then the 3D set, then the HUD
+  renderer.setClearColor('#000'); renderer.clear(); renderer.render(skyScene, skyCam); renderer.clearDepth(); renderer.render(scene, camera);
+  hudDraw(t); hudTex.needsUpdate = true; renderer.clearDepth(); renderer.render(hudScene, hudCam);
+  return true;
+};
+window.setTL = tl => { NB.TL = tl; CHUNKS = null; SHOTS = null; return true; };
+Promise.all([document.fonts.load(`bold 100px ${COND}`), document.fonts.load(`bold 60px ${FONT}`), build()]).then(() => { window.ready = true; }).catch(e => { document.title = 'ERR ' + e.message; throw e; });
+</script>

@@ -1,0 +1,3 @@
+{ "name": "90s-teen-horror", "note": "Late-90s glossy teen horror on 35mm: clean bright suburban days, cool blue nights with warm lamps, saturated but polished, fine grain, little halation.",
+  "lift": [0.0, 0.0, 0.02], "gamma": 1.0, "gain": [1.02, 1.0, 0.97], "sat": 1.08, "contrast": 1.1, "temp": 0.02, "print": 0.3, "vibrancy": 0.6,
+  "film": { "stock": "35mm", "grain": 0.5, "halation": 0.18, "bloom": 0.25, "rolloff": 0.86, "weave": 0.1, "flicker": 0.03, "dust": 0.05, "leaks": 0.0, "vignette": 0.9, "fringe": 0.6 } }

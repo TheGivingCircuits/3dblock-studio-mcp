@@ -1,0 +1,1535 @@
+{
+ "name": "maple-street",
+ "biome": "suburb",
+ "seed": 4,
+ "size": [
+  119,
+  150
+ ],
+ "sky": {
+  "time": "17:40",
+  "date": "1984-10-12",
+  "place": "illinois",
+  "weather": "clear"
+ },
+ "atmosphere": {
+  "haze": 0.004,
+  "color": "#c8c0b0"
+ },
+ "pieces": [
+  {
+   "uid": "ground-1",
+   "type": "ground",
+   "rect": [
+    -79.5,
+    79.5,
+    -75,
+    75
+   ],
+   "tex": "lawn"
+  },
+  {
+   "uid": "street-1",
+   "type": "street",
+   "kind": "suburb",
+   "from": [
+    -69.5,
+    0
+   ],
+   "to": [
+    69.5,
+    0
+   ],
+   "seed": 4
+  },
+  {
+   "uid": "house-1",
+   "type": "house",
+   "preset": "big-house",
+   "at": [
+    -38,
+    0,
+    -20.93
+   ],
+   "ry": 0,
+   "paint": "sage",
+   "seed": 81841,
+   "garageO": {
+    "drive": 12.47,
+    "w": 6.2
+   }
+  },
+  {
+   "uid": "item-1",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    -45.9,
+    0,
+    -4.36
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "item-2",
+   "type": "item",
+   "id": "trash-bin",
+   "at": [
+    -49.4,
+    0,
+    -7.36
+   ],
+   "ry": -0.127,
+   "physics": false
+  },
+  {
+   "uid": "tree-1",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -31.62,
+    -11.1
+   ],
+   "h": 6.11,
+   "seed": 81841
+  },
+  {
+   "uid": "tree-2",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -37.57,
+    -36.44
+   ],
+   "h": 7.69,
+   "seed": 81851
+  },
+  {
+   "uid": "tree-3",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -31.54,
+    -35.97
+   ],
+   "h": 7.89,
+   "seed": 81852
+  },
+  {
+   "uid": "tree-4",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -41.46,
+    -36.42
+   ],
+   "h": 8.11,
+   "seed": 81853
+  },
+  {
+   "uid": "fence-1",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     -47.2,
+     -20.93
+    ],
+    [
+     -47.2,
+     -39.43
+    ],
+    [
+     -28.8,
+     -39.43
+    ],
+    [
+     -28.8,
+     -20.93
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 81841
+  },
+  {
+   "uid": "swing-set-1",
+   "type": "swing-set",
+   "at": [
+    -38.07,
+    0,
+    -31.43
+   ],
+   "ry": 0.324
+  },
+  {
+   "uid": "item-3",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -39,
+    0,
+    -28.83
+   ],
+   "ry": 3.326,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "item-4",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -37.9,
+    0,
+    -28.83
+   ],
+   "ry": 3.039,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "item-5",
+   "type": "item",
+   "id": "doghouse",
+   "at": [
+    -30.3,
+    0,
+    -37.43
+   ],
+   "ry": 3.142,
+   "color": "#5a6a8a"
+  },
+  {
+   "uid": "item-6",
+   "type": "item",
+   "id": "basketball-hoop",
+   "at": [
+    -44.6,
+    0,
+    -12.23
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "item-7",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    -44.4,
+    0,
+    -13.73
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "house-2",
+   "type": "house",
+   "preset": "big-house",
+   "at": [
+    -19,
+    0,
+    -22.1
+   ],
+   "ry": 0,
+   "paint": "butter",
+   "seed": 186181,
+   "garageO": {
+    "drive": 13.64,
+    "w": 6.2
+   }
+  },
+  {
+   "uid": "item-8",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    -26.9,
+    0,
+    -4.36
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "tree-5",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -12.47,
+    -11.47
+   ],
+   "h": 5.01,
+   "seed": 186181
+  },
+  {
+   "uid": "tree-6",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -16.19,
+    -10.94
+   ],
+   "h": 6.67,
+   "seed": 186182
+  },
+  {
+   "uid": "tree-7",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -14.99,
+    -38.38
+   ],
+   "h": 7.86,
+   "seed": 186191
+  },
+  {
+   "uid": "tree-8",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -22.91,
+    -38.09
+   ],
+   "h": 9.15,
+   "seed": 186192
+  },
+  {
+   "uid": "fence-2",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     -28.2,
+     -22.1
+    ],
+    [
+     -28.2,
+     -40.6
+    ],
+    [
+     -9.8,
+     -40.6
+    ],
+    [
+     -9.8,
+     -22.1
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 186181
+  },
+  {
+   "uid": "item-9",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    -25.4,
+    0,
+    -14.9
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "house-3",
+   "type": "house",
+   "preset": "big-house",
+   "at": [
+    0,
+    0,
+    -21.81
+   ],
+   "ry": 0,
+   "paint": "sage",
+   "seed": 984934,
+   "garageO": {
+    "drive": 13.35,
+    "w": 6.2
+   }
+  },
+  {
+   "uid": "item-10",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    -7.9,
+    0,
+    -4.36
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "item-11",
+   "type": "item",
+   "id": "recycling-bin",
+   "at": [
+    -11.4,
+    0,
+    -7.36
+   ],
+   "ry": 0.13,
+   "physics": false
+  },
+  {
+   "uid": "tree-9",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    5.16,
+    -9.58
+   ],
+   "h": 5.34,
+   "seed": 984934
+  },
+  {
+   "uid": "tree-10",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    1.23,
+    -11.36
+   ],
+   "h": 7.81,
+   "seed": 984935
+  },
+  {
+   "uid": "tree-11",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -1.76,
+    -37.47
+   ],
+   "h": 9.64,
+   "seed": 984944
+  },
+  {
+   "uid": "tree-12",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    3.45,
+    -37.59
+   ],
+   "h": 9.45,
+   "seed": 984945
+  },
+  {
+   "uid": "fence-3",
+   "type": "fence",
+   "fence": "chainlink",
+   "path": [
+    [
+     -9.2,
+     -21.81
+    ],
+    [
+     -9.2,
+     -40.31
+    ],
+    [
+     9.2,
+     -40.31
+    ],
+    [
+     9.2,
+     -21.81
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 984934
+  },
+  {
+   "uid": "swing-set-2",
+   "type": "swing-set",
+   "at": [
+    0.81,
+    0,
+    -32.31
+   ],
+   "ry": 0.508
+  },
+  {
+   "uid": "item-12",
+   "type": "item",
+   "id": "grill",
+   "at": [
+    4.2,
+    0,
+    -28.01
+   ],
+   "ry": 1.69
+  },
+  {
+   "uid": "item-13",
+   "type": "item",
+   "id": "basketball-hoop",
+   "at": [
+    -6.6,
+    0,
+    -13.11
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "item-14",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    -6.4,
+    0,
+    -14.61
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "house-4",
+   "type": "house",
+   "preset": "two-story",
+   "at": [
+    19,
+    0,
+    -21.31
+   ],
+   "ry": 0,
+   "paint": "pink",
+   "seed": 49310
+  },
+  {
+   "uid": "driveway-1",
+   "type": "driveway",
+   "from": [
+    19,
+    -6.36
+   ],
+   "to": [
+    19,
+    -17.46
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-15",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    20.4,
+    0,
+    -4.36
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "tree-13",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    16.3,
+    -10.78
+   ],
+   "h": 6.69,
+   "seed": 49310
+  },
+  {
+   "uid": "tree-14",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    17.28,
+    -37
+   ],
+   "h": 9.78,
+   "seed": 49320
+  },
+  {
+   "uid": "tree-15",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    12.74,
+    -36.05
+   ],
+   "h": 6.3,
+   "seed": 49321
+  },
+  {
+   "uid": "fence-4",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     9.8,
+     -21.31
+    ],
+    [
+     9.8,
+     -39.06
+    ],
+    [
+     28.2,
+     -39.06
+    ],
+    [
+     28.2,
+     -21.31
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 49310
+  },
+  {
+   "uid": "item-16",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    18,
+    0,
+    -28.46
+   ],
+   "ry": 3.361,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "item-17",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    19.1,
+    0,
+    -28.46
+   ],
+   "ry": 3.375,
+   "color": "#3a5a9a"
+  },
+  {
+   "uid": "item-18",
+   "type": "item",
+   "id": "planter",
+   "at": [
+    21.2,
+    0,
+    -13.96
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "item-19",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    15.1,
+    0,
+    -14.86
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "house-5",
+   "type": "house",
+   "preset": "two-story",
+   "at": [
+    38,
+    0,
+    -20.37
+   ],
+   "ry": 0,
+   "paint": "butter",
+   "seed": 473408
+  },
+  {
+   "uid": "driveway-2",
+   "type": "driveway",
+   "from": [
+    38,
+    -6.36
+   ],
+   "to": [
+    38,
+    -16.52
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-20",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    39.4,
+    0,
+    -4.36
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "tree-16",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    35,
+    -9.84
+   ],
+   "h": 7.25,
+   "seed": 473408
+  },
+  {
+   "uid": "tree-17",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    33.4,
+    -35.89
+   ],
+   "h": 8.75,
+   "seed": 473418
+  },
+  {
+   "uid": "tree-18",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    38.63,
+    -34.85
+   ],
+   "h": 7.89,
+   "seed": 473419
+  },
+  {
+   "uid": "fence-5",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     28.8,
+     -20.37
+    ],
+    [
+     28.8,
+     -38.12
+    ],
+    [
+     47.2,
+     -38.12
+    ],
+    [
+     47.2,
+     -20.37
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 473408
+  },
+  {
+   "uid": "item-21",
+   "type": "item",
+   "id": "grill",
+   "at": [
+    40.7,
+    0,
+    -25.82
+   ],
+   "ry": 2.196
+  },
+  {
+   "uid": "item-22",
+   "type": "item",
+   "id": "doghouse",
+   "at": [
+    45.7,
+    0,
+    -36.12
+   ],
+   "ry": 3.142,
+   "color": "#8a2a1e"
+  },
+  {
+   "uid": "clothesline-1",
+   "type": "clothesline",
+   "from": [
+    35,
+    1.9,
+    -32.12
+   ],
+   "to": [
+    41,
+    1.9,
+    -32.12
+   ]
+  },
+  {
+   "uid": "item-23",
+   "type": "item",
+   "id": "garden-gnome",
+   "at": [
+    40.2,
+    0,
+    -13.02
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "item-24",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    34.1,
+    0,
+    -13.92
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "house-6",
+   "type": "house",
+   "preset": "two-story",
+   "at": [
+    -31.35,
+    0,
+    20.94
+   ],
+   "ry": 3.142,
+   "paint": "cream",
+   "seed": 752137
+  },
+  {
+   "uid": "driveway-3",
+   "type": "driveway",
+   "from": [
+    -31.35,
+    6.36
+   ],
+   "to": [
+    -31.35,
+    17.09
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-25",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    -32.75,
+    0,
+    4.36
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "tree-19",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -28.62,
+    10.74
+   ],
+   "h": 7.82,
+   "seed": 752137
+  },
+  {
+   "uid": "tree-20",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -36.47,
+    35.33
+   ],
+   "h": 8.69,
+   "seed": 752147
+  },
+  {
+   "uid": "tree-21",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -25.53,
+    35.95
+   ],
+   "h": 9.96,
+   "seed": 752148
+  },
+  {
+   "uid": "fence-6",
+   "type": "fence",
+   "fence": "picket",
+   "path": [
+    [
+     -40.55,
+     20.94
+    ],
+    [
+     -40.55,
+     38.69
+    ],
+    [
+     -22.15,
+     38.69
+    ],
+    [
+     -22.15,
+     20.94
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 752137
+  },
+  {
+   "uid": "item-26",
+   "type": "item",
+   "id": "grill",
+   "at": [
+    -28.65,
+    0,
+    26.39
+   ],
+   "ry": 5.338
+  },
+  {
+   "uid": "item-27",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    -27.45,
+    0,
+    14.49
+   ],
+   "ry": 6.283
+  },
+  {
+   "uid": "house-7",
+   "type": "house",
+   "preset": "ranch",
+   "at": [
+    -12.35,
+    0,
+    18.74
+   ],
+   "ry": 3.142,
+   "paint": "charcoal",
+   "seed": 678418,
+   "garageO": {
+    "drive": 11.03,
+    "w": 3.6
+   }
+  },
+  {
+   "uid": "item-28",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    -21.85,
+    0,
+    4.36
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "tree-22",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -16.71,
+    10.01
+   ],
+   "h": 6.04,
+   "seed": 678418
+  },
+  {
+   "uid": "tree-23",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -12.16,
+    11.46
+   ],
+   "h": 6.24,
+   "seed": 678419
+  },
+  {
+   "uid": "tree-24",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    -5.8,
+    33.7
+   ],
+   "h": 8.04,
+   "seed": 678428
+  },
+  {
+   "uid": "tree-25",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    -9.44,
+    33.92
+   ],
+   "h": 9.25,
+   "seed": 678429
+  },
+  {
+   "uid": "fence-7",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     -21.55,
+     18.74
+    ],
+    [
+     -21.55,
+     36.49
+    ],
+    [
+     -3.15,
+     36.49
+    ],
+    [
+     -3.15,
+     18.74
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 678418
+  },
+  {
+   "uid": "item-29",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -13.35,
+    0,
+    25.89
+   ],
+   "ry": 6.253,
+   "color": "#2a7a5a"
+  },
+  {
+   "uid": "item-30",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    -12.25,
+    0,
+    25.89
+   ],
+   "ry": 6.161,
+   "color": "#2a7a5a"
+  },
+  {
+   "uid": "item-31",
+   "type": "item",
+   "id": "tricycle",
+   "at": [
+    -19.05,
+    0,
+    11.99
+   ],
+   "ry": 4.34,
+   "physics": false
+  },
+  {
+   "uid": "item-32",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    -7.45,
+    0,
+    14.49
+   ],
+   "ry": 6.283
+  },
+  {
+   "uid": "house-8",
+   "type": "house",
+   "preset": "two-story",
+   "at": [
+    6.65,
+    0,
+    21.48
+   ],
+   "ry": 3.142,
+   "paint": "cream",
+   "seed": 67465
+  },
+  {
+   "uid": "driveway-4",
+   "type": "driveway",
+   "from": [
+    6.65,
+    6.36
+   ],
+   "to": [
+    6.65,
+    17.63
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-33",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    5.25,
+    0,
+    4.36
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "tree-26",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    9.36,
+    11.08
+   ],
+   "h": 5.67,
+   "seed": 67465
+  },
+  {
+   "uid": "tree-27",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    4.43,
+    37.22
+   ],
+   "h": 7.37,
+   "seed": 67475
+  },
+  {
+   "uid": "tree-28",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    0.91,
+    36.77
+   ],
+   "h": 9.7,
+   "seed": 67476
+  },
+  {
+   "uid": "fence-8",
+   "type": "fence",
+   "fence": "chainlink",
+   "path": [
+    [
+     -2.55,
+     21.48
+    ],
+    [
+     -2.55,
+     39.23
+    ],
+    [
+     15.85,
+     39.23
+    ],
+    [
+     15.85,
+     21.48
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 67465
+  },
+  {
+   "uid": "item-34",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    10.55,
+    0,
+    15.03
+   ],
+   "ry": 6.283
+  },
+  {
+   "uid": "house-9",
+   "type": "house",
+   "preset": "small-house",
+   "at": [
+    25.65,
+    0,
+    19.13
+   ],
+   "ry": 3.142,
+   "paint": "white",
+   "seed": 959486
+  },
+  {
+   "uid": "driveway-5",
+   "type": "driveway",
+   "from": [
+    25.65,
+    6.36
+   ],
+   "to": [
+    25.65,
+    16.03
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-35",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    24.25,
+    0,
+    4.36
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "tree-29",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    27.95,
+    10.2
+   ],
+   "h": 5.94,
+   "seed": 959486
+  },
+  {
+   "uid": "tree-30",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    23.27,
+    9.66
+   ],
+   "h": 7.4,
+   "seed": 959487
+  },
+  {
+   "uid": "tree-31",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    20.86,
+    33.56
+   ],
+   "h": 7.78,
+   "seed": 959496
+  },
+  {
+   "uid": "tree-32",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    33.14,
+    33.16
+   ],
+   "h": 6.3,
+   "seed": 959497
+  },
+  {
+   "uid": "fence-9",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     16.45,
+     19.13
+    ],
+    [
+     16.45,
+     36.13
+    ],
+    [
+     34.85,
+     36.13
+    ],
+    [
+     34.85,
+     19.13
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 959486
+  },
+  {
+   "uid": "item-36",
+   "type": "item",
+   "id": "grill",
+   "at": [
+    27.75,
+    0,
+    23.83
+   ],
+   "ry": 5.503
+  },
+  {
+   "uid": "item-37",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    24.65,
+    0,
+    25.53
+   ],
+   "ry": 6.334,
+   "color": "#3a5a9a"
+  },
+  {
+   "uid": "item-38",
+   "type": "item",
+   "id": "lawn-chair",
+   "at": [
+    25.75,
+    0,
+    25.53
+   ],
+   "ry": 6.432,
+   "color": "#c84a3a"
+  },
+  {
+   "uid": "item-39",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    28.55,
+    0,
+    14.03
+   ],
+   "ry": 6.283
+  },
+  {
+   "uid": "house-10",
+   "type": "house",
+   "preset": "two-story",
+   "at": [
+    44.65,
+    0,
+    21.5
+   ],
+   "ry": 3.142,
+   "paint": "white",
+   "seed": 977161
+  },
+  {
+   "uid": "driveway-6",
+   "type": "driveway",
+   "from": [
+    44.65,
+    6.36
+   ],
+   "to": [
+    44.65,
+    17.65
+   ],
+   "width": 1.2
+  },
+  {
+   "uid": "item-40",
+   "type": "item",
+   "id": "mailbox",
+   "at": [
+    43.25,
+    0,
+    4.36
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "tree-33",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    48.94,
+    11.37
+   ],
+   "h": 5.72,
+   "seed": 977161
+  },
+  {
+   "uid": "tree-34",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    44.03,
+    11.26
+   ],
+   "h": 5.06,
+   "seed": 977162
+  },
+  {
+   "uid": "tree-35",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    47.07,
+    37.63
+   ],
+   "h": 8.15,
+   "seed": 977171
+  },
+  {
+   "uid": "tree-36",
+   "type": "tree",
+   "kind": "pine",
+   "at": [
+    41.61,
+    37.29
+   ],
+   "h": 7.12,
+   "seed": 977172
+  },
+  {
+   "uid": "tree-37",
+   "type": "tree",
+   "kind": "live",
+   "at": [
+    42.99,
+    37.73
+   ],
+   "h": 7.41,
+   "seed": 977173
+  },
+  {
+   "uid": "fence-10",
+   "type": "fence",
+   "fence": "privacy",
+   "path": [
+    [
+     35.45,
+     21.5
+    ],
+    [
+     35.45,
+     39.25
+    ],
+    [
+     53.85,
+     39.25
+    ],
+    [
+     53.85,
+     21.5
+    ]
+   ],
+   "gate": {
+    "run": 0,
+    "u": 0.2,
+    "w": 1
+   },
+   "seed": 977161
+  },
+  {
+   "uid": "swing-set-3",
+   "type": "swing-set",
+   "at": [
+    45.31,
+    0,
+    31.25
+   ],
+   "ry": 0.504
+  },
+  {
+   "uid": "clothesline-2",
+   "type": "clothesline",
+   "from": [
+    41.65,
+    1.9,
+    33.25
+   ],
+   "to": [
+    47.65,
+    1.9,
+    33.25
+   ]
+  },
+  {
+   "uid": "item-41",
+   "type": "item",
+   "id": "hose-reel",
+   "at": [
+    48.55,
+    0,
+    15.05
+   ],
+   "ry": 6.283
+  },
+  {
+   "uid": "light-1",
+   "type": "light",
+   "kind": "streetlight",
+   "at": [
+    -51.5,
+    0,
+    -4.46
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-2",
+   "type": "light",
+   "kind": "streetlight",
+   "at": [
+    -17.5,
+    0,
+    4.46
+   ],
+   "ry": 3.142
+  },
+  {
+   "uid": "light-3",
+   "type": "light",
+   "kind": "streetlight",
+   "at": [
+    16.5,
+    0,
+    -4.46
+   ],
+   "ry": 0
+  },
+  {
+   "uid": "light-4",
+   "type": "light",
+   "kind": "streetlight",
+   "at": [
+    50.5,
+    0,
+    4.46
+   ],
+   "ry": 3.142
+  }
+ ],
+ "saved": "2026-10-26",
+ "opts": {}
+}

@@ -1,0 +1,186 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sketchy History: The Dancing Plague</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="/notebook/lib.js"></script>
+<script>
+// Dark pop-up book: crayon drawings on black paper that fold UP off the page while the camera tilts down into the scene.
+const { P, lerp, eo, eio, ei, back, clamp, rng, stroke, draw, drawAll, hatch, rect, hand, put, at, st, en } = NB;
+const W = 1080, H = 1920, PW = 1152, PH = 2048, U = 9 / PW;
+const toW = (px, py) => [(px - PW / 2) * U, (PH / 2 - py) * U];
+const CHALK = '#efe9dc', RED = '#e0392b', GOLD = '#f2c14e', DARK = '#16131a';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.outputEncoding = THREE.sRGBEncoding; renderer.autoClear = false;
+(document.body || document.documentElement).appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#0c0a0e'); scene.fog = new THREE.Fog('#0c0a0e', 20, 44);
+const camera = new THREE.PerspectiveCamera(30, W / H, .1, 120);
+const texOf = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; };
+const cnv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+
+// ---------- black paper ----------
+const paper = cnv(PW, PH); (() => { const g = paper.getContext('2d'), r = rng(7); g.fillStyle = '#1d1a22'; g.fillRect(0, 0, PW, PH);
+  for (let i = 0; i < 60000; i++) { g.fillStyle = r() < .5 ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.025)'; const z = 1 + r() * 2.5; g.fillRect(r() * PW, r() * PH, z, z); }
+  for (let i = 0; i < 140; i++) { g.strokeStyle = 'rgba(255,255,255,0.025)'; g.lineWidth = 1; g.beginPath(); const x = r() * PW, y = r() * PH; g.moveTo(x, y); g.lineTo(x + (r() - .5) * 90, y + (r() - .5) * 90); g.stroke(); } })();
+const page = cnv(PW, PH), pg = page.getContext('2d'), pageTex = texOf(page);
+scene.add(new THREE.Mesh(new THREE.PlaneGeometry(9, 16), new THREE.MeshBasicMaterial({ map: pageTex })));
+// a wide floor beyond the page edges so the tilted camera never sees the void
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshBasicMaterial({ color: '#0f0d12' })); floor.position.z = -.02; scene.add(floor);
+
+const title = hand('STRASBOURG · 1518', 96, CHALK, 3);
+const street = stroke([[60, 1420], [PW - 60, 1404]], CHALK, 8, 4);
+const cobbles = Array.from({ length: 26 }, (_, i) => { const r = rng(100 + i), x = 90 + r() * (PW - 180), y = 1460 + r() * 420; return stroke(NB.circlePts(x, y, 26 + r() * 18, 12, 14 + r() * 8), 'rgba(239,233,220,0.55)', 4, 110 + i); });
+const foot = (x, y, a, s) => { const pts = NB.circlePts(0, 0, 13, 10, 24).map(([px, py]) => [x + (px * Math.cos(a) - py * Math.sin(a)) * s, y + (px * Math.sin(a) + py * Math.cos(a)) * s]); return stroke(pts, RED, 7, (x * 7 + y) | 0); };
+const steps = Array.from({ length: 22 }, (_, i) => { const a = i / 22 * Math.PI * 2.2, r0 = 150 + i * 6; return foot(576 + Math.cos(a) * r0 + (i % 2 ? 18 : -18), 1180 + Math.sin(a) * r0 * .55, a + 1.6, 1.25); });
+function drawPage(t) {
+  pg.drawImage(paper, 0, 0);
+  put(pg, title, PW / 2, 300, eo(P(t, .05, 1.1)), 'center');
+  draw(pg, street, P(t, .3, .9)); cobbles.forEach((c, i) => draw(pg, c, P(t, .5 + i * .03, .3), .5));
+  steps.forEach((s, i) => draw(pg, s, P(t, at('L3', 'bled') - .2 + i * .09, .25), .85));
+}
+
+// ---------- paper dolls (cut-outs hinged at their feet) ----------
+// pose 0/1 = two dance frames, drawn in crayon on a transparent canvas
+function dollCanvas(o, pose, prog = 1) {
+  const c = cnv(256, 512), g = c.getContext('2d'), s = o.seed * 13, ink = o.ink || CHALK;
+  const hx = 128, hy = 92, legA = pose ? [[118, 340], [74, 470]] : [[118, 340], [100, 488]], legB = pose ? [[138, 340], [170, 488]] : [[138, 340], [196, 452]];
+  const armA = pose ? [[110, 182], [40, 96]] : [[110, 182], [32, 236]], armB = pose ? [[146, 182], [222, 240]] : [[146, 182], [214, 100]];
+  // dress (filled + hatched), head, limbs
+  g.save(); g.beginPath(); g.moveTo(128, 150); g.lineTo(o.wide ? 214 : 200, 352); g.lineTo(o.wide ? 42 : 56, 352); g.closePath(); g.clip();
+  g.fillStyle = o.dress; g.fillRect(0, 0, 256, 512); hatch(40, 140, 180, 220, 'rgba(0,0,0,0.35)', 14, -.8, 5, s).forEach(h => draw(g, h, prog, .6)); g.restore();
+  const parts = [stroke([[128, 150], [o.wide ? 214 : 200, 352], [o.wide ? 42 : 56, 352], [128, 150]], ink, 8, s + 1), stroke(NB.circlePts(hx, hy, 48), ink, 8, s + 2),
+    stroke(legA, ink, 9, s + 3), stroke(legB, ink, 9, s + 4), stroke(armA, ink, 9, s + 5), stroke(armB, ink, 9, s + 6)];
+  g.fillStyle = o.skin; g.beginPath(); g.arc(hx, hy, 44, 0, 6.283); g.fill();
+  if (o.bonnet) { g.fillStyle = CHALK; g.beginPath(); g.arc(hx, hy - 8, 50, Math.PI * 1.05, Math.PI * 1.95); g.fill(); }
+  if (o.hat) { g.fillStyle = o.hat; g.fillRect(hx - 52, hy - 54, 104, 14); g.fillRect(hx - 32, hy - 92, 64, 40); }
+  drawAll(g, parts, prog, .95);
+  // face: two dots + a small open mouth (they can't stop)
+  g.fillStyle = '#16131a'; g.fillRect(hx - 18, hy - 6, 8, 8); g.fillRect(hx + 10, hy - 6, 8, 8); g.beginPath(); g.ellipse(hx, hy + 22, 7, o.mouth || 9, 0, 0, 6.283); g.fill();
+  return c;
+}
+function doll(o) {
+  const w = (o.h || 3) * .5, h = o.h || 3, pivot = new THREE.Group(), [x, y] = toW(o.px, o.py);
+  const texs = [0, 1].map(p => texOf(dollCanvas(o, p)));
+  const mat = new THREE.MeshBasicMaterial({ map: texs[0], transparent: true, alphaTest: .35, side: THREE.DoubleSide, depthWrite: true });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.y = h / 2; pivot.add(m);
+  pivot.position.set(x, y, .01); pivot.rotation.order = 'ZXY'; scene.add(pivot);
+  return { o, pivot, m, mat, texs };
+}
+const PALETTE = ['#8a5a3c', '#2f6f6a', '#6b4a7a', '#7a7a70', '#9a6b2f', '#3f5a7a', '#7a3b3b'], SKINS = ['#e8c6a4', '#c99a74', '#8a5a3c', '#f0d2b4', '#b07a55'];
+const woman = doll({ px: 576, py: 1180, h: 3.4, dress: RED, skin: '#f0d2b4', bonnet: true, seed: 1, wide: true });
+const crowd = Array.from({ length: 44 }, (_, i) => {
+  const r = rng(300 + i), ring = i < 14 ? 0 : i < 30 ? 1 : 2, a = (i * 2.399) % (Math.PI * 2), rad = [250, 400, 520][ring] + r() * 60;
+  const px = clamp(576 + Math.cos(a) * rad * 1.1, 70, PW - 70), py = clamp(1180 - Math.abs(Math.sin(a)) * rad * .5 + 40, 990, 1290);
+  return doll({ px, py, h: 2.3 + r() * .7, dress: PALETTE[i % PALETTE.length], skin: SKINS[i % SKINS.length], seed: 10 + i, hat: r() < .35 ? '#2a2430' : null, wide: r() < .5, mouth: 5 + r() * 6, join: i < 30 ? 0 : 1, k: i, ph: r() * 6.28, spd: .85 + r() * .4 });
+}).sort((a, b) => b.o.py - a.o.py);
+// houses: a pop-up skyline across the back of the street
+const houses = (() => {
+  const c = cnv(2048, 640), g = c.getContext('2d'); const r = rng(55); let x = 10;
+  while (x < 2040) { const w = 170 + r() * 120, h = 300 + r() * 260, top = 640 - h, peak = top - 80 - r() * 70;
+    g.fillStyle = '#26222c'; g.beginPath(); g.moveTo(x, 640); g.lineTo(x, top); g.lineTo(x + w / 2, peak); g.lineTo(x + w, top); g.lineTo(x + w, 640); g.closePath(); g.fill();
+    draw(g, stroke([[x, 640], [x, top], [x + w / 2, peak], [x + w, top], [x + w, 640]], CHALK, 7, (x | 0) + 1), 1, .9);
+    for (let wy = top + 40; wy < 600; wy += 90) for (let wx = x + 30; wx < x + w - 50; wx += 70) { const lit = r() < .45; g.fillStyle = lit ? GOLD : '#1a1720'; g.fillRect(wx, wy, 34, 46); draw(g, stroke(rect(wx, wy, 34, 46), CHALK, 4, (wx * 3 + wy) | 0), 1, .7); }
+    x += w + 6; }
+  const tex = texOf(c), pivot = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(9.6, 3), new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: .3, side: THREE.DoubleSide }));
+  m.position.y = 1.5; pivot.add(m); const [x0, y0] = toW(576, 690); pivot.position.set(x0, y0, .01); scene.add(pivot); return pivot;
+})();
+// the stage the city built
+const stage = (() => {
+  const grp = new THREE.Group(), wood = (seed, sh) => { const c = cnv(256, 128), g = c.getContext('2d'); g.fillStyle = '#5a3a24'; g.fillRect(0, 0, 256, 128); for (let y = 0; y < 128; y += 26) draw(g, stroke([[0, y], [256, y + 3]], '#2a1a10', 6, seed + y)); draw(g, stroke(rect(5, 5, 246, 118), CHALK, 7, seed + 99), 1, .85); const t = texOf(c); return new THREE.MeshBasicMaterial({ map: t, color: new THREE.Color(sh, sh, sh) }); };
+  const b = new THREE.Mesh(new THREE.BoxGeometry(5.8, 1.3, .9), [wood(1, .75), wood(2, .75), wood(3, 1.05), wood(4, .55), wood(5, 1), wood(6, .6)]);
+  b.position.z = .45; grp.add(b); const [x, y] = toW(576, 850); grp.position.set(x, y, 0); grp.scale.set(1, 1, .01); grp.visible = false; scene.add(grp); return grp;
+})();
+const musicians = [doll({ px: 400, py: 850, h: 2.2, dress: '#3f5a7a', skin: '#c99a74', seed: 90, hat: '#2a2430' }), doll({ px: 760, py: 850, h: 2.2, dress: '#6b4a7a', skin: '#e8c6a4', seed: 91, hat: '#2a2430' })];
+musicians.forEach(m => m.pivot.visible = false);
+// floating music notes (billboards)
+const notes = Array.from({ length: 12 }, (_, i) => { const c = cnv(128, 128), g = c.getContext('2d'); g.font = '96px "Apple Symbols", "Segoe UI Symbol", serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = CHALK; g.fillText(i % 2 ? '♪' : '♫', 64, 64);
+  const tex = texOf(c), m = new THREE.Mesh(new THREE.PlaneGeometry(.8, .8), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, color: new THREE.Color(1, 1, 1) })); m.visible = false; scene.add(m); return m; });
+
+// ---------- HUD: captions, big scrawled words, grain, vignette ----------
+const hud = cnv(W, H), hg = hud.getContext('2d'), hudTex = texOf(hud);
+const hudScene = new THREE.Scene(), hudCam = new THREE.OrthographicCamera(-.5, .5, .5, -.5, 0, 1);
+hudScene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: hudTex, transparent: true, depthTest: false })));
+const BIG = { thirty: hand('30', 260, CHALK, 21), hundreds: hand('HUNDREDS', 190, RED, 22), noMusic: hand('NO MUSIC', 150, CHALK, 23), cure: hand('THE CURE?', 150, CHALK, 24), more: hand('MORE MUSIC', 170, GOLD, 25), fifteen: hand('15 A DAY', 200, RED, 26), july: hand('JULY 1518', 210, CHALK, 27), why: hand('WHY?', 230, RED, 28) };
+const xOut = stroke([[300, 330], [780, 520]], RED, 22, 29), xOut2 = stroke([[780, 330], [300, 520]], RED, 22, 30);
+const KEY = /^(1518|dance|couldn|stop|bled|hundreds|cure|music|worse|fifteen|dropped|why|when|days|thirty)/i;
+let CHUNKS = null;
+function buildChunks() {
+  CHUNKS = []; for (const [id, l] of Object.entries(NB.TL.lines)) { let cur = [];
+    const ws = l.words.filter(w => !/^\[/.test(w.w));
+    ws.forEach((w, i) => { cur.push({ ...w, s: l.start + w.s, e: l.start + w.e }); const brk = /[.,!?…]$/.test(w.w) || cur.length >= 3 || i === ws.length - 1; if (brk) { CHUNKS.push(cur); cur = []; } }); }
+  CHUNKS.forEach((c, i) => { c.t0 = c[0].s - .04; c.t1 = CHUNKS[i + 1] ? Math.min(CHUNKS[i + 1][0].s - .04, c.at(-1).e + .6) : c.at(-1).e + .6; });
+}
+function captions(t) {
+  if (!CHUNKS) buildChunks(); const c = CHUNKS.find(c => t >= c.t0 && t < c.t1); if (!c) return;
+  const size = 96, y = 1290; hg.font = `800 ${size}px "Avenir Next Condensed", "Avenir Next", sans-serif`; hg.textBaseline = 'middle'; hg.lineJoin = 'round';
+  const words = c.map(w => w.w.toUpperCase()), widths = words.map(w => hg.measureText(w).width), gap = 26, tw = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
+  let x = W / 2 - tw / 2; const pop = 1 + .12 * (1 - eo(P(t, c.t0, .15)));
+  hg.save(); hg.translate(W / 2, y); hg.scale(pop, pop); hg.translate(-W / 2, -y);
+  words.forEach((w, i) => { const now = t >= c[i].s && t < (c[i + 1] ? c[i + 1].s : c.t1), key = KEY.test(c[i].w.replace(/[^a-z0-9]/gi, ''));
+    hg.lineWidth = 16; hg.strokeStyle = '#0b090d'; hg.strokeText(w, x, y); hg.fillStyle = now ? '#ffd84a' : key ? '#ff5a4a' : '#ffffff'; hg.fillText(w, x, y); x += widths[i] + gap; });
+  hg.restore();
+}
+const big = (c, y, p, a = 1, rot = 0) => { if (p <= 0 || a <= 0) return; hg.save(); hg.translate(W / 2, y); hg.rotate(rot); const s = 1 + .25 * (1 - eo(clamp(p * 1.5))); hg.scale(s, s); put(hg, c, 0, c.height * .35, p, 'center', a); hg.restore(); };
+function hudDraw(t) {
+  hg.clearRect(0, 0, W, H);
+  const show = (key, t0, t1, y = 470, rot = -.03) => { if (t < t0 || t > t1 + .3) return; big(BIG[key], y, eo(P(t, t0, .35)), 1 - P(t, t1, .3), rot); };
+  show('noMusic', at('L2', 'music') - .1, en('L2'), 470); if (t > at('L2', 'music') + .2 && t < en('L2') + .3) { draw(hg, xOut, P(t, at('L2', 'music') + .2, .2)); draw(hg, xOut2, P(t, at('L2', 'music') + .35, .2)); }
+  show('thirty', at('L4', 'thirty') - .05, at('L4', 'month') - .1, 470); show('hundreds', at('L4', 'hundreds') - .05, en('L4') + .4, 470, .03);
+  show('cure', at('L5', 'cure') - .1, st('L6') - .05, 470); show('more', at('L6', 'more') - .05, en('L6') + .6, 470, .04);
+  show('fifteen', at('L9', 'fifteen') - .05, en('L9') + .1, 470, -.04); show('why', at('L10', 'why') - .05, en('L10') + .15, 470);
+  show('july', at('L11', 'only') - .05, NB.TL.end + 1, 600, -.02);
+  captions(t);
+  // grain + vignette (+ a darker squeeze at the end)
+  const r = rng(Math.floor(t * 30) + 3); hg.fillStyle = 'rgba(255,255,255,0.04)'; for (let i = 0; i < 2200; i++) hg.fillRect(r() * W, r() * H, 2, 2);
+  const squeeze = P(t, st('L10') - .2, 1.2), v = hg.createRadialGradient(W / 2, H * .45, H * lerp(.32, .2, squeeze), W / 2, H * .45, H * .78); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, `rgba(0,0,0,${lerp(.65, .9, squeeze)})`); hg.fillStyle = v; hg.fillRect(0, 0, W, H);
+}
+
+// ---------- animation ----------
+function dance(d, t, t0, energy) {
+  const o = d.o, spd = (o.spd || 1) * (1 + energy * .9), ph = o.ph || 0, beat = (t - t0) * 3.2 * spd + ph;
+  const pose = Math.floor(beat / Math.PI) % 2; if (d.mat.map !== d.texs[pose]) { d.mat.map = d.texs[pose]; d.mat.needsUpdate = true; }
+  d.m.position.y = (o.h || 3) / 2 + Math.abs(Math.sin(beat)) * .22 * (1 + energy * .6); d.m.rotation.z = Math.sin(beat * .5) * .12 * (1 + energy);
+  d.m.rotation.y = energy > .6 ? Math.sin(beat * .3) * .6 : 0;
+}
+function faceCamera(d) { const up = clamp(d.pivot.rotation.x / (Math.PI / 2)); d.pivot.rotation.z = Math.atan2(camera.position.x - d.pivot.position.x, Math.max(.5, d.pivot.position.y - camera.position.y)) * .35 * up; }
+
+window.seek = function (t) {
+  drawPage(t); pageTex.needsUpdate = true;
+  const tFold = at('L1', 'stepped'), tDance = at('L1', 'dance') - .05, energy = clamp(P(t, at('L6', 'more'), .6) - P(t, en('L8') + 1.5, 2)) * 1 + P(t, at('L8', 'worse'), .4) * .5 * (1 - P(t, st('L10'), 1));
+  // houses fold up first, then Frau Troffea
+  houses.rotation.x = Math.PI / 2 * back(P(t, tFold, .7)) * (1 - eio(P(t, st('L10') + .5, 1.3)));
+  woman.pivot.rotation.x = Math.PI / 2 * back(P(t, tDance, .55)) * (1 - eio(P(t, st('L10') + .5, 1.3))); faceCamera(woman);
+  if (t > tDance + .3) dance(woman, t, tDance, energy); else { woman.m.position.y = (woman.o.h) / 2; }
+  // the crowd joins: thirty, then hundreds; they drop on "fifteen a day ... dropped"
+  const tJoin = [at('L4', 'thirty') - .1, at('L4', 'hundreds') - .1], tDrop0 = at('L9', 'fifteen') - .1, tDrop1 = en('L9') + .2;
+  crowd.forEach((d, i) => {
+    const j = d.o.join, t0 = tJoin[j] + (j ? (d.o.k - 30) * .07 : d.o.k * .04), up = back(P(t, t0, .45));
+    const dropAt = lerp(tDrop0, tDrop1, ((d.o.k * 37) % 44) / 44), down = eio(P(t, dropAt, .4));
+    const gone = P(t, dropAt + .35, .6); d.mat.opacity = 1 - gone; d.pivot.visible = t > t0 - .05 && gone < 1; d.pivot.rotation.x = Math.PI / 2 * up * (1 - down); faceCamera(d);
+    if (up > .9 && down < .1) dance(d, t, t0, energy); else d.m.rotation.set(0, 0, 0);
+  });
+  // the stage rises on "built a stage", musicians pop up on "hired musicians"; everything sinks back at the end
+  const sUp = back(P(t, at('L7', 'stage') - .1, .6)), sDown = eio(P(t, st('L10'), 1.2));
+  stage.visible = sUp > 0 && sDown < .98; stage.scale.z = Math.max(.01, sUp * (1 - sDown));
+  musicians.forEach((m, i) => { const u = back(P(t, at('L7', 'musicians') + i * .12, .5)) * (1 - sDown); m.pivot.visible = u > 0; m.pivot.position.z = .9 * stage.scale.z; m.pivot.rotation.x = Math.PI / 2 * u; faceCamera(m); if (u > .9) dance(m, t, at('L7', 'musicians'), energy * .6); });
+  notes.forEach((n, i) => { const t0 = at('L6', 'more') + i * .08, k = t - t0, life = P(t, t0, .4) * (1 - P(t, st('L9') - .2, .6)); n.visible = life > 0;
+    if (!n.visible) return; const a = k * (1.4 + energy) + i * .52, r0 = 2.2 + (i % 3) * .7; const [sx, sy] = toW(576, 1100);
+    n.position.set(sx + Math.cos(a) * r0 * 1.2, sy + Math.sin(a) * r0 * .5, 2.2 + Math.sin(k * 2 + i) * .6 + (i % 4) * .5); n.quaternion.copy(camera.quaternion); n.scale.setScalar(1.3 + life * .9);
+    n.material.opacity = life; n.material.color.set(t > at('L8', 'worse') ? '#ff5a4a' : (i % 3 === 0 ? GOLD : CHALK)); });
+  // camera: start top-down on the page, tilt down into the pop-up street, sway with the dance, rise back to top-down for the loop
+  const tilt = eio(P(t, tFold - .2, 1.6)) * (1 - eio(P(t, st('L10') + .3, 2.2)));
+  const sway = Math.sin(t * .5) * 1.4 * tilt, push = eio(P(t, st('L7'), 2.5)) * (1 - eio(P(t, st('L10'), 1.5)));
+  let shake = 0; for (const hit of [at('L6', 'more'), at('L7', 'musicians'), at('L9', 'fifteen'), at('L9', 'dropped')]) { const d = t - hit; if (d > 0 && d < .4) shake += Math.exp(-d * 12) * .25; }
+  const [fx, fy] = toW(576, 1150);
+  const pos = new THREE.Vector3(lerp(0, fx + sway, tilt), lerp(0, fy - 15.5 + push * 2.5, tilt), lerp(29.9, 13.5 - push * 2.2, tilt));
+  pos.x += Math.sin(t * 47) * shake; pos.y += Math.cos(t * 39) * shake;
+  camera.position.copy(pos); camera.up.set(0, 1, 0);
+  camera.lookAt(lerp(0, fx, tilt), lerp(0, fy + 1.4, tilt), lerp(0, 1.3, tilt));
+  renderer.setClearColor('#0c0a0e'); renderer.clear(); renderer.render(scene, camera);
+  hudDraw(t); hudTex.needsUpdate = true; renderer.clearDepth(); renderer.render(hudScene, hudCam);
+  return true;
+};
+window.setTL = tl => { NB.TL = tl; CHUNKS = null; return true; };
+window.ready = true;
+</script>

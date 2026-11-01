@@ -1,0 +1,33 @@
+{
+ "name": "kodachrome-70s",
+ "note": "A rich 1970s reversal-stock look: deep saturated reds and blues, dense shadows (never crushed), warm whites, punchy and filmic; for sunny small-town and road scenes.",
+ "lift": [
+  -0.01,
+  -0.015,
+  -0.025
+ ],
+ "gamma": 0.97,
+ "gain": [
+  1.1,
+  1.0,
+  0.86
+ ],
+ "sat": 1.42,
+ "contrast": 1.24,
+ "temp": 0.22,
+ "print": 0.5,
+ "vibrancy": 0.8,
+ "film": {
+  "stock": "35mm",
+  "grain": 0.65,
+  "halation": 0.3,
+  "bloom": 0.25,
+  "rolloff": 0.84,
+  "weave": 0.25,
+  "flicker": 0.06,
+  "dust": 0.1,
+  "leaks": 0.0,
+  "vignette": 1.0,
+  "fringe": 0.8
+ }
+}

@@ -1,0 +1,3 @@
+{ "name": "teal-orange", "note": "Modern blockbuster split: warm skin against teal shadows, punchy but under the vibrancy ceiling. New; no PS1.GRADES ancestor.",
+  "lift": [-0.02, 0.02, 0.05], "gamma": 1.0, "gain": [1.06, 0.99, 0.9], "sat": 1.1, "contrast": 1.12, "temp": 0.08, "print": 0.35, "vibrancy": 0.6,
+  "film": { "grain": 0.8, "halation": 0.2, "bloom": 0.3, "rolloff": 0.85, "vignette": 1.0, "fringe": 1.0 } }

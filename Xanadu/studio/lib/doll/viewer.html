@@ -1,0 +1,128 @@
+<!doctype html><meta charset="utf-8"><title>Doll Studio</title>
+<style>
+html,body{margin:0;height:100%;background:#15171c;overflow:hidden;font:13px -apple-system,system-ui,sans-serif;color:#dde}
+#ui{position:fixed;left:0;top:0;bottom:0;width:318px;background:#101319;overflow:auto;border-right:1px solid #222a36;padding:8px 10px 40px;box-sizing:border-box;z-index:2}
+h3{margin:2px 0 6px;font-size:15px}details{border-top:1px solid #222a36;padding:6px 0}summary{cursor:pointer;font-weight:600;color:#9fc0ff;padding:2px 0}
+label{display:flex;align-items:center;gap:6px;margin:5px 0}label span{width:92px;color:#9ab;flex:none}
+input[type=range]{flex:1;min-width:0}select,input[type=text],textarea{flex:1;min-width:0;background:#1b212c;color:#dde;border:1px solid #2a3342;border-radius:4px;padding:3px}
+input[type=color]{width:34px;height:22px;border:0;padding:0;background:none}
+button{margin:2px 2px 2px 0;padding:4px 8px;border:0;border-radius:5px;background:#2b3140;color:#dde;cursor:pointer}button:hover{background:#364056}button.on{background:#c9893a;color:#111}
+.row{display:flex;flex-wrap:wrap}.val{width:38px;text-align:right;color:#7a8;flex:none}
+#hint{position:fixed;bottom:8px;left:330px;color:#7d8da0;pointer-events:none}
+#msg{position:fixed;top:10px;right:14px;color:#9fc;background:#0007;padding:4px 10px;border-radius:6px;display:none}
+</style>
+<div id="ui"></div><div id="hint">drag = orbit · right-drag = pan · wheel = zoom</div><div id="msg"></div>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createDoll, PRESETS, EMOTIONS, POSES, HAIR_STYLES, BUILD_NAMES, ARMOR_PIECES } from './doll.js';
+const q = new URLSearchParams(location.search), PW = 318;
+const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); R.setPixelRatio(Math.min(devicePixelRatio, 2)); R.outputEncoding = THREE.sRGBEncoding; R.shadowMap.enabled = true; document.body.appendChild(R.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#262a33'); scene.fog = new THREE.Fog('#262a33', 10, 26);
+const cam = new THREE.PerspectiveCamera(30, 1, .05, 60);
+const ctl = new OrbitControls(cam, R.domElement); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .52; ctl.minDistance = .4; ctl.maxDistance = 14;
+scene.add(new THREE.HemisphereLight('#bfd0ff', '#4a3a30', .5));
+const key = new THREE.DirectionalLight('#fff0dd', .85); key.position.set(3, 5, 4); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 1, far: 20 }); scene.add(key);
+const rim = new THREE.DirectionalLight('#7a9cff', .6); rim.position.set(-4, 3, -4); scene.add(rim);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(14, 48), new THREE.MeshLambertMaterial({ color: '#3a3f4a' })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const grid = new THREE.GridHelper(8, 16, '#566074', '#434b5a'); grid.position.y = .002; scene.add(grid);
+function layout() { const w = innerWidth - PW, h = innerHeight; R.setSize(w, h); R.domElement.style.cssText = `position:fixed;left:${PW}px;top:0;width:${w}px;height:${h}px`; cam.aspect = w / h; cam.updateProjectionMatrix(); }
+addEventListener('resize', layout); layout();
+
+let look = JSON.parse(JSON.stringify(PRESETS.nurse));
+let doll = null, pose = 'stand', emo = 'neutral', talking = false, lookCam = true, turn = false, speed = 1, walkAround = false, mouthManual = null, prevPose = 'stand';
+const home = new THREE.Group(); scene.add(home);
+function rebuild() {
+  if (doll) { home.remove(doll.group); doll.dispose(); }
+  doll = createDoll(JSON.parse(JSON.stringify(look))); home.add(doll.group);
+  doll.setPose(pose, speed); doll.setEmotion(emo); doll.talk(talking); doll.update(1 / 60);
+}
+const ui = document.getElementById('ui'); ui.innerHTML = '<h3>DOLL STUDIO</h3>';
+const msg = t => { const m = document.getElementById('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(msg.t); msg.t = setTimeout(() => m.style.display = 'none', 1800); };
+function section(title, open = true) { const d = document.createElement('details'); d.open = open; d.innerHTML = `<summary>${title}</summary>`; ui.appendChild(d); return d; }
+const toggles = [];
+function btns(parent, items, get, set) { const row = document.createElement('div'); row.className = 'row'; const bs = items.map(it => { const b = document.createElement('button'); b.textContent = it; b.onclick = () => { set(it); sync(); }; row.appendChild(b); return b; }); parent.appendChild(row); toggles.push(() => bs.forEach(b => b.classList.toggle('on', get(b.textContent)))); }
+function flag(parent, label, get, set) { const b = document.createElement('button'); b.textContent = label; b.onclick = () => { set(!get()); sync(); }; parent.appendChild(b); toggles.push(() => b.classList.toggle('on', !!get())); }
+function slider(parent, label, min, max, step, get, set) { const l = document.createElement('label'); l.innerHTML = `<span>${label}</span><input type=range min=${min} max=${max} step=${step}><b class=val></b>`; const i = l.querySelector('input'), v = l.querySelector('.val'); i.oninput = () => { set(+i.value); v.textContent = (+i.value).toFixed(2); }; parent.appendChild(l); toggles.push(() => { i.value = get(); v.textContent = (+get()).toFixed(2); }); }
+function color(parent, label, get, set) { const l = document.createElement('label'); l.innerHTML = `<span>${label}</span><input type=color><input type=text style="max-width:80px">`; const c = l.querySelector('input[type=color]'), t = l.querySelector('input[type=text]'); c.oninput = () => { set(c.value); t.value = c.value; }; t.onchange = () => { if (/^#[0-9a-f]{6}$/i.test(t.value)) { set(t.value); c.value = t.value; } }; parent.appendChild(l); toggles.push(() => { c.value = get(); t.value = get(); }); }
+function select(parent, label, items, get, set) { const l = document.createElement('label'); l.innerHTML = `<span>${label}</span><select>${items.map(i => `<option>${i}</option>`).join('')}</select>`; const s = l.querySelector('select'); s.onchange = () => { set(s.value); sync(); }; parent.appendChild(l); toggles.push(() => s.value = get()); }
+function swatches(p, cols, f) { const r = document.createElement('div'); r.className = 'row'; for (const c of cols) { const b = document.createElement('button'); b.style.cssText = `background:${c};width:28px;height:20px`; b.onclick = () => { f(c); sync(); }; r.appendChild(b); } p.appendChild(r); }
+const set = (k, v) => { look[k] = v; rebuild(); };
+
+let s = section('Presets');
+btns(s, Object.keys(PRESETS), n => look.name === PRESETS[n].name, n => { look = JSON.parse(JSON.stringify(PRESETS[n])); rebuild(); frame(); });
+flag(s, 'Randomize', () => false, () => randomize());
+s = section('Body');
+slider(s, 'height (m)', 1, 2.15, .01, () => look.height, v => { look.height = v; rebuild(); });
+select(s, 'build', BUILD_NAMES, () => look.build, v => set('build', v));
+select(s, 'sex shape', ['m', 'f'], () => look.sex || 'm', v => set('sex', v));
+color(s, 'skin', () => look.skin, v => set('skin', v));
+swatches(s, ['#f1cfb4', '#e0b08a', '#c79a78', '#a8754f', '#8a5a3c', '#5a3a28', '#3a261c'], c => set('skin', c));
+s = section('Face & hair');
+select(s, 'hair', HAIR_STYLES, () => look.hair.style, v => { look.hair.style = v; rebuild(); });
+color(s, 'hair colour', () => look.hair.color, v => { look.hair.color = v; rebuild(); });
+select(s, 'beard', ['none', 'stubble', 'moustache', 'full'], () => look.beard || 'none', v => { look.beard = v === 'none' ? undefined : v; rebuild(); });
+color(s, 'eye colour', () => look.iris, v => set('iris', v));
+slider(s, 'eye size', .7, 1.5, .01, () => look.eyeSize || 1, v => set('eyeSize', v));
+slider(s, 'nose size', .5, 2, .01, () => look.noseSize || 1, v => set('noseSize', v));
+slider(s, 'ear size', .5, 2, .01, () => look.ear || 1, v => set('ear', v));
+s = section('Clothes');
+color(s, 'top', () => look.top, v => set('top', v));
+select(s, 'sleeves', ['long', 'short', 'none'], () => look.sleeves, v => set('sleeves', v));
+color(s, 'bottom', () => look.bottom, v => set('bottom', v));
+select(s, 'bottom style', ['pants', 'shorts', 'skirt'], () => look.bottomStyle || 'pants', v => set('bottomStyle', v));
+color(s, 'shoes', () => look.shoes, v => set('shoes', v));
+s = section('Armor');
+flag(s, 'armor on', () => !!look.armor, () => { look.armor = look.armor ? null : { color: '#aab2bc', trim: '#c9a24a', pieces: ['helmet', 'chest', 'pauldrons', 'bracers', 'gauntlets', 'greaves', 'knees', 'belt'] }; rebuild(); });
+color(s, 'metal', () => look.armor?.color || '#aab2bc', v => { if (look.armor) { look.armor.color = v; rebuild(); } });
+color(s, 'trim', () => look.armor?.trim || '#c9a24a', v => { if (look.armor) { look.armor.trim = v; rebuild(); } });
+btns(s, ARMOR_PIECES, p => !!look.armor?.pieces.includes(p), p => { if (!look.armor) return; const a = look.armor.pieces, i = a.indexOf(p); i < 0 ? a.push(p) : a.splice(i, 1); rebuild(); });
+s = section('Animation');
+btns(s, Object.keys(POSES), p => pose === p, p => { pose = p; doll.setPose(p, speed); });
+slider(s, 'speed', .3, 2.5, .05, () => speed, v => { speed = v; doll.setPose(pose, speed); });
+flag(s, 'walk around', () => walkAround, () => { walkAround = !walkAround; if (walkAround) { prevPose = pose; pose = 'walk'; } else { pose = prevPose === 'walk' ? 'stand' : prevPose; home.position.set(0, 0, 0); home.rotation.y = 0; } doll.setPose(pose, speed); });
+flag(s, 'turntable', () => turn, () => turn = !turn);
+s = section('Emotion & face');
+btns(s, Object.keys(EMOTIONS), e => emo === e, e => { emo = e; doll.setEmotion(e); });
+flag(s, 'talk', () => talking, () => { talking = !talking; mouthManual = null; doll.talk(talking); });
+flag(s, 'look at camera', () => lookCam, () => lookCam = !lookCam);
+{ const b = document.createElement('button'); b.textContent = 'blink'; b.onclick = () => doll.blink(); s.appendChild(b); }
+slider(s, 'mouth open', 0, 1, .01, () => mouthManual ?? 0, v => { mouthManual = v; talking = false; doll.talk(false); doll.setMouth(v); });
+s = section('Camera');
+const camBtns = { full: () => frame(), '3/4': () => frame(.7), side: () => frame(1.57), back: () => frame(3.14), face: () => faceCam(), hands: () => handsCam() };
+btns(s, Object.keys(camBtns), () => false, k => camBtns[k]());
+s = section('Save / load', false);
+const ta = document.createElement('textarea'); ta.rows = 6; ta.style.width = '100%'; s.appendChild(ta);
+{ const a = document.createElement('button'); a.textContent = 'Copy look JSON'; a.onclick = () => { ta.value = JSON.stringify(look, null, 1); ta.select(); navigator.clipboard?.writeText(ta.value); msg('look copied'); }; s.appendChild(a);
+  const b = document.createElement('button'); b.textContent = 'Load from box'; b.onclick = () => { try { look = JSON.parse(ta.value); rebuild(); sync(); msg('loaded'); } catch (e) { msg('bad JSON'); } }; s.appendChild(b); }
+function sync() { toggles.forEach(f => f()); }
+
+function frame(yaw = 0) { const h = look.height, d = Math.max(3.2, h * 2.6); ctl.target.set(0, h * .52, 0); cam.position.set(Math.sin(yaw) * d, h * .62, Math.cos(yaw) * d); }
+function faceCam() { const h = look.height; ctl.target.set(0, h * .88, 0); cam.position.set(.25, h * .9, 1.15); }
+function handsCam() { const h = look.height; ctl.target.set(0, h * .55, 0); cam.position.set(.4, h * .6, 1.5); }
+function randomize() {
+  const pick = a => a[Math.floor(Math.random() * a.length)], hex = (h, s, l) => '#' + new THREE.Color().setHSL(h, s, l).getHexString();
+  look = { name: 'Random', height: 1.5 + Math.random() * .5, build: pick(BUILD_NAMES), sex: pick(['m', 'f']), skin: pick(['#f1cfb4', '#e0b08a', '#c79a78', '#a8754f', '#8a5a3c', '#5a3a28']),
+    hair: { style: pick(HAIR_STYLES), color: pick(['#1a1210', '#3a2418', '#6a4a2a', '#c9a042', '#a83a22', '#cfcfcf', hex(Math.random(), .6, .5)]) }, beard: pick([undefined, undefined, 'stubble', 'moustache', 'full']),
+    top: hex(Math.random(), .35 + Math.random() * .3, .3 + Math.random() * .35), sleeves: pick(['long', 'short', 'none']), bottom: hex(Math.random(), .25, .22 + Math.random() * .2), bottomStyle: pick(['pants', 'pants', 'shorts', 'skirt']), shoes: pick(['#1e1a18', '#f0f0f0', '#6a3a22']),
+    iris: hex(Math.random(), .45, .4), eyeSize: .85 + Math.random() * .4, noseSize: .7 + Math.random() * .9, ear: .8 + Math.random() * .8 };
+  if (look.build === 'child') look.height = 1.05 + Math.random() * .25;
+  if (Math.random() < .3) look.armor = { color: pick(['#aab2bc', '#4a5260', '#b08a4a']), trim: pick(['#c9a24a', '#8a8f99', '#a02a2a']), pieces: ARMOR_PIECES.filter(() => Math.random() < .6) };
+  rebuild(); sync(); frame();
+}
+
+if (q.get('preset') && PRESETS[q.get('preset')]) look = JSON.parse(JSON.stringify(PRESETS[q.get('preset')]));
+if (q.get('p')) pose = q.get('p'); if (q.get('e')) emo = q.get('e');
+rebuild(); sync(); frame(+q.get('yaw') || 0); if (q.get('face')) faceCam(); if (q.get('hideui')) ui.style.display = 'none';
+const clk = new THREE.Clock(); let t = 0;
+function tick(dt) {
+  t += dt;
+  if (turn) home.rotation.y += dt * .7;
+  if (walkAround) { const sp = .9 * speed, r = 1.7, a = t * sp / r; home.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); home.rotation.y = -a + Math.PI; }
+  doll.lookAt(lookCam ? cam.position : null); doll.update(dt); ctl.update(); R.render(scene, cam);
+}
+window.__frame = (dt = 1 / 60, n = 1) => { for (let i = 0; i < n; i++) tick(dt); };
+window.__ready = true;
+if (!q.get('manual')) { const loop = () => { tick(Math.min(clk.getDelta(), .05)); requestAnimationFrame(loop); }; loop(); }
+</script>

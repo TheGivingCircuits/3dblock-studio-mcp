@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Lookbook</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="/node_modules/three/build/three.min.js"></script>
+<script src="/notebook/lib.js"></script>
+<script src="/studio/lib/ps1.js"></script>
+<script src="/studio/lib/lights.js"></script>
+<script src="/studio/lib/camera.js"></script>
+<script src="/studio/lib/cast/looks.js"></script>
+<script src="/studio/lib/cast/cast.js"></script>
+<script src="/studio/lib/cast/motion.js"></script>
+<script>
+// the lookbook stage: one character on a grey cyclorama in three-point light; window.LOOK(recipe) swaps the character, the four views are
+// the shots FRONT (0 s), SIDE (1 s), BACK (2 s), CU (3 s); the HUD prints the sheet's label
+(function () { const { V } = PS1; LIGHTS.use(); const M = LIGHTS.mat; let P = null, LABEL = '';
+  window.LOOK = (r, label) => { if (P) PS1.scene.remove(P.G); P = CAST.make(r); if (r.wear) P.setWear(r.wear); CAM.mark('who', P); LABEL = label || r.name || ''; CAST.act(P, 0, [{ at: 0, motion: 'stand' }]); return true; };
+  NB.TL = { end: 4, lines: {} };
+  CAM.episode({
+    hud(t, S, q) { q.save(); q.font = 'bold 15px Arial, Helvetica, sans-serif'; q.fillStyle = '#f2f0ea'; q.strokeStyle = '#000'; q.lineWidth = 4; q.textAlign = 'center';
+      const v = ['FRONT', 'SIDE', 'BACK', 'CLOSE-UP'][Math.min(3, Math.floor(t))]; q.strokeText(LABEL, 180, 26); q.fillText(LABEL, 180, 26); q.font = 'bold 12px Arial'; q.strokeText(v, 180, 620); q.fillText(v, 180, 620); q.restore(); },
+    build(S) { PS1.add(PS1.plane(10, 10, 4, 4, .5), M(PS1.color('#77767a')), 0, 0, 0).rotation.x = -Math.PI / 2; PS1.add(PS1.plane(10, 6, 4, 2, .5), M(PS1.color('#5c5e66')), 0, 3, -3);
+      window.LOOK({ name: 'stand-in' }); LIGHTS.sky({ time: '12:00', sun: { azimuth: 150, elevation: 45, kelvin: 5200, stops: -1 }, skylight: -1.2, interior: -1, shadowSize: 4 }); LIGHTS.setup('three-point', { subject: 'who', stops: -1.2 }); },
+    shots: S => [{ id: 'FRONT', at: 0, dur: 1, lens: '50mm', stop: 'f/8', exposure: .8, pos: [0, 1.0, 5.4], look: [0, .92, 0], subject: [0, .92, 0] }, { id: 'SIDE', at: 1, dur: 1, lens: '50mm', stop: 'f/8', exposure: .8, pos: [5.4, 1.0, 0], look: [0, .92, 0], subject: [0, .92, 0] },
+      { id: 'BACK', at: 2, dur: 1, lens: '50mm', stop: 'f/8', exposure: 1.4, pos: [0, 1.0, -5.4], look: [0, .92, 0], subject: [0, .92, 0] }, { id: 'CU', at: 3, dur: 1, lens: '85mm', stop: 'f/4', subject: 'who.face', size: 'MCU', angle: [0, 2] }],
+    update(t, S) { if (P) { P.solve(CAST.MOTIONS.stand()); P.animateFace(0); } },
+  });
+})();
+</script>

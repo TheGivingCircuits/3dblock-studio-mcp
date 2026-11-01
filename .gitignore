@@ -2,3 +2,20 @@ node_modules/
 .DS_Store
 *.mp4
 .history/
+# big/derived/private stuff stays on the T7 only
+Temp/
+Episodes/
+Uploads/
+Support/
+Assets/Sound Effects/*/
+Xanadu/node_modules/
+Xanadu/.tools/
+._*
+*.mov
+*.wav
+*.mp3
+*.ogg
+*.tar.gz
+*.zip
+*.key
+.env
